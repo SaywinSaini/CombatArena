@@ -8,6 +8,8 @@ public class CombatArena : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
+		PublicIncludePaths.Add("CombatArena");
+		
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" , "GameplayAbilities" , "GameplayTags" , "GameplayTasks" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
