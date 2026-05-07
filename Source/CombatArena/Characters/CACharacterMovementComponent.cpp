@@ -23,6 +23,8 @@ void UCACharacterMovementComponent::StopSprinting()
 
 void UCACharacterMovementComponent::Dodge()
 {
+	if (!CachedOwner || !CachedOwner->GetCharacterData()) return;
+	
 	if (!bCanDodge)
 	{
 		bHasDodgeBuffered = true;
@@ -36,17 +38,23 @@ void UCACharacterMovementComponent::Dodge()
 	{
 		DodgeDirection = -GetCharacterOwner()->GetActorForwardVector();
 	}
-	GetCharacterOwner()->LaunchCharacter(DodgeDirection * DodgeImpulse , true,true);
+	GetCharacterOwner()->LaunchCharacter(DodgeDirection * CachedOwner->GetCharacterData()->DodgeImpulse , true,true);
 		
 	bCanDodge = false;
 	
-	GetWorld()->GetTimerManager().SetTimer(DodgeTimerHandle,[this]() { bCanDodge = true; },DodgeCooldown,false);
+	GetWorld()->GetTimerManager().SetTimer(DodgeTimerHandle,[this]() { bCanDodge = true; },CachedOwner->GetCharacterData()->DodgeCooldown,false);
 	
 }
 
 void UCACharacterMovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	CachedOwner = Cast<ACAPlayerCharacter>(GetCharacterOwner());
+	if (!CachedOwner)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("ACharacterMovementComponent: Owner is not ACAPlayerCharacter"));
+	}
 	
 }
 
@@ -56,21 +64,19 @@ void UCACharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick Ti
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	// Get owning player character to access CharacterData
-	ACAPlayerCharacter* Owner =Cast<ACAPlayerCharacter>(GetCharacterOwner());
-	if (Owner && Owner->GetCharacterData())
-	{
+	if (!CachedOwner || !CachedOwner->GetCharacterData()) return;
+	
 		const float TargetSpeed = bIsSprinting ?
-		Owner->GetCharacterData()->SprintSpeed :
-		Owner->GetCharacterData()->MovementSpeed;
+		CachedOwner->GetCharacterData()->SprintSpeed :
+		CachedOwner->GetCharacterData()->MovementSpeed;
 		
 		// Smoothly interpolate MaxWalkSpeed toward target speed each frame
-		MaxWalkSpeed = FMath::FInterpTo(MaxWalkSpeed, TargetSpeed,DeltaTime,SpeedInterpSpeed);
-	}
+		MaxWalkSpeed = FMath::FInterpTo(MaxWalkSpeed, TargetSpeed,DeltaTime,CachedOwner->GetCharacterData()->SpeedInterpSpeed);
+	
 	if (bHasDodgeBuffered && bCanDodge)
 	{
 		const float CurrentTime = GetWorld()->GetTimeSeconds();
-		if (CurrentTime - BufferedInputTime <= BufferWindow)
+		if (CurrentTime - BufferedInputTime <= CachedOwner->GetCharacterData()->BufferWindow)
 		{
 			bHasDodgeBuffered = false;
 			Dodge();
