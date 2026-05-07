@@ -49,9 +49,12 @@ public:
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
+	UCACharacterData* GetCharacterData() const { return CharacterData; }
 private: 
 	UPROPERTY(EditDefaultsOnly, Category = "Data")
 	TObjectPtr<UCACharacterData> CharacterData;
+	
+	
 	
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
