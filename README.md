@@ -1,36 +1,35 @@
 # Combat Arena
 
-## About
-UE5 C++ combat arena project built for AAA gameplay programmer portfolio.
-Built from a blank project with no template code.
+A third person action combat game built in UE5 from a blank C++ project. 
+No templates, no shortcuts — everything written from scratch.
 
-## Part 1 — Player Character Foundation
-- Custom character built from scratch in C++
-- Data driven movement via UCACharacterData asset
-- Enhanced Input System wired entirely in C++
-- Custom GameMode spawning correct Blueprint pawn
+Still in active development. Adding systems as I go.
 
-## Systems
-- CAPlayerCharacter — custom character class
-- CACharacterData — data asset for movement values
-- CAGameMode — game mode with default pawn setup
+---
 
-## Part 2 — Custom Movement Component
-- Custom UCharacterMovementComponent subclass in C++
-- Sprint with smooth interpolation via FMath::FInterpTo
-- Crouch using UE5 built in system
-- Directional dodge roll with cooldown timer
-- Input buffering system — early inputs fire when cooldown expires
-- All values data driven via CACharacterData asset
-- Cached owner reference for performance
+## What's been built so far
 
- ## Systems
-- CAPlayerCharacter — custom character class
-- CACharacterData — data asset for all tuneable values
-- CAGameMode — game mode with default pawn setup
-- CACharacterMovementComponent — custom movement with sprint, crouch, dodge 
+### Player Character
+Custom character class with a data-driven movement system. All values like 
+walk speed, jump height and gravity live in a data asset so they can be tuned 
+without touching code.
 
-## Built With
+Enhanced Input System wired entirely in C++. GameMode spawns the correct 
+Blueprint pawn at runtime using ConstructorHelpers.
+
+### Movement
+Subclassed UCharacterMovementComponent to add sprint, crouch and dodge roll.
+
+Sprint smoothly interpolates to max speed using FInterpTo rather than snapping 
+instantly. Dodge is directional — rolls toward whatever direction you are 
+pressing, or backward if standing still. Input buffering lets you queue a dodge 
+slightly early and it fires the moment the cooldown expires.
+
+Owner reference is cached in BeginPlay rather than cast every frame.
+
+---
+
+## Tech
 - Unreal Engine 5.7
 - C++
-- Rider IDE
+- Rider
