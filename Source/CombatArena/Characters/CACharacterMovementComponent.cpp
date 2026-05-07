@@ -23,7 +23,12 @@ void UCACharacterMovementComponent::StopSprinting()
 
 void UCACharacterMovementComponent::Dodge()
 {
-	if (!bCanDodge) return;
+	if (!bCanDodge)
+	{
+		bHasDodgeBuffered = true;
+		BufferedInputTime = GetWorld()->GetTimeSeconds();
+		return;
+	}
 	
 	FVector DodgeDirection = GetLastInputVector();
 	
@@ -61,6 +66,19 @@ void UCACharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick Ti
 		
 		// Smoothly interpolate MaxWalkSpeed toward target speed each frame
 		MaxWalkSpeed = FMath::FInterpTo(MaxWalkSpeed, TargetSpeed,DeltaTime,SpeedInterpSpeed);
+	}
+	if (bHasDodgeBuffered && bCanDodge)
+	{
+		const float CurrentTime = GetWorld()->GetTimeSeconds();
+		if (CurrentTime - BufferedInputTime <= BufferWindow)
+		{
+			bHasDodgeBuffered = false;
+			Dodge();
+		}
+		else
+		{
+			bHasDodgeBuffered = false;
+		}
 	}
 	 
 }
