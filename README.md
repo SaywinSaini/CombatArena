@@ -16,6 +16,6 @@ Built from a blank project with no template code.
 - CAGameMode — game mode with default pawn setup
 
 ## Built With
-- Unreal Engine 5.4
+- Unreal Engine 5.7
 - C++
 - Rider IDE
