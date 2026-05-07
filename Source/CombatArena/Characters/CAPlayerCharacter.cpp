@@ -149,6 +149,8 @@ void ACAPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 			EIC->BindAction(SprintAction,ETriggerEvent::Triggered,CMC,&UCACharacterMovementComponent::StartSprinting);
 		
 			EIC->BindAction(SprintAction,ETriggerEvent::Completed,CMC,&UCACharacterMovementComponent::StopSprinting);
+			
+			EIC->BindAction(DodgeAction,ETriggerEvent::Triggered,CMC,&UCACharacterMovementComponent::Dodge);
 		}
 	}
 }

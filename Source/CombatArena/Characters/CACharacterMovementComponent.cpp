@@ -21,6 +21,24 @@ void UCACharacterMovementComponent::StopSprinting()
 	bIsSprinting = false;
 }
 
+void UCACharacterMovementComponent::Dodge()
+{
+	if (!bCanDodge) return;
+	
+	FVector DodgeDirection = GetLastInputVector();
+	
+	if (DodgeDirection.IsNearlyZero())
+	{
+		DodgeDirection = -GetCharacterOwner()->GetActorForwardVector();
+	}
+	GetCharacterOwner()->LaunchCharacter(DodgeDirection * DodgeImpulse , true,true);
+		
+	bCanDodge = false;
+	
+	GetWorld()->GetTimerManager().SetTimer(DodgeTimerHandle,[this]() { bCanDodge = true; },DodgeCooldown,false);
+	
+}
+
 void UCACharacterMovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
