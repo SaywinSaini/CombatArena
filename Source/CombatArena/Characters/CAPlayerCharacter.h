@@ -41,6 +41,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> SprintAction;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> CrouchAction;
+	
 	virtual void BeginPlay() override;
 
 
@@ -58,8 +61,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Data")
 	TObjectPtr<UCACharacterData> CharacterData;
 	
-	
-	
 	void Move(const FInputActionValue& Value);
+	
 	void Look(const FInputActionValue& Value);
+    
+	void StartCrouch();
+	
+	void StopCrouch();
 };

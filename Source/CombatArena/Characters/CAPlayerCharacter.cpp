@@ -33,6 +33,9 @@ ACAPlayerCharacter::ACAPlayerCharacter(const FObjectInitializer& ObjectInitializ
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 	
+	// Enable crouch
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+	
 	//Spring arm
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(RootComponent);
@@ -112,6 +115,16 @@ void ACAPlayerCharacter::Look(const FInputActionValue& Value)
 	AddControllerPitchInput(Axis.Y);
 }
 
+void ACAPlayerCharacter::StartCrouch()
+{
+	Crouch();
+}
+
+void ACAPlayerCharacter::StopCrouch()
+{
+	UnCrouch();
+}
+
 void ACAPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -125,6 +138,10 @@ void ACAPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EIC->BindAction(JumpAction, ETriggerEvent::Triggered,this, &ACAPlayerCharacter::Jump);
 
 		EIC->BindAction(JumpAction, ETriggerEvent::Completed,this, &ACAPlayerCharacter::StopJumping);
+		
+		EIC->BindAction(CrouchAction,ETriggerEvent::Triggered,this,&ACAPlayerCharacter::StartCrouch);
+		
+		EIC->BindAction(CrouchAction,ETriggerEvent::Completed,this,&ACAPlayerCharacter::StopCrouch);
 		
 		UCACharacterMovementComponent* CMC = Cast<UCACharacterMovementComponent>(GetCharacterMovement());
 		if (CMC)
