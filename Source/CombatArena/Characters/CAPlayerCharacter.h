@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "CAPlayerCharacter.generated.h"
 
+class UCACharacterMovementComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UCACharacterData;
@@ -36,6 +37,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> JumpAction;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> SprintAction;
 	
 	virtual void BeginPlay() override;
 

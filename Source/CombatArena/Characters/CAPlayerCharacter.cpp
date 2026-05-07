@@ -50,8 +50,6 @@ void ACAPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	//Checking components
-	UE_LOG(LogTemp,Warning,TEXT("CACharacterMovementComponent is active"));
 	
 	//Apply character data values to movement component
 	
@@ -127,6 +125,14 @@ void ACAPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EIC->BindAction(JumpAction, ETriggerEvent::Triggered,this, &ACAPlayerCharacter::Jump);
 
 		EIC->BindAction(JumpAction, ETriggerEvent::Completed,this, &ACAPlayerCharacter::StopJumping);
+		
+		UCACharacterMovementComponent* CMC = Cast<UCACharacterMovementComponent>(GetCharacterMovement());
+		if (CMC)
+		{
+			EIC->BindAction(SprintAction,ETriggerEvent::Triggered,CMC,&UCACharacterMovementComponent::StartSprinting);
+		
+			EIC->BindAction(SprintAction,ETriggerEvent::Completed,CMC,&UCACharacterMovementComponent::StopSprinting);
+		}
 	}
 }
 
