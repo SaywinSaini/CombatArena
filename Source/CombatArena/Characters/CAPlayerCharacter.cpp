@@ -6,16 +6,20 @@
 #include "CACharacterData.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/InputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include  "CACharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 
-ACAPlayerCharacter::ACAPlayerCharacter()
+ACAPlayerCharacter::ACAPlayerCharacter(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer.SetDefaultSubobjectClass<UCACharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
+
 {
 	PrimaryActorTick.bCanEverTick = true;
+	
+	
+	
 	
 	//Capsule size
 	GetCapsuleComponent()->InitCapsuleSize(42.f,96.f);
@@ -46,15 +50,18 @@ void ACAPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//Checking components
+	UE_LOG(LogTemp,Warning,TEXT("CACharacterMovementComponent is active"));
+	
 	//Apply character data values to movement component
 	
 	if (CharacterData)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = CharacterData->MovementSpeed;
+		GetCharacterMovement()->MaxWalkSpeed  = CharacterData->MovementSpeed;
 		GetCharacterMovement()->JumpZVelocity = CharacterData->JumpZVelocity;
-		GetCharacterMovement()->AirControl = CharacterData->AirControl;
-		GetCharacterMovement()->GravityScale = CharacterData->GravityScale;
-		GetCharacterMovement()->RotationRate = FRotator(0.0f, CharacterData->RotationRate, 0.0f);
+		GetCharacterMovement()->AirControl    = CharacterData->AirControl;
+		GetCharacterMovement()->GravityScale  = CharacterData->GravityScale;
+		GetCharacterMovement()->RotationRate  = FRotator(0.0f, CharacterData->RotationRate, 0.0f);
 	}
 	else
 	{
@@ -93,7 +100,7 @@ void ACAPlayerCharacter::Move(const FInputActionValue& Value)
 		const FVector ForwardDir = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		
 		const FVector RightDir = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		
+		 
 		AddMovementInput(ForwardDir,Axis.Y);
 		AddMovementInput(RightDir,Axis.X);
 	}
@@ -102,6 +109,7 @@ void ACAPlayerCharacter::Move(const FInputActionValue& Value)
 void ACAPlayerCharacter::Look(const FInputActionValue& Value)
 {
 	const FVector2D Axis = Value.Get<FVector2D>();
+	
 	AddControllerYawInput(Axis.X);
 	AddControllerPitchInput(Axis.Y);
 }
@@ -112,17 +120,13 @@ void ACAPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	
 	if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EIC->BindAction(MoveAction, ETriggerEvent::Triggered,
-			this, &ACAPlayerCharacter::Move);
+		EIC->BindAction(MoveAction, ETriggerEvent::Triggered,this, &ACAPlayerCharacter::Move);
 
-		EIC->BindAction(LookAction, ETriggerEvent::Triggered,
-			this, &ACAPlayerCharacter::Look);
+		EIC->BindAction(LookAction, ETriggerEvent::Triggered,this, &ACAPlayerCharacter::Look);
 
-		EIC->BindAction(JumpAction, ETriggerEvent::Triggered,
-			this, &ACAPlayerCharacter::Jump);
+		EIC->BindAction(JumpAction, ETriggerEvent::Triggered,this, &ACAPlayerCharacter::Jump);
 
-		EIC->BindAction(JumpAction, ETriggerEvent::Completed,
-			this, &ACAPlayerCharacter::StopJumping);
+		EIC->BindAction(JumpAction, ETriggerEvent::Completed,this, &ACAPlayerCharacter::StopJumping);
 	}
 }
 

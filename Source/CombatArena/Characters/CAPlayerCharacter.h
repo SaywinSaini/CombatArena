@@ -41,7 +41,9 @@ protected:
 
 
 public:
-	ACAPlayerCharacter();
+	
+    ACAPlayerCharacter(const FObjectInitializer& ObjectInitializer);
+	
 	
 	virtual void Tick(float DeltaTime) override;
 	
