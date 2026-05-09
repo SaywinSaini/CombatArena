@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include  "CACharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
+#include "Abilities/CAAttributeSet.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -48,6 +49,8 @@ ACAPlayerCharacter::ACAPlayerCharacter(const FObjectInitializer& ObjectInitializ
 	Camera->bUsePawnControlRotation = false;
 	
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	
+	CreateDefaultSubobject<UCAAttributeSet>(TEXT("AttributeSet"));
 }
 
 
@@ -80,6 +83,7 @@ void ACAPlayerCharacter::BeginPlay()
 		}
 	}
 	
+	AbilitySystemComponent->InitAbilityActorInfo(this,this);
 }
 
 
