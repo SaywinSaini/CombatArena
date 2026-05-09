@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "AbilitySystemInterface.h"
+#include "AbilitySystemComponent.h"
 #include "CAPlayerCharacter.generated.h"
 
 class UCACharacterMovementComponent;
@@ -14,7 +16,7 @@ class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
 UCLASS()
-class COMBATARENA_API ACAPlayerCharacter : public ACharacter
+class COMBATARENA_API ACAPlayerCharacter : public ACharacter , public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -54,13 +56,19 @@ public:
 	
     ACAPlayerCharacter(const FObjectInitializer& ObjectInitializer);
 	
-	
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
+	// Returns the AbilitySystemComponent for GAS to use externally
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override {return AbilitySystemComponent;}
+	
 	UCACharacterData* GetCharacterData() const { return CharacterData; }
 private: 
+	
+	UPROPERTY(VisibleAnywhere, Category = "GAS")
+	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Data")
 	TObjectPtr<UCACharacterData> CharacterData;
 	

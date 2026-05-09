@@ -19,25 +19,23 @@ UCLASS()
 class COMBATARENA_API UCAAttributeSet : public UAttributeSet
 {
 	GENERATED_BODY()
-	
+
 public:
-	
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
-	
-	UPROPERTY(BlueprintReadOnly,Category = "Attributes")
+
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UCAAttributeSet, Health)
-	
-	UPROPERTY(BlueprintReadOnly,Category = "Attributes")
+
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UCAAttributeSet, MaxHealth)
-	
-	UPROPERTY(BlueprintReadOnly,Category = "Attributes")
+
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData Stamina;
 	ATTRIBUTE_ACCESSORS(UCAAttributeSet, Stamina)
-	
-	UPROPERTY(BlueprintReadOnly,Category = "Attributes")
+
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData MaxStamina;
 	ATTRIBUTE_ACCESSORS(UCAAttributeSet, MaxStamina)
-	
 };

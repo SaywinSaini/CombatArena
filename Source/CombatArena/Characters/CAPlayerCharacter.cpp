@@ -46,6 +46,8 @@ ACAPlayerCharacter::ACAPlayerCharacter(const FObjectInitializer& ObjectInitializ
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 	Camera->bUsePawnControlRotation = false;
+	
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 }
 
 
