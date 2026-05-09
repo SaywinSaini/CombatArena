@@ -51,6 +51,7 @@ void UCACharacterMovementComponent::BeginPlay()
 	Super::BeginPlay();
 	
 	CachedOwner = Cast<ACAPlayerCharacter>(GetCharacterOwner());
+	
 	if (!CachedOwner)
 	{
 		UE_LOG(LogTemp,Warning,TEXT("ACharacterMovementComponent: Owner is not ACAPlayerCharacter"));
@@ -59,8 +60,7 @@ void UCACharacterMovementComponent::BeginPlay()
 }
 
 
-void UCACharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                                  FActorComponentTickFunction* ThisTickFunction)
+void UCACharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
