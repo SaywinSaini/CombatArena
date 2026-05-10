@@ -27,6 +27,19 @@ slightly early and it fires the moment the cooldown expires.
 
 Owner reference is cached in BeginPlay rather than cast every frame.
 
+### Combat — Gameplay Ability System
+Full GAS implementation from scratch. AbilitySystemComponent lives on the
+player character with a custom AttributeSet tracking Health, MaxHealth,
+Stamina and MaxStamina. Attributes are clamped in PostGameplayEffectExecute
+so they never go negative or exceed their maximum.
+
+Three abilities implemented in C++:
+- Melee attack — plays an animation montage on activation
+- Ranged projectile — spawns a projectile actor in the character forward direction
+- Defensive block — stays active while button held, ends on release
+
+Abilities are granted via a designer-friendly array in Blueprint and activated
+using GameplayTags. All ability values driven by a DataTable asset.
 ---
 
 ## Tech
