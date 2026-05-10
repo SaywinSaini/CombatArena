@@ -10,6 +10,9 @@
 #include  "CACharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "Abilities/CAAttributeSet.h"
+#include "Abilities/CABlockAbility.h"
+#include "Abilities/CAMeleeAbility.h"
+#include "Abilities/CAProjectileAbility.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -141,6 +144,26 @@ void ACAPlayerCharacter::StopCrouch()
 	UnCrouch();
 }
 
+void ACAPlayerCharacter::ActivateMeleeAbility()
+{
+	AbilitySystemComponent->TryActivateAbilityByClass(UCAMeleeAbility::StaticClass());
+}
+
+void ACAPlayerCharacter::ActivateRangedAbility()
+{
+	AbilitySystemComponent->TryActivateAbilityByClass(UCAProjectileAbility::StaticClass());
+}
+
+void ACAPlayerCharacter::StartBlockAbility()
+{
+	AbilitySystemComponent->TryActivateAbilityByClass(UCABlockAbility::StaticClass());
+}
+
+void ACAPlayerCharacter::StopBlockAbility()
+{
+	//nothing
+}
+
 void ACAPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -158,6 +181,14 @@ void ACAPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EIC->BindAction(CrouchAction,ETriggerEvent::Triggered,this,&ACAPlayerCharacter::StartCrouch);
 		
 		EIC->BindAction(CrouchAction,ETriggerEvent::Completed,this,&ACAPlayerCharacter::StopCrouch);
+		
+		EIC->BindAction(MeleeAction,ETriggerEvent::Triggered,this,&ACAPlayerCharacter::ActivateMeleeAbility);
+		
+		EIC->BindAction(RangedAction,ETriggerEvent::Triggered,this,&ACAPlayerCharacter::ActivateRangedAbility);
+		
+		EIC->BindAction(BlockAction,ETriggerEvent::Triggered,this,&ACAPlayerCharacter::StartBlockAbility);
+		
+		EIC->BindAction(BlockAction,ETriggerEvent::Completed,this,&ACAPlayerCharacter::StopBlockAbility);
 		
 		UCACharacterMovementComponent* CMC = Cast<UCACharacterMovementComponent>(GetCharacterMovement());
 		if (CMC)

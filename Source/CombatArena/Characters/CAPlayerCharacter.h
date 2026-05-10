@@ -50,6 +50,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> DodgeAction;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> MeleeAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> RangedAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> BlockAction;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "GAS")
 	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
 	
@@ -83,4 +92,12 @@ private:
 	void StartCrouch();
 	
 	void StopCrouch();
+	
+	void ActivateMeleeAbility();
+	
+	void ActivateRangedAbility();
+	
+	void StartBlockAbility();
+	
+	void StopBlockAbility();
 };
