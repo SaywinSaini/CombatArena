@@ -146,17 +146,23 @@ void ACAPlayerCharacter::StopCrouch()
 
 void ACAPlayerCharacter::ActivateMeleeAbility()
 {
-	AbilitySystemComponent->TryActivateAbilityByClass(UCAMeleeAbility::StaticClass());
+	FGameplayTagContainer AbilityTags;
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Melee")));
+	AbilitySystemComponent->TryActivateAbilitiesByTag(AbilityTags);
 }
 
 void ACAPlayerCharacter::ActivateRangedAbility()
 {
-	AbilitySystemComponent->TryActivateAbilityByClass(UCAProjectileAbility::StaticClass());
+	FGameplayTagContainer AbilityTags;
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Ranged")));
+	AbilitySystemComponent->TryActivateAbilitiesByTag(AbilityTags);
 }
 
 void ACAPlayerCharacter::StartBlockAbility()
 {
-	AbilitySystemComponent->TryActivateAbilityByClass(UCABlockAbility::StaticClass());
+	FGameplayTagContainer AbilityTags;
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Block")));
+	AbilitySystemComponent->TryActivateAbilitiesByTag(AbilityTags);
 }
 
 void ACAPlayerCharacter::StopBlockAbility()

@@ -5,6 +5,11 @@
 
 #include "GameFramework/Character.h"
 
+UCAProjectileAbility::UCAProjectileAbility()
+{
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Ranged")));
+}
+
 void UCAProjectileAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                            const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                            const FGameplayEventData* TriggerEventData)

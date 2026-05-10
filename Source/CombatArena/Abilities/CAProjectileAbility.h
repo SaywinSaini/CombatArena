@@ -15,6 +15,7 @@ class COMBATARENA_API UCAProjectileAbility : public UCAGameplayAbility
 	GENERATED_BODY()
 	
 	public:
+	UCAProjectileAbility();
 	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	

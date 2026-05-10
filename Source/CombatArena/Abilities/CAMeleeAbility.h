@@ -19,5 +19,7 @@ class COMBATARENA_API UCAMeleeAbility : public UCAGameplayAbility
 	TObjectPtr<UAnimMontage> AttackMontage;
 	
 public:
+	UCAMeleeAbility();
+	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 };

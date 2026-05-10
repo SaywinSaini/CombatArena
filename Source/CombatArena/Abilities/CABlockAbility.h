@@ -15,6 +15,7 @@ class COMBATARENA_API UCABlockAbility : public UCAGameplayAbility
 	GENERATED_BODY()
 	
 	public:
+	UCABlockAbility();
 	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	

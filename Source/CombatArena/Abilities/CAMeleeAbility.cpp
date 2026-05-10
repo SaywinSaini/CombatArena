@@ -5,6 +5,12 @@
 
 #include "GameFramework/Character.h"
 
+UCAMeleeAbility::UCAMeleeAbility()
+{
+	// Tag this ability so it can be found and activated by tag queries
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Melee")));
+}
+
 void UCAMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                       const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                       const FGameplayEventData* TriggerEventData)
