@@ -2,7 +2,7 @@
 
 
 #include "Abilities/CAAttributeSet.h"
-
+#include "GameplayEffectExtension.h"
 
 void UCAAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {

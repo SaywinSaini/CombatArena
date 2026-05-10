@@ -3,14 +3,34 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/DataTable.h"
 #include "Abilities/GameplayAbility.h"
 #include "CAGameplayAbility.generated.h"
+
 
 UENUM(BlueprintType)
 enum class ECAAbilityActivationPolicy : uint8
 {
 	OnInputTriggered,
 	OnGranted
+};
+
+USTRUCT(BlueprintType)
+struct  FCAAbilityData : public FTableRowBase
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Ability")
+	float Damage = 20.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Ability")
+	float StaminaCost = 10.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Ability")
+	float Cooldown = 1.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Ability")
+	float Range = 200.0f;
 };
 
 UCLASS()
