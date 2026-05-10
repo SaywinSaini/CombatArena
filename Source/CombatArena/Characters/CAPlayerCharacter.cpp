@@ -50,6 +50,7 @@ ACAPlayerCharacter::ACAPlayerCharacter(const FObjectInitializer& ObjectInitializ
 	
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	
+	// Create and register AttributeSet with the ASC
 	CreateDefaultSubobject<UCAAttributeSet>(TEXT("AttributeSet"));
 }
 
@@ -83,7 +84,16 @@ void ACAPlayerCharacter::BeginPlay()
 		}
 	}
 	
+	// Initialize ASC with owner and avatar actor
 	AbilitySystemComponent->InitAbilityActorInfo(this,this);
+	
+	for (TSubclassOf<UGameplayAbility> Ability : DefaultAbilities)
+	{
+		if (Ability)
+		{
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability));
+		}
+	}
 }
 
 
