@@ -9,6 +9,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "CAPlayerCharacter.generated.h"
 
+class UCAHitDetectionComponent;
 class UCACharacterMovementComponent;
 class USpringArmComponent;
 class UCameraComponent;
@@ -77,7 +78,12 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override {return AbilitySystemComponent;}
 	
 	UCACharacterData* GetCharacterData() const { return CharacterData; }
+	
+	UCAHitDetectionComponent* GetHitDetectionComponent() const {return HitDetectionComponent;}
 private: 
+	
+	UPROPERTY(VisibleAnywhere,Category = "Combat")
+	TObjectPtr<UCAHitDetectionComponent> HitDetectionComponent;
 	
 	UPROPERTY(VisibleAnywhere, Category = "GAS")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;

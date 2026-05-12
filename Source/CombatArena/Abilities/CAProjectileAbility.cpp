@@ -7,7 +7,9 @@
 
 UCAProjectileAbility::UCAProjectileAbility()
 {
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Ranged")));
+	FGameplayTagContainer NewTags;
+	NewTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Ranged")));
+    SetAssetTags(NewTags);
 }
 
 void UCAProjectileAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,

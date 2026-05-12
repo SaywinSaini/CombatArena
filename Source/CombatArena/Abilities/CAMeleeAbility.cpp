@@ -2,13 +2,16 @@
 
 
 #include "CAMeleeAbility.h"
-
+#include "Characters/CAPlayerCharacter.h"
+#include "Combat/CAHitDetectionComponent.h"
 #include "GameFramework/Character.h"
 
 UCAMeleeAbility::UCAMeleeAbility()
 {
 	// Tag this ability so it can be found and activated by tag queries
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Melee")));
+	FGameplayTagContainer NewTags;
+	NewTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Melee")));
+	SetAssetTags(NewTags);
 }
 
 void UCAMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -17,12 +20,27 @@ void UCAMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
-	ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get());
+	ACAPlayerCharacter* Character = Cast<ACAPlayerCharacter>(ActorInfo->AvatarActor.Get());
 	
 	if (!Character) return;
 	
+	//Start hit detection
+	if (UCAHitDetectionComponent* HitDetection = Character->GetHitDetectionComponent())
+	{
+		HitDetection->StartTrace();
+	}
+	
 	Character->PlayAnimMontage(AttackMontage);
 	
+	//Stop hit detection and end ability
+	
+	if (UCAHitDetectionComponent* HitDetection = Character->GetHitDetectionComponent())
+	{
+		HitDetection->StopTrace();
+	}
+	
 	EndAbility(Handle,ActorInfo,ActivationInfo,true,false);
+	
+	
 	
 }

@@ -5,7 +5,9 @@
 
 UCABlockAbility::UCABlockAbility()
 {
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Block")));
+	FGameplayTagContainer NewTags;
+	NewTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Block")));
+	SetAssetTags(NewTags);
 }
 
 void UCABlockAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -13,8 +15,6 @@ void UCABlockAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	
-	UE_LOG(LogTemp, Warning, TEXT("Block ability activated"));
 }
 
 void UCABlockAbility::OnBlockReleased(const FGameplayAbilitySpecHandle Handle,

@@ -13,6 +13,7 @@
 #include "Abilities/CABlockAbility.h"
 #include "Abilities/CAMeleeAbility.h"
 #include "Abilities/CAProjectileAbility.h"
+#include "Combat/CAHitDetectionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -21,8 +22,6 @@ ACAPlayerCharacter::ACAPlayerCharacter(const FObjectInitializer& ObjectInitializ
 
 {
 	PrimaryActorTick.bCanEverTick = true;
-	
-	
 	
 	
 	//Capsule size
@@ -55,6 +54,8 @@ ACAPlayerCharacter::ACAPlayerCharacter(const FObjectInitializer& ObjectInitializ
 	
 	// Create and register AttributeSet with the ASC
 	CreateDefaultSubobject<UCAAttributeSet>(TEXT("AttributeSet"));
+	
+	HitDetectionComponent = CreateDefaultSubobject<UCAHitDetectionComponent>(TEXT("HitDetectionComponent"));
 }
 
 
@@ -97,6 +98,8 @@ void ACAPlayerCharacter::BeginPlay()
 			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability));
 		}
 	}
+	
+	
 }
 
 
