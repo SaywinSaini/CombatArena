@@ -1,9 +1,25 @@
 ﻿#include "CAHitDetectionComponent.h"
 
+#include "Characters/CACharacterData.h"
+#include "Characters/CAPlayerCharacter.h"
+
 
 UCAHitDetectionComponent::UCAHitDetectionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+}
+
+void UCAHitDetectionComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	ACAPlayerCharacter* Player = Cast<ACAPlayerCharacter>(GetOwner());
+	
+	if (!Player) return;
+	
+	CharacterData = Player->GetCharacterData();
+	
+	if (!CharacterData) return;
 }
 
 void UCAHitDetectionComponent::StartTrace()
@@ -19,35 +35,42 @@ void UCAHitDetectionComponent::StopTrace()
 
 void UCAHitDetectionComponent::PerformTrace()
 {
-	if (bIsTracing)
-	{
-		FVector StartPoint = GetOwner()->GetActorLocation();
+	if (!bIsTracing || !CharacterData) return;
+	
+		UE_LOG(LogTemp, Warning, TEXT("PerformTrace fired"));
 		
-		FVector ForwardPoint = GetOwner()->GetActorForwardVector();
-		
-		FVector EndPoint = StartPoint + ForwardPoint * TraceRange;
-		
+	    //Get the skeletal mesh to read socket position
+		USkeletalMeshComponent* Mesh = GetOwner()->FindComponentByClass<USkeletalMeshComponent>();
+	
+	if (!Mesh) return;
+	
+		const FVector StartPoint = Mesh->GetSocketLocation(CharacterData->WeaponSocketName);
+		const FVector ForwardPoint = GetOwner()->GetActorForwardVector();
+		const FVector EndPoint = StartPoint + ForwardPoint * CharacterData->TraceRange;
+	
 		TArray<FHitResult> HitResults;
 		
-		FCollisionShape Sphere = FCollisionShape::MakeSphere(TraceRadius);
+		const FCollisionShape Sphere = FCollisionShape::MakeSphere(CharacterData->TraceRadius);
 		
-		GetWorld()->SweepMultiByChannel(HitResults, StartPoint, EndPoint, FQuat(),ECC_Pawn,Sphere);
-		
-		for (FHitResult Hit : HitResults)
+		GetWorld()->SweepMultiByChannel(HitResults, StartPoint, EndPoint, FQuat::Identity,ECC_Pawn,Sphere);
+	
+	    // Debug- Visualize sweep in editor so we can confirm postion
+	    DrawDebugSphere(GetWorld(),StartPoint,CharacterData->TraceRadius,12,FColor::Red,false,1.0f);
+	    DrawDebugSphere(GetWorld(), EndPoint, CharacterData->TraceRadius, 12, FColor::Green, false, 1.0f);
+	
+		for (const FHitResult& Hit : HitResults)
 		{
 			AActor* HitActor = Hit.GetActor();
-			if (HitActor && HitActor != GetOwner() && !HitActors.Contains(HitActor))
-			{
-				HitActors.Add(HitActor);
-			}
+			if (!HitActor || HitActor == GetOwner()) continue;
+			
+			if (HitActors.Contains(TWeakObjectPtr<AActor>(HitActor))) continue;
+			
+				HitActors.Add(TWeakObjectPtr<AActor>(HitActor));
+			//Confirms which actor was hit 
+			UE_LOG(LogTemp, Warning, TEXT("CAHitDetectionComponent: Hit %s"), *HitActor->GetName());
 		}
 		
 		
-	}
-}
-
-void UCAHitDetectionComponent::BeginPlay()
-{
-	Super::BeginPlay();
+	
 }
 

@@ -4,7 +4,7 @@
 #include "CAMeleeAbility.h"
 #include "Characters/CAPlayerCharacter.h"
 #include "Combat/CAHitDetectionComponent.h"
-#include "GameFramework/Character.h"
+
 
 UCAMeleeAbility::UCAMeleeAbility()
 {
@@ -20,27 +20,63 @@ void UCAMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
+	//Get the character
 	ACAPlayerCharacter* Character = Cast<ACAPlayerCharacter>(ActorInfo->AvatarActor.Get());
 	
-	if (!Character) return;
+	if (!Character)
+	{
+		EndAbility(Handle,ActorInfo,ActivationInfo,true,true);
+		return;
+	}
 	
-	//Start hit detection
+	//Tell hit detection we are starting a swing
 	if (UCAHitDetectionComponent* HitDetection = Character->GetHitDetectionComponent())
 	{
 		HitDetection->StartTrace();
 	}
 	
-	Character->PlayAnimMontage(AttackMontage);
+	//Create the async montage task
 	
-	//Stop hit detection and end ability
+	MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this,NAME_None,AttackMontage,1.0f);
 	
-	if (UCAHitDetectionComponent* HitDetection = Character->GetHitDetectionComponent())
+	//Bind delegates — these fire when montage ends
+	
+	MontageTask->OnCompleted.AddDynamic(this, &UCAMeleeAbility::OnMontageCompleted);
+	MontageTask->OnCancelled.AddDynamic(this, &UCAMeleeAbility::OnMontageCancelled);
+	MontageTask->OnInterrupted.AddDynamic(this, &UCAMeleeAbility::OnMontageCancelled);
+	
+	//ability suspends here, montage begins playing
+	MontageTask->ReadyForActivation();
+	
+}
+
+void UCAMeleeAbility::OnMontageCompleted()
+{
+	StopAbility();
+}
+
+void UCAMeleeAbility::OnMontageCancelled()
+{
+	StopAbility();
+}
+
+void UCAMeleeAbility::StopAbility()
+{
+	if (const FGameplayAbilityActorInfo* ActorInfo = GetCurrentActorInfo())
 	{
-		HitDetection->StopTrace();
+		ACAPlayerCharacter* Character = Cast<ACAPlayerCharacter>(ActorInfo->AvatarActor.Get());
+		if (Character)
+		{
+			if (UCAHitDetectionComponent* HitDetection = Character->GetHitDetectionComponent())
+			{
+				HitDetection->StopTrace();
+			}
+		}
 	}
 	
+	const FGameplayAbilitySpecHandle Handle = GetCurrentAbilitySpecHandle();
+	const FGameplayAbilityActorInfo* ActorInfo = GetCurrentActorInfo();
+	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
+
 	EndAbility(Handle,ActorInfo,ActivationInfo,true,false);
-	
-	
-	
 }

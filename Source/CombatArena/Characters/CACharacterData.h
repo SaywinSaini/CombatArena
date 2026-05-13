@@ -47,5 +47,14 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 	UPROPERTY(EditDefaultsOnly,Category= "Movement")
 	float SpeedInterpSpeed = 10.0f;
 	
+	// Combat — Melee hit detection
+	UPROPERTY(EditDefaultsOnly , Category= "Combat")
+	float TraceRadius = 50.0f;
 	
+	UPROPERTY(EditDefaultsOnly , Category= "Combat")
+	float TraceRange = 150.0f;
+	
+	//Socket used as origin for both melee traces and projectile spawning
+	UPROPERTY(EditDefaultsOnly ,Category= "Combat")
+	FName WeaponSocketName = FName("hand_r");
 };

@@ -31,6 +31,8 @@ void UCACharacterMovementComponent::Dodge()
 		BufferedInputTime = GetWorld()->GetTimeSeconds();
 		return;
 	}
+	// Prevent dodge while airborne
+	if (!IsMovingOnGround()) return;
 	
 	FVector DodgeDirection = GetLastInputVector();
 	

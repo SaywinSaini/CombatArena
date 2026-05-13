@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "CAGameplayAbility.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "CAMeleeAbility.generated.h"
+
 
 /**
  * 
@@ -13,13 +15,29 @@ UCLASS()
 class COMBATARENA_API UCAMeleeAbility : public UCAGameplayAbility
 {
 	GENERATED_BODY()
+public:
 	
-	protected:
+	UCAMeleeAbility();
+	
+protected:
+	
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	
+	// Called when montage finishes naturally
+	UFUNCTION()
+	void OnMontageCompleted();
+	
+	// Called when montage is interrupted or cancelled
+	UFUNCTION()
+	void OnMontageCancelled();
+	
+private:
+	// Helper to avoid duplicating stop+end logic
+	void StopAbility();
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Ability")
 	TObjectPtr<UAnimMontage> AttackMontage;
 	
-public:
-	UCAMeleeAbility();
-	
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	UPROPERTY()
+	TObjectPtr<UAbilityTask_PlayMontageAndWait> MontageTask;
 };

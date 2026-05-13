@@ -195,7 +195,7 @@ void ACAPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		
 		EIC->BindAction(RangedAction,ETriggerEvent::Triggered,this,&ACAPlayerCharacter::ActivateRangedAbility);
 		
-		EIC->BindAction(BlockAction,ETriggerEvent::Triggered,this,&ACAPlayerCharacter::StartBlockAbility);
+		EIC->BindAction(BlockAction,ETriggerEvent::Started,this,&ACAPlayerCharacter::StartBlockAbility);
 		
 		EIC->BindAction(BlockAction,ETriggerEvent::Completed,this,&ACAPlayerCharacter::StopBlockAbility);
 		
