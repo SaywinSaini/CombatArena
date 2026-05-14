@@ -5,6 +5,7 @@
 #include "CAHitDetectionComponent.generated.h"
 
 
+class UGameplayEffect;
 class UCACharacterData;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -27,13 +28,16 @@ public:
 	void PerformTrace();
 	
 	private:
+	
 	// Tracks actors already hit this swing to prevent multiple hits per attack
-	UPROPERTY()
 	TSet<TWeakObjectPtr<AActor>> HitActors;
 	
-	// Tracks actors already hit this swing,weak refs so dead actors GC naturally
 	UPROPERTY()
 	TObjectPtr<UCACharacterData> CharacterData;
+	
+	//GameplayEffect applied to hit actors , set in editor
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TSubclassOf<UGameplayEffect> DamageEffectClass;
 	
 	bool bIsTracing = false;
 	

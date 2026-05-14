@@ -29,6 +29,14 @@ void UCAMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 	
+	//CommitAbility checks cooldown and costs - must be called before doing any work
+	
+	if (!CommitAbility(Handle,ActorInfo,ActivationInfo))
+	{
+		EndAbility(Handle,ActorInfo,ActivationInfo,true,true);
+		return;
+	}
+	
 	//Tell hit detection we are starting a swing
 	if (UCAHitDetectionComponent* HitDetection = Character->GetHitDetectionComponent())
 	{
@@ -56,7 +64,7 @@ void UCAMeleeAbility::OnMontageCompleted()
 }
 
 void UCAMeleeAbility::OnMontageCancelled()
-{
+{  
 	StopAbility();
 }
 

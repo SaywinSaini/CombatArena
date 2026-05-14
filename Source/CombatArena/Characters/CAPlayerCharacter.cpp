@@ -191,9 +191,9 @@ void ACAPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		
 		EIC->BindAction(CrouchAction,ETriggerEvent::Completed,this,&ACAPlayerCharacter::StopCrouch);
 		
-		EIC->BindAction(MeleeAction,ETriggerEvent::Triggered,this,&ACAPlayerCharacter::ActivateMeleeAbility);
+		EIC->BindAction(MeleeAction,ETriggerEvent::Started,this,&ACAPlayerCharacter::ActivateMeleeAbility);
 		
-		EIC->BindAction(RangedAction,ETriggerEvent::Triggered,this,&ACAPlayerCharacter::ActivateRangedAbility);
+		EIC->BindAction(RangedAction,ETriggerEvent::Started,this,&ACAPlayerCharacter::ActivateRangedAbility);
 		
 		EIC->BindAction(BlockAction,ETriggerEvent::Started,this,&ACAPlayerCharacter::StartBlockAbility);
 		
