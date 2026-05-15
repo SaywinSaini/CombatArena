@@ -40,6 +40,22 @@ Three abilities implemented in C++:
 
 Abilities are granted via a designer-friendly array in Blueprint and activated
 using GameplayTags. All ability values driven by a DataTable asset.
+
+### Hit Detection
+Melee hit detection built on a dedicated component rather than overlap events.
+CAHitDetectionComponent performs a sphere sweep from the weapon hand socket
+driven by an AnimNotify — damage windows are tied directly to animation timing.
+
+CAMeleeAbility uses AbilityTask_PlayMontageAndWait to keep the ability alive
+across frames while the montage plays. A TWeakObjectPtr TSet tracks hit actors
+per swing to prevent multi-hit.
+
+Damage is applied through GAS — GE_Damage is built as a spec from the source
+ASC and applied to the target ASC on valid hit. A custom ECC_Weapon collision
+channel controls which actors respond to weapon traces.
+
+All trace values live in CACharacterData so designers can tune without touching
+code.
 ---
 
 ## Tech
