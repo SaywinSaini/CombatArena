@@ -3,6 +3,7 @@
 #include "Characters/CACharacterData.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "CombatArena.h"
 #include "Characters/CAPlayerCharacter.h"
 
 
@@ -51,9 +52,9 @@ void UCAHitDetectionComponent::PerformTrace()
 		
 		const FCollisionShape Sphere = FCollisionShape::MakeSphere(CharacterData->TraceRadius);
 		
-		GetWorld()->SweepMultiByChannel(HitResults, StartPoint, EndPoint, FQuat::Identity,ECC_Pawn,Sphere);
+		GetWorld()->SweepMultiByChannel(HitResults, StartPoint, EndPoint, FQuat::Identity,ECC_Weapon,Sphere);
 	
-	    // Debug- Visualize sweep in editor so we can confirm postion
+	    // Debug - Visualize sweep in editor so we can confirm position
 	    DrawDebugSphere(GetWorld(),StartPoint,CharacterData->TraceRadius,12,FColor::Red,false,1.0f);
 	    DrawDebugSphere(GetWorld(), EndPoint, CharacterData->TraceRadius, 12, FColor::Green, false, 1.0f);
 	
