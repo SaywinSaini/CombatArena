@@ -10,7 +10,7 @@ public class CombatArena : ModuleRules
 	
 		PublicIncludePaths.Add("CombatArena");
 		
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" , "GameplayAbilities" , "GameplayTags" , "GameplayTasks" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" , "GameplayAbilities" , "GameplayTags" , "GameplayTasks" ,"AIModule" , "NavigationSystem" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

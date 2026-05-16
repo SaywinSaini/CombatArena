@@ -65,7 +65,7 @@ protected:
 	
 	virtual void BeginPlay() override;
 
-
+	
 public:
 	
     ACAPlayerCharacter(const FObjectInitializer& ObjectInitializer);
