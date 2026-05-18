@@ -16,6 +16,8 @@
 #include "Combat/CAHitDetectionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
 
 
 ACAPlayerCharacter::ACAPlayerCharacter(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer.SetDefaultSubobjectClass<UCACharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -56,6 +58,9 @@ ACAPlayerCharacter::ACAPlayerCharacter(const FObjectInitializer& ObjectInitializ
 	CreateDefaultSubobject<UCAAttributeSet>(TEXT("AttributeSet"));
 	
 	HitDetectionComponent = CreateDefaultSubobject<UCAHitDetectionComponent>(TEXT("HitDetectionComponent"));
+	
+	PerceptionStimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionStimuliSource"));
+	PerceptionStimuliSource->bAutoRegister = true;
 }
 
 
@@ -99,6 +104,8 @@ void ACAPlayerCharacter::BeginPlay()
 		}
 	}
 	
+	PerceptionStimuliSource->RegisterForSense(TSubclassOf<UAISense>(UAISense_Sight::StaticClass()));
+	PerceptionStimuliSource->RegisterWithPerceptionSystem();
 	
 }
 

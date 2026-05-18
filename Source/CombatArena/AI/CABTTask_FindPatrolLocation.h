@@ -24,7 +24,7 @@ class COMBATARENA_API UCABTTask_FindPatrolLocation : public UBTTaskNode
 	UPROPERTY(EditAnywhere,Category = "AI")
 	float PatrolRadius = 1000.0f;
 	
-	//// Blackboard key written with the chosen patrol destination each cycle
+	// Blackboard key written with the chosen patrol destination each cycle
 	UPROPERTY(EditAnywhere,Category = "AI")
 	FBlackboardKeySelector PatrolLocationKey;
 };

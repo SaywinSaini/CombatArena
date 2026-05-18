@@ -20,6 +20,9 @@ void ACAEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
 	AbilitySystemComponent->InitAbilityActorInfo(this,this);
+	
+	UE_LOG(LogTemp, Warning, TEXT("CAEnemyBase: BeginPlay — Controller: %s"),
+	   GetController() ? *GetController()->GetClass()->GetName() : TEXT("NULL"));
 }
 
 void ACAEnemyBase::Die()

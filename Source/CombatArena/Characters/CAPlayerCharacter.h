@@ -9,6 +9,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "CAPlayerCharacter.generated.h"
 
+class UAIPerceptionStimuliSourceComponent;
 class UCAHitDetectionComponent;
 class UCACharacterMovementComponent;
 class USpringArmComponent;
@@ -80,6 +81,8 @@ public:
 	UCACharacterData* GetCharacterData() const { return CharacterData; }
 	
 	UCAHitDetectionComponent* GetHitDetectionComponent() const {return HitDetectionComponent;}
+	
+	
 private: 
 	
 	UPROPERTY(VisibleAnywhere,Category = "Combat")
@@ -106,4 +109,8 @@ private:
 	void StartBlockAbility();
 	
 	void StopBlockAbility();
+	
+	UPROPERTY(VisibleAnywhere, Category = "AI")
+	TObjectPtr<UAIPerceptionStimuliSourceComponent> PerceptionStimuliSource;
+	
 };
