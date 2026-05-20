@@ -22,9 +22,14 @@ public:
 	
 	virtual void Die();
 	
+	UAnimMontage* GetAttackMontage() const {return AttackMontage;};
+	
 protected:
 	
 	virtual void BeginPlay() override;
+	
+	UPROPERTY(EditDefaultsOnly,Category = "Combat")
+	TObjectPtr<UAnimMontage> AttackMontage;
 	
 private:
 	

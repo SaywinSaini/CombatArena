@@ -13,9 +13,9 @@ ACAEnemyAIController::ACAEnemyAIController()
 	
 	// Create and configure sight sense
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
-	SightConfig->SightRadius = 500.0f;
-	SightConfig->LoseSightRadius = 600.0f;
-	SightConfig->PeripheralVisionAngleDegrees = 60.0f;
+	SightConfig->SightRadius = 800.0f;
+	SightConfig->LoseSightRadius = 1000.0f;
+	SightConfig->PeripheralVisionAngleDegrees = 120.0f;
 	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
 	SightConfig->DetectionByAffiliation.bDetectFriendlies = false;
