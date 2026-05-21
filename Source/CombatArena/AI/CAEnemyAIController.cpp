@@ -55,7 +55,8 @@ void ACAEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus 
 
 	if (Stimulus.WasSuccessfullySensed())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CAEnemyAIController: Player spotted — %s"), *Actor->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("CAEnemyAIController: Player spotted — %s"), 
+			*Actor->GetName());
 
 		if (GetBlackboardComponent())
 		{
@@ -65,12 +66,22 @@ void ACAEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus 
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CAEnemyAIController: Player lost — %s"), *Actor->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("CAEnemyAIController: Player lost — %s"), 
+			*Actor->GetName());
 
 		if (GetBlackboardComponent())
 		{
-			GetBlackboardComponent()->SetValueAsObject(TEXT("PlayerActor"), nullptr);
+			// Keep PlayerActor reference for 2 seconds — allows current movement to complete
 			GetBlackboardComponent()->SetValueAsBool(TEXT("bCanSeePlayer"), false);
+            
+			FTimerHandle LostSightTimer;
+			GetWorldTimerManager().SetTimer(LostSightTimer, [this]()
+			{
+				if (GetBlackboardComponent())
+				{
+					GetBlackboardComponent()->SetValueAsObject(TEXT("PlayerActor"), nullptr);
+				}
+			}, 2.0f, false);
 		}
 	}
 }
