@@ -1,7 +1,10 @@
 ﻿
 #include "CAEnemyAIController.h"
+
+#include "CAEnemyBase.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Characters/CAEnemyData.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 
@@ -13,15 +16,11 @@ ACAEnemyAIController::ACAEnemyAIController()
 	
 	// Create and configure sight sense
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
-	SightConfig->SightRadius = 800.0f;
-	SightConfig->LoseSightRadius = 1000.0f;
-	SightConfig->PeripheralVisionAngleDegrees = 120.0f;
+	
 	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
 	SightConfig->DetectionByAffiliation.bDetectFriendlies = false;
 	
-	UE_LOG(LogTemp, Warning, TEXT("CAEnemyAIController: AIPerception — %s"),
-		AIPerception ? TEXT("VALID") : TEXT("NULL"));
 	if (AIPerception)
 	{
 		AIPerception->ConfigureSense(*SightConfig);
@@ -35,17 +34,34 @@ void ACAEnemyAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 	
-	UE_LOG(LogTemp, Warning, TEXT("CAEnemyAIController: OnPossess called on %s"), *InPawn->GetName());
+	ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(InPawn);
 	
-	//Start the behaviour tree - drives all AI decision making
-	if (BehaviorTree)
+	if (Enemy && Enemy->GetEnemyData())
 	{
-		RunBehaviorTree(BehaviorTree);
-		UE_LOG(LogTemp, Warning, TEXT("CAEnemyAIController: BehaviorTree started"));
+		SightConfig->SightRadius = Enemy->GetEnemyData()->SightRadius;
+		SightConfig->LoseSightRadius = Enemy->GetEnemyData()->LoseSightRadius;
+		SightConfig->PeripheralVisionAngleDegrees = Enemy->GetEnemyData()->PeripheralVisionAngle;
+		
+		UAIPerceptionComponent* AIPerception = GetPerceptionComponent();
+		if (AIPerception)
+		{
+			AIPerception->ConfigureSense(*SightConfig);
+		}
+		
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CAEnemyAIController: BehaviorTree is NULL"));
+		UE_LOG(LogTemp, Error, TEXT("CAEnemyAIController: EnemyData not assigned on %s"),
+		   *InPawn->GetName());
+	}
+	if (BehaviorTree)
+	{
+		RunBehaviorTree(BehaviorTree);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("CAEnemyAIController: BehaviorTree not assigned on %s"),
+			*GetName());
 	}
 }
 

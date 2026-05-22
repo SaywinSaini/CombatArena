@@ -2,7 +2,9 @@
 #include "CAEnemyBase.h"
 #include "AbilitySystemComponent.h"
 #include "CAEnemyAIController.h"
+#include "Characters/CAEnemyData.h"
 #include "Abilities/CAAttributeSet.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 ACAEnemyBase::ACAEnemyBase()
@@ -21,8 +23,18 @@ void ACAEnemyBase::BeginPlay()
 	Super::BeginPlay();
 	AbilitySystemComponent->InitAbilityActorInfo(this,this);
 	
-	UE_LOG(LogTemp, Warning, TEXT("CAEnemyBase: BeginPlay — Controller: %s"),
-	   GetController() ? *GetController()->GetClass()->GetName() : TEXT("NULL"));
+	if (EnemyData)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = EnemyData->MovementSpeed;
+		
+		//Initialize Health attribute from DataAsset
+		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetHealthAttribute(),EnemyData->MaxHealth);
+		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxHealthAttribute(),EnemyData->MaxHealth);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("CAEnemyBase: EnemyData is null on %s"), *GetName());
+	}
 }
 
 void ACAEnemyBase::Die()

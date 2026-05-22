@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "CAEnemyBase.generated.h"
 
+class UCAEnemyData;
 class UAbilitySystemComponent;
 class UCAAttributeSet;
 
@@ -23,6 +24,8 @@ public:
 	virtual void Die();
 	
 	UAnimMontage* GetAttackMontage() const {return AttackMontage;};
+	
+	UCAEnemyData* GetEnemyData() const {return EnemyData; };
 	
 protected:
 	
@@ -41,5 +44,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<UCAAttributeSet> AttributeSet;
 
-
+    UPROPERTY(EditAnywhere,Category = "Data")
+	TObjectPtr<UCAEnemyData> EnemyData;
 };
