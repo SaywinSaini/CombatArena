@@ -26,10 +26,16 @@ void ACAEnemyBase::BeginPlay()
 	if (EnemyData)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = EnemyData->MovementSpeed;
-		
-		//Initialize Health attribute from DataAsset
-		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetHealthAttribute(),EnemyData->MaxHealth);
-		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxHealthAttribute(),EnemyData->MaxHealth);
+		// Delay one frame — ensures ASC is fully initialized before setting attributes
+		GetWorldTimerManager().SetTimerForNextTick([this]()
+			{
+			if (AbilitySystemComponent && EnemyData)
+			{
+				//Initialize Health attribute from DataAsset
+				AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetHealthAttribute(),EnemyData->MaxHealth);
+				AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxHealthAttribute(),EnemyData->MaxHealth);
+			}
+	});
 	}
 	else
 	{
