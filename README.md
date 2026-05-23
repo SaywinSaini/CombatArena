@@ -56,6 +56,29 @@ channel controls which actors respond to weapon traces.
 
 All trace values live in CACharacterData so designers can tune without touching
 code.
+
+### AI Enemy System
+Three enemy types built on a shared C++ base class. Each enemy runs a single
+Behavior Tree driven by a UAIPerceptionComponent for sight detection. All
+tuneable values live in a CAEnemyData DataAsset — movement speed, health,
+attack range and sight radius are configured per enemy type without touching
+code.
+
+Enemies transition between three states — patrol, chase and attack — driven
+entirely by Blackboard key updates. When the player enters the sight cone,
+OnTargetPerceptionUpdated writes to the Blackboard and the BT switches states
+immediately via Observer Abort decorators.
+
+Patrol uses a custom BTTask that queries UNavigationSystemV1 for a random
+reachable point each cycle. Attack is gated by a custom BTDecorator that
+evaluates distance to the player each tick. An EQS query with a custom
+C++ context class generates candidate positions around the player for
+tactical positioning.
+
+Enemy health is initialized from the DataAsset via GAS SetNumericAttributeBase
+— damage from the player's hit detection applies correctly through the shared
+IAbilitySystemInterface implementation.
+
 ---
 
 ## Tech
