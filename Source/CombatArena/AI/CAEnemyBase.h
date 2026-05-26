@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "CAEnemyBase.generated.h"
 
+class UCAHitstopComponent;
 class UCAEnemyData;
 class UAbilitySystemComponent;
 class UCAAttributeSet;
@@ -27,6 +28,8 @@ public:
 	
 	UCAEnemyData* GetEnemyData() const {return EnemyData; };
 	
+	UCAHitstopComponent* GetHitstopComponent() const {return HitstopComponent; };
+	
 protected:
 	
 	virtual void BeginPlay() override;
@@ -46,4 +49,7 @@ private:
 
     UPROPERTY(EditAnywhere,Category = "Data")
 	TObjectPtr<UCAEnemyData> EnemyData;
+	
+	UPROPERTY(VisibleAnywhere,Category = "Combat")
+	TObjectPtr<UCAHitstopComponent> HitstopComponent;
 };

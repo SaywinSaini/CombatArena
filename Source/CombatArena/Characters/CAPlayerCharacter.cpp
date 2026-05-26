@@ -14,6 +14,7 @@
 #include "Abilities/CAMeleeAbility.h"
 #include "Abilities/CAProjectileAbility.h"
 #include "Combat/CAHitDetectionComponent.h"
+#include "Combat/CAHitstopComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
@@ -21,7 +22,6 @@
 
 
 ACAPlayerCharacter::ACAPlayerCharacter(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer.SetDefaultSubobjectClass<UCACharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
-
 {
 	PrimaryActorTick.bCanEverTick = true;
 	
@@ -61,6 +61,8 @@ ACAPlayerCharacter::ACAPlayerCharacter(const FObjectInitializer& ObjectInitializ
 	
 	PerceptionStimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionStimuliSource"));
 	PerceptionStimuliSource->bAutoRegister = true;
+	
+	HitstopComponent = CreateDefaultSubobject<UCAHitstopComponent>(TEXT("HitstopComponent"));
 }
 
 

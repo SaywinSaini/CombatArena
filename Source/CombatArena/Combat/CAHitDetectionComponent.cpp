@@ -3,6 +3,7 @@
 #include "Characters/CACharacterData.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "CAHitstopComponent.h"
 #include "CombatArena.h"
 #include "Characters/CAPlayerCharacter.h"
 
@@ -23,6 +24,8 @@ void UCAHitDetectionComponent::BeginPlay()
 	CharacterData = Player->GetCharacterData();
 	
 	if (!CharacterData) return;
+	
+	HitstopComponent = Player->GetHitstopComponent();
 }
 
 void UCAHitDetectionComponent::StartTrace()
@@ -38,6 +41,7 @@ void UCAHitDetectionComponent::StopTrace()
 
 void UCAHitDetectionComponent::PerformTrace()
 {
+	
 	if (!bIsTracing || !CharacterData) return;
 		
 	    //Get the skeletal mesh to read socket position
@@ -89,6 +93,11 @@ void UCAHitDetectionComponent::PerformTrace()
 			if (!SpecHandle.IsValid()) continue;
 			
 			SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(),TargetASC);
+			
+			if (HitstopComponent)
+			{
+				HitstopComponent->ApplyHitstop(HitActor);
+			}
 			UE_LOG(LogTemp, Warning, TEXT("CAHitDetectionComponent: Applied damage to %s"), *HitActor->GetName());
 		}
 		

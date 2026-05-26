@@ -35,9 +35,17 @@ EBTNodeResult::Type UCABTTask_EnemyAttack::ExecuteTask(UBehaviorTreeComponent& O
 	}
 	UE_LOG(LogTemp, Warning, TEXT("CABTTask_EnemyAttack: Playing montage %s"), 
 	   *Montage->GetName());
+	OwnerComp.GetAIOwner()->StopMovement();
 	AnimInstance->Montage_Play(Montage);
 	
+	FOnMontageEnded MontageEndedDelegate;
+	MontageEndedDelegate.BindLambda([this, &OwnerComp](UAnimMontage* Montage, bool bInterrupted)
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	});
+	AnimInstance->Montage_SetEndDelegate(MontageEndedDelegate, Montage);
+
 	
-	return EBTNodeResult::Succeeded;
+	return EBTNodeResult::InProgress;
 }
 

@@ -9,6 +9,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "CAPlayerCharacter.generated.h"
 
+class UCAHitstopComponent;
 class UAIPerceptionStimuliSourceComponent;
 class UCAHitDetectionComponent;
 class UCACharacterMovementComponent;
@@ -82,6 +83,7 @@ public:
 	
 	UCAHitDetectionComponent* GetHitDetectionComponent() const {return HitDetectionComponent;}
 	
+	UCAHitstopComponent* GetHitstopComponent() const {return HitstopComponent;}
 	
 private: 
 	
@@ -93,6 +95,9 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Data")
 	TObjectPtr<UCACharacterData> CharacterData;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Combat")
+	TObjectPtr<UCAHitstopComponent> HitstopComponent;
 	
 	void Move(const FInputActionValue& Value);
 	

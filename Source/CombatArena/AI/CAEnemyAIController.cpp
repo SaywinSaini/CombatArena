@@ -5,6 +5,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Characters/CAEnemyData.h"
+#include "Characters/CAPlayerCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 
@@ -69,6 +70,9 @@ void ACAEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus 
 {
 	if (!Actor) return;
 
+	if (!Actor->IsA<ACAPlayerCharacter>()) return;
+	
+	
 	if (Stimulus.WasSuccessfullySensed())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("CAEnemyAIController: Player spotted — %s"), 

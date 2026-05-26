@@ -5,6 +5,7 @@
 #include "CAHitDetectionComponent.generated.h"
 
 
+class UCAHitstopComponent;
 class UGameplayEffect;
 class UCACharacterData;
 
@@ -40,5 +41,8 @@ public:
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 	
 	bool bIsTracing = false;
+	
+	UPROPERTY()
+	TObjectPtr<UCAHitstopComponent> HitstopComponent;
 	
 };

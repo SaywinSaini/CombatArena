@@ -52,7 +52,7 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 	float TraceRadius = 50.0f;
 	
 	UPROPERTY(EditDefaultsOnly , Category= "Combat")
-	float TraceRange = 150.0f;
+	float TraceRange = 100.0f;
 	
 	//Socket used as origin for both melee traces and projectile spawning
 	UPROPERTY(EditDefaultsOnly ,Category= "Combat")

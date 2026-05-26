@@ -4,6 +4,7 @@
 #include "CAEnemyAIController.h"
 #include "Characters/CAEnemyData.h"
 #include "Abilities/CAAttributeSet.h"
+#include "Combat/CAHitstopComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
@@ -16,6 +17,8 @@ ACAEnemyBase::ACAEnemyBase()
 	
    AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AttributeSet = CreateDefaultSubobject<UCAAttributeSet>(TEXT("AttributeSet"));
+	
+	HitstopComponent = CreateDefaultSubobject<UCAHitstopComponent>(TEXT("HitstopComponent"));
 }
 
 void ACAEnemyBase::BeginPlay()
