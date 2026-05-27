@@ -9,6 +9,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "CAPlayerCharacter.generated.h"
 
+class UCATargetingComponent;
 class UCAHitstopComponent;
 class UAIPerceptionStimuliSourceComponent;
 class UCAHitDetectionComponent;
@@ -62,6 +63,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> BlockAction;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> TargetLockAction;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "GAS")
 	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
 	
@@ -85,6 +89,8 @@ public:
 	
 	UCAHitstopComponent* GetHitstopComponent() const {return HitstopComponent;}
 	
+	UCATargetingComponent* GetTargetingComponent() const {return TargetingComponent;}
+	
 private: 
 	
 	UPROPERTY(VisibleAnywhere,Category = "Combat")
@@ -98,6 +104,9 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, Category = "Combat")
 	TObjectPtr<UCAHitstopComponent> HitstopComponent;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Combat")
+	TObjectPtr<UCATargetingComponent> TargetingComponent;
 	
 	void Move(const FInputActionValue& Value);
 	
@@ -114,6 +123,8 @@ private:
 	void StartBlockAbility();
 	
 	void StopBlockAbility();
+	
+	void ToggleTargetLock();
 	
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	TObjectPtr<UAIPerceptionStimuliSourceComponent> PerceptionStimuliSource;

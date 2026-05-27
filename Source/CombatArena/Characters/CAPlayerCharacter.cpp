@@ -15,6 +15,7 @@
 #include "Abilities/CAProjectileAbility.h"
 #include "Combat/CAHitDetectionComponent.h"
 #include "Combat/CAHitstopComponent.h"
+#include "Combat/CATargetingComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
@@ -63,6 +64,8 @@ ACAPlayerCharacter::ACAPlayerCharacter(const FObjectInitializer& ObjectInitializ
 	PerceptionStimuliSource->bAutoRegister = true;
 	
 	HitstopComponent = CreateDefaultSubobject<UCAHitstopComponent>(TEXT("HitstopComponent"));
+	
+	TargetingComponent = CreateDefaultSubobject<UCATargetingComponent>(TEXT("TargetingComponent"));
 }
 
 
@@ -122,7 +125,24 @@ void ACAPlayerCharacter::Move(const FInputActionValue& Value)
 	//2D axis from input
 	const FVector2D Axis = Value.Get<FVector2D>();
 	
-	if (Controller)
+	if (!Controller) return;
+	
+	if (TargetingComponent && TargetingComponent->IsTargetLocked())
+	{
+		AActor* Target = TargetingComponent->GetLockedTarget();
+		if (Target)
+		{
+			FVector ToEnemy = (Target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+			ToEnemy.Z = 0.0f;
+			
+			FVector RightDir = FVector::CrossProduct(FVector::UpVector,ToEnemy).GetSafeNormal();
+			
+			AddMovementInput(ToEnemy,Axis.Y);
+			AddMovementInput(RightDir,Axis.X);
+		}
+	}
+	
+	else
 	{
 		//Get camera facing direction
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -182,6 +202,14 @@ void ACAPlayerCharacter::StopBlockAbility()
 	//nothing
 }
 
+void ACAPlayerCharacter::ToggleTargetLock()
+{
+	if (TargetingComponent)
+	{
+		TargetingComponent->ToggleTargetLock();
+	}
+}
+
 void ACAPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -207,6 +235,8 @@ void ACAPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EIC->BindAction(BlockAction,ETriggerEvent::Started,this,&ACAPlayerCharacter::StartBlockAbility);
 		
 		EIC->BindAction(BlockAction,ETriggerEvent::Completed,this,&ACAPlayerCharacter::StopBlockAbility);
+		
+		EIC->BindAction(TargetLockAction,ETriggerEvent::Started,this,&ACAPlayerCharacter::ToggleTargetLock);
 		
 		UCACharacterMovementComponent* CMC = Cast<UCACharacterMovementComponent>(GetCharacterMovement());
 		if (CMC)

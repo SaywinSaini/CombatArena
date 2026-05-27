@@ -4,6 +4,7 @@
 #include "CAMeleeAbility.h"
 #include "Characters/CAPlayerCharacter.h"
 #include "Combat/CAHitDetectionComponent.h"
+#include "Combat/CATargetingComponent.h"
 
 
 UCAMeleeAbility::UCAMeleeAbility()

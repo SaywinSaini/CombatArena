@@ -16,7 +16,7 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 	
 	//Movement
 	UPROPERTY(EditDefaultsOnly,Category = "Movement" )
-	float MovementSpeed = 600.0f;
+	float MovementSpeed = 400.0f;
 	
 	UPROPERTY(EditDefaultsOnly,Category = "Movement")
 	float SprintSpeed = 1000.0f;
@@ -29,9 +29,11 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float GravityScale = 1.75f;
-    // Yaw Rotation
+	
+	// Yaw Rotation
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float RotationRate = 500.f;
+	
 	//Dodge
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float DodgeCooldown = 1.0f;
