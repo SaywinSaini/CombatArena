@@ -3,13 +3,24 @@
 #include "AI/CAEnemyBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Splines/SplineMath.h"
-
+#include "GameFramework/PlayerController.h"
 
 UCATargetingComponent::UCATargetingComponent()
 {
 
 	PrimaryComponentTick.bCanEverTick = true;
 
+}
+
+void UCATargetingComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	APawn* Owner = Cast<APawn>(GetOwner());
+	if (Owner)
+	{
+		PlayerController= Cast<APlayerController>(Owner->GetController());
+	}
 }
 
 AActor* UCATargetingComponent::FindBestTarget()
@@ -92,6 +103,17 @@ void UCATargetingComponent::TickComponent(float DeltaTime, enum ELevelTick TickT
 		return;
 	}
 	RotateTowardsTarget(LockedTarget,DeltaTime);
+	if (PlayerController)
+	{
+		FVector ToEnemy = (LockedTarget->GetActorLocation() - GetOwner()->GetActorLocation()).GetSafeNormal();
+		FRotator TargetRotation = ToEnemy.Rotation();
+		TargetRotation.Pitch = CameraVerticalOffset;
+		
+		FRotator CurrentRotation = PlayerController->GetControlRotation();
+		FRotator NewRotation = FMath::RInterpTo(CurrentRotation,TargetRotation,DeltaTime,CameraInterpSpeed);
+		
+		PlayerController->SetControlRotation(NewRotation);
+	}
 	
 }
 

@@ -6,14 +6,6 @@
 #include "BehaviorTree/BTService.h"
 #include "CABTService_UpdateChaseTarget.generated.h"
 
-/**
- * Periodic chase target updater — updates ChaseTarget Blackboard key
- * on a timed interval to smooth enemy movement toward player.
- * 
- * Currently not active in BT_Enemy — MoveTo PlayerActor used instead
- * for reliable direct chase. This service is available for tuning
- * if flanking behavior is desired in future iterations.
- */
 UCLASS()
 class COMBATARENA_API UCABTService_UpdateChaseTarget : public UBTService
 {

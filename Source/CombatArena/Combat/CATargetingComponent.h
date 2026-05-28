@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "CATargetingComponent.generated.h"
 
+class APlayerController;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class COMBATARENA_API UCATargetingComponent : public UActorComponent
@@ -15,6 +16,8 @@ class COMBATARENA_API UCATargetingComponent : public UActorComponent
 public:
 	
 	UCATargetingComponent();
+	
+	virtual void BeginPlay() override;
 	
     AActor* FindBestTarget();
 	
@@ -43,4 +46,14 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly,Category = "Combat")
 	float RotationInterpSpeed = 10.0f;
+	
+	UPROPERTY()
+	TObjectPtr<APlayerController> PlayerController;	
+	
+	UPROPERTY(EditDefaultsOnly,Category = "Targeting")
+	float CameraInterpSpeed = 5.0f;
+	
+	UPROPERTY(EditDefaultsOnly,Category = "Targeting")
+	float CameraVerticalOffset = -25.0f;
+	
 };

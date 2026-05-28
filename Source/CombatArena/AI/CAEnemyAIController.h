@@ -34,4 +34,5 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TObjectPtr<UBehaviorTree> BehaviorTree;
 	
+	FTimerHandle LostSightTimer;
 };

@@ -42,4 +42,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly,Category = "Health")
 	float MaxHealth = 100.0f;
+	
+	UPROPERTY(EditDefaultsOnly,Category = "AI")
+	float LostSightMemoryDuration = 5.0f;
 };

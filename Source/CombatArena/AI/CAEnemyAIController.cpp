@@ -69,7 +69,7 @@ void ACAEnemyAIController::OnPossess(APawn* InPawn)
 void ACAEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
 	if (!Actor) return;
-
+    
 	if (!Actor->IsA<ACAPlayerCharacter>()) return;
 	
 	
@@ -80,8 +80,12 @@ void ACAEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus 
 
 		if (GetBlackboardComponent())
 		{
+			// Cancel pending lost sight cleanup if target is reacquired
+			GetWorldTimerManager().ClearTimer(LostSightTimer);
+			
 			GetBlackboardComponent()->SetValueAsObject(TEXT("PlayerActor"), Actor);
 			GetBlackboardComponent()->SetValueAsBool(TEXT("bCanSeePlayer"), true);
+			GetBlackboardComponent()->SetValueAsVector(TEXT("LastKnownLocation"), Actor->GetActorLocation());
 		}
 	}
 	else
@@ -91,17 +95,21 @@ void ACAEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus 
 
 		if (GetBlackboardComponent())
 		{
-			// Keep PlayerActor reference for 2 seconds — allows current movement to complete
+			// Preserve target reference briefly after LOS break
 			GetBlackboardComponent()->SetValueAsBool(TEXT("bCanSeePlayer"), false);
-            
-			FTimerHandle LostSightTimer;
+           
+			ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(GetPawn());
+			float MemoryDuration = (Enemy && Enemy->GetEnemyData()) ? Enemy->GetEnemyData()->LostSightMemoryDuration : 5.0f;
+			
+			GetBlackboardComponent()->SetValueAsVector(TEXT("LastKnownLocation"),Actor->GetActorLocation());
+			
 			GetWorldTimerManager().SetTimer(LostSightTimer, [this]()
 			{
 				if (GetBlackboardComponent())
 				{
 					GetBlackboardComponent()->SetValueAsObject(TEXT("PlayerActor"), nullptr);
 				}
-			}, 2.0f, false);
+			},MemoryDuration , false);
 		}
 	}
 }

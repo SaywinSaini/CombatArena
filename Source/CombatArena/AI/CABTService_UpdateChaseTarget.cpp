@@ -9,7 +9,7 @@
 UCABTService_UpdateChaseTarget::UCABTService_UpdateChaseTarget()
 {
 	NodeName = "Update Chase Target";
-	Interval = 2.0f;
+	Interval = 0.1f;
 	RandomDeviation = 0.5f;
 }
 
@@ -27,12 +27,17 @@ void UCABTService_UpdateChaseTarget::TickNode(UBehaviorTreeComponent& OwnerComp,
 		UE_LOG(LogTemp, Warning, TEXT("CABTService: PlayerActor is null"));
 		return;
 	}
+	//Current Player velocity
+	FVector Velocity = Player->GetVelocity();
+	Velocity.Z = 0.f;
 	
-	FVector PlayerLocation = Player->GetActorLocation();
-	UE_LOG(LogTemp, Warning, TEXT("CABTService: Writing location %s to ChaseTarget"),
-		*PlayerLocation.ToString());
-
+	//Prevent insane prediction
+	Velocity = Velocity.GetClampedToMaxSize(600.0f);
+	
+	FVector PredictedLocation = Player->GetActorLocation() + Velocity * 0.6f;
+	
+	UE_LOG(LogTemp, Warning,TEXT("CABTService: Predicted ChaseTarget %s"),*PredictedLocation.ToString());
 	
 	// Write updated player location to chase target key every interval
-	OwnerComp.GetBlackboardComponent()->SetValueAsVector(ChaseTargetKey.SelectedKeyName,Player->GetActorLocation());
+	OwnerComp.GetBlackboardComponent()->SetValueAsVector(ChaseTargetKey.SelectedKeyName,PredictedLocation);
 }
