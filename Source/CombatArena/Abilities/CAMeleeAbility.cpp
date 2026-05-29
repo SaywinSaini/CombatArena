@@ -15,6 +15,12 @@ UCAMeleeAbility::UCAMeleeAbility()
 	SetAssetTags(NewTags);
 }
 
+void UCAMeleeAbility::SetComboInputReceived()
+{
+	UE_LOG(LogTemp, Warning, TEXT("SetComboInputReceived called"));
+	bComboInputReceived = true;
+}
+
 void UCAMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                       const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                       const FGameplayEventData* TriggerEventData)
@@ -46,7 +52,7 @@ void UCAMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	
 	//Create the async montage task
 	
-	MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this,NAME_None,AttackMontage,1.0f);
+	MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this,NAME_None,AttackMontage,1.0f,ComboSections.IsValidIndex(0) ? ComboSections[0] :NAME_None);
 	
 	//Bind delegates — these fire when montage ends
 	
@@ -58,6 +64,38 @@ void UCAMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	MontageTask->ReadyForActivation();
 	
 }
+void UCAMeleeAbility::AdvanceCombo()
+{
+	UE_LOG(LogTemp, Warning,
+	TEXT("AdvanceCombo called. InputReceived=%s"),
+	bComboInputReceived ? TEXT("TRUE") : TEXT("FALSE"));
+	
+	UE_LOG(LogTemp, Warning, TEXT("AdvanceCombo called"));
+	
+if (!bComboInputReceived)
+{
+	StopAbility();
+	return;
+}
+	bComboInputReceived = false;
+	ComboIndex++;
+	if (!ComboSections.IsValidIndex(ComboIndex))
+	{
+		StopAbility();
+		return;
+	}
+	//Play next section
+	ACAPlayerCharacter* Character = Cast<ACAPlayerCharacter>(GetCurrentActorInfo()->AvatarActor.Get());
+	if (Character)
+	{
+		UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
+		if (AnimInstance)
+		{
+			AnimInstance->Montage_JumpToSection(ComboSections[ComboIndex],AttackMontage);
+		}
+	}
+}
+
 
 void UCAMeleeAbility::OnMontageCompleted()
 {
@@ -82,10 +120,11 @@ void UCAMeleeAbility::StopAbility()
 			}
 		}
 	}
-	
+	ComboIndex = 0;
+	bComboInputReceived = false;
 	const FGameplayAbilitySpecHandle Handle = GetCurrentAbilitySpecHandle();
 	const FGameplayAbilityActorInfo* ActorInfo = GetCurrentActorInfo();
 	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
-
+    
 	EndAbility(Handle,ActorInfo,ActivationInfo,true,false);
 }

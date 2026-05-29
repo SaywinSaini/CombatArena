@@ -10,7 +10,7 @@ UCABTService_UpdateChaseTarget::UCABTService_UpdateChaseTarget()
 {
 	NodeName = "Update Chase Target";
 	Interval = 0.1f;
-	RandomDeviation = 0.5f;
+	RandomDeviation = 0.0f;
 }
 
 void UCABTService_UpdateChaseTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -34,7 +34,7 @@ void UCABTService_UpdateChaseTarget::TickNode(UBehaviorTreeComponent& OwnerComp,
 	//Prevent insane prediction
 	Velocity = Velocity.GetClampedToMaxSize(600.0f);
 	
-	FVector PredictedLocation = Player->GetActorLocation() + Velocity * 0.6f;
+	FVector PredictedLocation = Player->GetActorLocation() + Velocity * 1.5f;
 	
 	UE_LOG(LogTemp, Warning,TEXT("CABTService: Predicted ChaseTarget %s"),*PredictedLocation.ToString());
 	

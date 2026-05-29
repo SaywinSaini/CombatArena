@@ -19,6 +19,10 @@ public:
 	
 	UCAMeleeAbility();
 	
+	void SetComboInputReceived();
+	int32 GetComboIndex() const { return ComboIndex;}
+	void AdvanceCombo();
+	
 protected:
 	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
@@ -40,4 +44,10 @@ private:
 	
 	UPROPERTY()
 	TObjectPtr<UAbilityTask_PlayMontageAndWait> MontageTask;
+	
+	int32 ComboIndex = 0;
+	bool bComboInputReceived = false;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Ability")
+	TArray<FName> ComboSections;
 };

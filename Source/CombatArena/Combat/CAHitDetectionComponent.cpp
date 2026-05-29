@@ -5,6 +5,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "CAHitstopComponent.h"
 #include "CombatArena.h"
+#include "GameFramework/PlayerController.h"
 #include "Characters/CAPlayerCharacter.h"
 
 
@@ -41,7 +42,7 @@ void UCAHitDetectionComponent::StopTrace()
 
 void UCAHitDetectionComponent::PerformTrace()
 {
-	
+	UE_LOG(LogTemp, Warning, TEXT("PerformTrace called"));
 	if (!bIsTracing || !CharacterData) return;
 		
 	    //Get the skeletal mesh to read socket position
@@ -97,6 +98,15 @@ void UCAHitDetectionComponent::PerformTrace()
 			if (HitstopComponent)
 			{
 				HitstopComponent->ApplyHitstop(HitActor);
+			}
+			APlayerController* PC = GetWorld()->GetFirstPlayerController();
+			if (PC && HitCameraShake)
+			{   UE_LOG(LogTemp, Warning, TEXT("Triggering camera shake"));
+				PC->ClientStartCameraShake(HitCameraShake);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Camera shake failed — PC: %d | Shake: %d"), PC != nullptr, HitCameraShake != nullptr);
 			}
 			UE_LOG(LogTemp, Warning, TEXT("CAHitDetectionComponent: Applied damage to %s"), *HitActor->GetName());
 		}

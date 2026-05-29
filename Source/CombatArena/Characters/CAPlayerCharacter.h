@@ -9,6 +9,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "CAPlayerCharacter.generated.h"
 
+class UCAMeleeAbility;
 class UCATargetingComponent;
 class UCAHitstopComponent;
 class UAIPerceptionStimuliSourceComponent;
@@ -91,6 +92,7 @@ public:
 	
 	UCATargetingComponent* GetTargetingComponent() const {return TargetingComponent;}
 	
+	UCAMeleeAbility* GetActiveMeleeAbility() const {return ActiveMeleeAbility;}
 private: 
 	
 	UPROPERTY(VisibleAnywhere,Category = "Combat")
@@ -129,4 +131,11 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	TObjectPtr<UAIPerceptionStimuliSourceComponent> PerceptionStimuliSource;
 	
+	FGameplayAbilitySpecHandle MeleeAbilityHandle;
+	
+	UPROPERTY()
+	TObjectPtr<UCAMeleeAbility> ActiveMeleeAbility;
+	
+	void OnAbilityActivated(UGameplayAbility* Ability);
+	void OnAbilityEnded(UGameplayAbility* Ability);
 };

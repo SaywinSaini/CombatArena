@@ -4,7 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "CAHitDetectionComponent.generated.h"
 
-
+class UCameraShakeBase;
 class UCAHitstopComponent;
 class UGameplayEffect;
 class UCACharacterData;
@@ -45,4 +45,6 @@ public:
 	UPROPERTY()
 	TObjectPtr<UCAHitstopComponent> HitstopComponent;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TSubclassOf<UCameraShakeBase> HitCameraShake;
 };

@@ -2,7 +2,7 @@
 
 
 #include "CAPlayerCharacter.h"
-
+#include "AbilitySystemComponent.h"
 #include "CACharacterData.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -71,49 +71,54 @@ ACAPlayerCharacter::ACAPlayerCharacter(const FObjectInitializer& ObjectInitializ
 
 void ACAPlayerCharacter::BeginPlay()
 {
-	Super::BeginPlay();
-	
-	
-	//Apply character data values to movement component
-	
-	if (CharacterData)
-	{
-		GetCharacterMovement()->MaxWalkSpeed  = CharacterData->MovementSpeed;
-		GetCharacterMovement()->JumpZVelocity = CharacterData->JumpZVelocity;
-		GetCharacterMovement()->AirControl    = CharacterData->AirControl;
-		GetCharacterMovement()->GravityScale  = CharacterData->GravityScale;
-		GetCharacterMovement()->RotationRate  = FRotator(0.0f, CharacterData->RotationRate, 0.0f);
-	}
-	else
-	{
-		UE_LOG(LogTemp,Warning,TEXT("CAPlayerCharacter: No CharacterData assigned on %s"),*GetName());
-	}
-	
-	//Activating input mapping context
-	if (APlayerController* PC = Cast<APlayerController>(GetController()))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(PlayerMappingContext,0);
-		}
-	}
-	
-	// Initialize ASC with owner and avatar actor
-	AbilitySystemComponent->InitAbilityActorInfo(this,this);
-	
-	for (TSubclassOf<UGameplayAbility> Ability : DefaultAbilities)
-	{
-		if (Ability)
-		{
-			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability));
-		}
-	}
-	
-	PerceptionStimuliSource->RegisterForSense(TSubclassOf<UAISense>(UAISense_Sight::StaticClass()));
-	PerceptionStimuliSource->RegisterWithPerceptionSystem();
-	
-}
+    Super::BeginPlay();
+    
+    //Apply character data values to movement component
+    if (CharacterData)
+    {
+        GetCharacterMovement()->MaxWalkSpeed  = CharacterData->MovementSpeed;
+        GetCharacterMovement()->JumpZVelocity = CharacterData->JumpZVelocity;
+        GetCharacterMovement()->AirControl    = CharacterData->AirControl;
+        GetCharacterMovement()->GravityScale  = CharacterData->GravityScale;
+        GetCharacterMovement()->RotationRate  = FRotator(0.0f, CharacterData->RotationRate, 0.0f);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("CAPlayerCharacter: No CharacterData assigned on %s"), *GetName());
+    }
+    
+    //Activating input mapping context
+    if (APlayerController* PC = Cast<APlayerController>(GetController()))
+    {
+        if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+        {
+            Subsystem->AddMappingContext(PlayerMappingContext, 0);
+        }
+    }
+    
+    // Initialize ASC with owner and avatar actor
+    AbilitySystemComponent->InitAbilityActorInfo(this, this);
+    
+    for (TSubclassOf<UGameplayAbility> Ability : DefaultAbilities)
+    {
+        if (Ability)
+        {
+            FGameplayAbilitySpecHandle Handle = AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability));
+            
+            if (Ability->IsChildOf(UCAMeleeAbility::StaticClass()))
+            {
+                MeleeAbilityHandle = Handle;
+            }
+        }
+    }
 
+    // Cache active melee ability reference for direct combo access
+	AbilitySystemComponent->AbilityActivatedCallbacks.AddUObject(this, &ACAPlayerCharacter::OnAbilityActivated);
+	AbilitySystemComponent->AbilityEndedCallbacks.AddUObject(this, &ACAPlayerCharacter::OnAbilityEnded);
+    
+    PerceptionStimuliSource->RegisterForSense(TSubclassOf<UAISense>(UAISense_Sight::StaticClass()));
+    PerceptionStimuliSource->RegisterWithPerceptionSystem();
+}
 
 void ACAPlayerCharacter::Tick(float DeltaTime)
 {
@@ -178,9 +183,14 @@ void ACAPlayerCharacter::StopCrouch()
 
 void ACAPlayerCharacter::ActivateMeleeAbility()
 {
-	FGameplayTagContainer AbilityTags;
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Melee")));
-	AbilitySystemComponent->TryActivateAbilitiesByTag(AbilityTags);
+	if (ActiveMeleeAbility)
+	{
+		ActiveMeleeAbility->SetComboInputReceived();
+	}
+	else
+	{
+		AbilitySystemComponent->TryActivateAbility(MeleeAbilityHandle);
+	}
 }
 
 void ACAPlayerCharacter::ActivateRangedAbility()
@@ -207,6 +217,23 @@ void ACAPlayerCharacter::ToggleTargetLock()
 	if (TargetingComponent)
 	{
 		TargetingComponent->ToggleTargetLock();
+	}
+}
+
+void ACAPlayerCharacter::OnAbilityActivated(UGameplayAbility* Ability)
+{
+	if (UCAMeleeAbility* Melee = Cast<UCAMeleeAbility>(Ability))
+	{
+		ActiveMeleeAbility = Melee;
+	}
+}
+
+void ACAPlayerCharacter::OnAbilityEnded(UGameplayAbility* Ability)
+{
+	
+	if (Cast<UCAMeleeAbility>(Ability))
+	{
+		ActiveMeleeAbility = nullptr;
 	}
 }
 
