@@ -5,7 +5,6 @@
 #include "CAHitDetectionComponent.generated.h"
 
 class UCameraShakeBase;
-class UCAHitstopComponent;
 class UGameplayEffect;
 class UCACharacterData;
 
@@ -42,9 +41,10 @@ public:
 	
 	bool bIsTracing = false;
 	
-	UPROPERTY()
-	TObjectPtr<UCAHitstopComponent> HitstopComponent;
+	bool bIsPlayerFrozen = false;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TSubclassOf<UCameraShakeBase> HitCameraShake;
+	
+	
 };

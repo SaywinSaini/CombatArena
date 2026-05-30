@@ -26,7 +26,6 @@ void UCAHitDetectionComponent::BeginPlay()
 	
 	if (!CharacterData) return;
 	
-	HitstopComponent = Player->GetHitstopComponent();
 }
 
 void UCAHitDetectionComponent::StartTrace()
@@ -38,6 +37,7 @@ void UCAHitDetectionComponent::StartTrace()
 void UCAHitDetectionComponent::StopTrace()
 {
 	bIsTracing = false;
+	bIsPlayerFrozen = false;
 }
 
 void UCAHitDetectionComponent::PerformTrace()
@@ -74,6 +74,9 @@ void UCAHitDetectionComponent::PerformTrace()
 		    UE_LOG(LogTemp, Error, TEXT("DamageEffectClass is NULL")); return;
 	    }    
 	
+	    //for Camera
+	    APlayerController* PC = GetWorld()->GetFirstPlayerController();
+	    
 		for (const FHitResult& Hit : HitResults)
 		{
 			AActor* HitActor = Hit.GetActor();
@@ -93,15 +96,19 @@ void UCAHitDetectionComponent::PerformTrace()
 			
 			if (!SpecHandle.IsValid()) continue;
 			
+			//Apply damage
 			SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(),TargetASC);
 			
-			if (HitstopComponent)
-			{
-				HitstopComponent->ApplyHitstop(HitActor);
+			UCAHitstopComponent* EnemyHitStop = HitActor->FindComponentByClass<UCAHitstopComponent>();
+			
+			if (EnemyHitStop)
+			{   
+				EnemyHitStop->ApplyHitstop(HitActor,!bIsPlayerFrozen,GetOwner());
+				bIsPlayerFrozen = true;
 			}
-			APlayerController* PC = GetWorld()->GetFirstPlayerController();
+			
 			if (PC && HitCameraShake)
-			{   UE_LOG(LogTemp, Warning, TEXT("Triggering camera shake"));
+			{  
 				PC->ClientStartCameraShake(HitCameraShake);
 			}
 			else

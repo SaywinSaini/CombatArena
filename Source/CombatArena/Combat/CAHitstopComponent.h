@@ -27,10 +27,10 @@ public:
 	
 	UCAHitstopComponent();
 	
-	void ApplyHitstop(AActor* HitActor);
+	void ApplyHitstop(AActor* HitActor, bool bFreezePlayer,AActor* PlayerActor);
 	
 private:
 	
-	void ResetHitstop(AActor* HitActor);
+	void ResetHitstop(AActor* HitActor,bool bFreezePlayer,AActor* PlayerActor);
 
 };

@@ -11,7 +11,6 @@
 
 class UCAMeleeAbility;
 class UCATargetingComponent;
-class UCAHitstopComponent;
 class UAIPerceptionStimuliSourceComponent;
 class UCAHitDetectionComponent;
 class UCACharacterMovementComponent;
@@ -88,8 +87,6 @@ public:
 	
 	UCAHitDetectionComponent* GetHitDetectionComponent() const {return HitDetectionComponent;}
 	
-	UCAHitstopComponent* GetHitstopComponent() const {return HitstopComponent;}
-	
 	UCATargetingComponent* GetTargetingComponent() const {return TargetingComponent;}
 	
 	UCAMeleeAbility* GetActiveMeleeAbility() const {return ActiveMeleeAbility;}
@@ -103,9 +100,6 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Data")
 	TObjectPtr<UCACharacterData> CharacterData;
-	
-	UPROPERTY(VisibleAnywhere, Category = "Combat")
-	TObjectPtr<UCAHitstopComponent> HitstopComponent;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Combat")
 	TObjectPtr<UCATargetingComponent> TargetingComponent;
