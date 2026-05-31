@@ -20,6 +20,8 @@ class COMBATARENA_API UCAAttributeSet : public UAttributeSet
 	GENERATED_BODY()
 
 public:
+	
+	//fires after any attribute change
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")

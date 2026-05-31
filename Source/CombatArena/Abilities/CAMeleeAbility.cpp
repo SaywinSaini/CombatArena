@@ -66,11 +66,6 @@ void UCAMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 }
 void UCAMeleeAbility::AdvanceCombo()
 {
-	UE_LOG(LogTemp, Warning,
-	TEXT("AdvanceCombo called. InputReceived=%s"),
-	bComboInputReceived ? TEXT("TRUE") : TEXT("FALSE"));
-	
-	UE_LOG(LogTemp, Warning, TEXT("AdvanceCombo called"));
 	
 if (!bComboInputReceived)
 {
@@ -88,9 +83,14 @@ if (!bComboInputReceived)
 	ACAPlayerCharacter* Character = Cast<ACAPlayerCharacter>(GetCurrentActorInfo()->AvatarActor.Get());
 	if (Character)
 	{
+		UCAHitDetectionComponent* HitDetection = Character->GetHitDetectionComponent();
+		if (HitDetection)
+		{
+			HitDetection->StartTrace();
+		}
 		UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
 		if (AnimInstance)
-		{
+		{   
 			AnimInstance->Montage_JumpToSection(ComboSections[ComboIndex],AttackMontage);
 		}
 	}

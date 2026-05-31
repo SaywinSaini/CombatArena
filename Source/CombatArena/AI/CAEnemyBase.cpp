@@ -1,10 +1,12 @@
 ﻿
 #include "CAEnemyBase.h"
 #include "AbilitySystemComponent.h"
+#include "BrainComponent.h"
 #include "CAEnemyAIController.h"
 #include "Characters/CAEnemyData.h"
 #include "Abilities/CAAttributeSet.h"
 #include "Combat/CAHitstopComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
@@ -49,5 +51,16 @@ void ACAEnemyBase::BeginPlay()
 void ACAEnemyBase::Die()
 {
 	UE_LOG(LogTemp,Warning,TEXT("Die : Working"));
+	
+	AAIController* AIController = Cast<AAIController>(GetController());
+	
+	if (AIController)
+	{
+		AIController->GetBrainComponent()->StopLogic(TEXT("Dead"));
+	}
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		
+	SetLifeSpan(3.0f);
+	
 }
 
