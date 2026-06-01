@@ -7,8 +7,9 @@
 #include "CAEnemyData.generated.h"
 
 /**
- * 
+ * Designer-tunable configuration data shared by enemy AI.
  */
+
 UCLASS()
 class COMBATARENA_API UCAEnemyData : public UDataAsset
 {

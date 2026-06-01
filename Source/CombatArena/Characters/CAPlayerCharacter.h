@@ -20,6 +20,7 @@ class UCACharacterData;
 class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
+
 UCLASS()
 class COMBATARENA_API ACAPlayerCharacter : public ACharacter , public IAbilitySystemInterface
 {
@@ -125,6 +126,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	TObjectPtr<UAIPerceptionStimuliSourceComponent> PerceptionStimuliSource;
 	
+	// Stores the ability spec handle assigned to the melee ability granted during initialization
 	FGameplayAbilitySpecHandle MeleeAbilityHandle;
 	
 	UPROPERTY()

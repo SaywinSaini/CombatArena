@@ -25,6 +25,7 @@ void UCACharacterMovementComponent::Dodge()
 {
 	if (!CachedOwner || !CachedOwner->GetCharacterData()) return;
 	
+	// Buffer dodge input if dodge is still on cooldown
 	if (!bCanDodge)
 	{
 		bHasDodgeBuffered = true;
@@ -36,14 +37,18 @@ void UCACharacterMovementComponent::Dodge()
 	
 	FVector DodgeDirection = GetLastInputVector();
 	
+	// Backstep when no movement input is provided
 	if (DodgeDirection.IsNearlyZero())
 	{
 		DodgeDirection = -GetCharacterOwner()->GetActorForwardVector();
 	}
+	
+	// Apply dodge impulse immediately using CharacterMovement
 	GetCharacterOwner()->LaunchCharacter(DodgeDirection * CachedOwner->GetCharacterData()->DodgeImpulse , true,true);
 		
 	bCanDodge = false;
 	
+	// Re-enable dodging after cooldown expires
 	GetWorld()->GetTimerManager().SetTimer(DodgeTimerHandle,[this]() { bCanDodge = true; },CachedOwner->GetCharacterData()->DodgeCooldown,false);
 	
 }
@@ -52,6 +57,7 @@ void UCACharacterMovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Cache typed owner reference to avoid repeated casts
 	CachedOwner = Cast<ACAPlayerCharacter>(GetCharacterOwner());
 	
 	if (!CachedOwner)
@@ -75,9 +81,12 @@ void UCACharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick Ti
 		// Smoothly interpolate MaxWalkSpeed toward target speed each frame
 		MaxWalkSpeed = FMath::FInterpTo(MaxWalkSpeed, TargetSpeed,DeltaTime,CachedOwner->GetCharacterData()->SpeedInterpSpeed);
 	
+	// Execute buffered dodge if cooldown has finished
 	if (bHasDodgeBuffered && bCanDodge)
 	{
 		const float CurrentTime = GetWorld()->GetTimeSeconds();
+		
+		// Execute only if the buffered input is still within the buffer window
 		if (CurrentTime - BufferedInputTime <= CachedOwner->GetCharacterData()->BufferWindow)
 		{
 			bHasDodgeBuffered = false;

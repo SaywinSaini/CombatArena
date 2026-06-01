@@ -26,35 +26,30 @@ ACAPlayerCharacter::ACAPlayerCharacter(const FObjectInitializer& ObjectInitializ
 	PrimaryActorTick.bCanEverTick = true;
 	
 	
-	//Capsule size
+	// Configure default locomotion settings
 	GetCapsuleComponent()->InitCapsuleSize(42.f,96.f);
 	
-	//Don't Rotate the Character with Camera
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	
-	//Character rotates in direction of movement
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 	
-	// Enable crouch
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	
-	//Spring arm
+	// Third-person camera setup
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(RootComponent);
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bDoCollisionTest = true;
 	
-	//Camera
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 	Camera->bUsePawnControlRotation = false;
 	
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	
-	// Create and register AttributeSet with the ASC
 	CreateDefaultSubobject<UCAAttributeSet>(TEXT("AttributeSet"));
 	
 	HitDetectionComponent = CreateDefaultSubobject<UCAHitDetectionComponent>(TEXT("HitDetectionComponent"));
@@ -84,7 +79,7 @@ void ACAPlayerCharacter::BeginPlay()
         UE_LOG(LogTemp, Warning, TEXT("CAPlayerCharacter: No CharacterData assigned on %s"), *GetName());
     }
     
-    //Activating input mapping context
+	// Register the default Enhanced Input mapping context
     if (APlayerController* PC = Cast<APlayerController>(GetController()))
     {
         if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
@@ -93,9 +88,10 @@ void ACAPlayerCharacter::BeginPlay()
         }
     }
     
-    // Initialize ASC with owner and avatar actor
+	// Initialize GAS owner and avatar actor information
     AbilitySystemComponent->InitAbilityActorInfo(this, this);
     
+	// Grant startup abilities and cache the melee ability handle
     for (TSubclassOf<UGameplayAbility> Ability : DefaultAbilities)
     {
         if (Ability)
@@ -109,7 +105,7 @@ void ACAPlayerCharacter::BeginPlay()
         }
     }
 
-    // Cache active melee ability reference for direct combo access
+	// Track melee ability activation state for input handling
 	AbilitySystemComponent->AbilityActivatedCallbacks.AddUObject(this, &ACAPlayerCharacter::OnAbilityActivated);
 	AbilitySystemComponent->AbilityEndedCallbacks.AddUObject(this, &ACAPlayerCharacter::OnAbilityEnded);
     
@@ -124,7 +120,6 @@ void ACAPlayerCharacter::Tick(float DeltaTime)
 
 void ACAPlayerCharacter::Move(const FInputActionValue& Value)
 {
-	//2D axis from input
 	const FVector2D Axis = Value.Get<FVector2D>();
 	
 	if (!Controller) return;
@@ -134,9 +129,11 @@ void ACAPlayerCharacter::Move(const FInputActionValue& Value)
 		AActor* Target = TargetingComponent->GetLockedTarget();
 		if (Target)
 		{
+			// Move relative to the locked target instead of camera direction
 			FVector ToEnemy = (Target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 			ToEnemy.Z = 0.0f;
 			
+			// Generate strafing direction around the target
 			FVector RightDir = FVector::CrossProduct(FVector::UpVector,ToEnemy).GetSafeNormal();
 			
 			AddMovementInput(ToEnemy,Axis.Y);
@@ -146,7 +143,7 @@ void ACAPlayerCharacter::Move(const FInputActionValue& Value)
 	
 	else
 	{
-		//Get camera facing direction
+		// Move relative to camera yaw when target lock is inactive
 		const FRotator Rotation = Controller->GetControlRotation();
 		
 		const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
@@ -178,6 +175,8 @@ void ACAPlayerCharacter::StopCrouch()
 	UnCrouch();
 }
 
+// Forward input to the active melee ability when one is running;
+// otherwise activate the granted melee ability.
 void ACAPlayerCharacter::ActivateMeleeAbility()
 {
 	if (ActiveMeleeAbility)
@@ -206,7 +205,7 @@ void ACAPlayerCharacter::StartBlockAbility()
 
 void ACAPlayerCharacter::StopBlockAbility()
 {
-	//nothing
+	// nothing
 }
 
 void ACAPlayerCharacter::ToggleTargetLock()
@@ -219,6 +218,7 @@ void ACAPlayerCharacter::ToggleTargetLock()
 
 void ACAPlayerCharacter::OnAbilityActivated(UGameplayAbility* Ability)
 {
+	// Store the active melee ability so subsequent attack presses can advance combos.
 	if (UCAMeleeAbility* Melee = Cast<UCAMeleeAbility>(Ability))
 	{
 		ActiveMeleeAbility = Melee;
@@ -227,7 +227,7 @@ void ACAPlayerCharacter::OnAbilityActivated(UGameplayAbility* Ability)
 
 void ACAPlayerCharacter::OnAbilityEnded(UGameplayAbility* Ability)
 {
-	
+	// Stop forwarding combo inputs once the melee ability has ended.
 	if (Cast<UCAMeleeAbility>(Ability))
 	{
 		ActiveMeleeAbility = nullptr;

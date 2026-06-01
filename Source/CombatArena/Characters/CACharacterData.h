@@ -6,6 +6,9 @@
 #include "Engine/DataAsset.h"
 #include "CACharacterData.generated.h"
 
+/**
+ * Designer-tunable movement and combat parameters for the player character.
+ */
 
 UCLASS()
 class COMBATARENA_API UCACharacterData : public UDataAsset
@@ -14,7 +17,6 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 	
 	public:
 	
-	//Movement
 	UPROPERTY(EditDefaultsOnly,Category = "Movement" )
 	float MovementSpeed = 400.0f;
 	
@@ -30,11 +32,9 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float GravityScale = 1.75f;
 	
-	// Yaw Rotation
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float RotationRate = 500.f;
 	
-	//Dodge
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float DodgeCooldown = 1.0f;
 	
@@ -49,10 +49,11 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 	UPROPERTY(EditDefaultsOnly,Category= "Movement")
 	float SpeedInterpSpeed = 10.0f;
 	
-	// Combat — Melee hit detection
+	// Radius of the melee sphere trace used for hit detection.
 	UPROPERTY(EditDefaultsOnly , Category= "Combat")
 	float TraceRadius = 50.0f;
 	
+	// Forward distance of the melee sphere trace.
 	UPROPERTY(EditDefaultsOnly , Category= "Combat")
 	float TraceRange = 100.0f;
 	
