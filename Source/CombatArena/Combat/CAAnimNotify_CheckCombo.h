@@ -6,9 +6,6 @@
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "CAAnimNotify_CheckCombo.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class COMBATARENA_API UCAAnimNotify_CheckCombo : public UAnimNotify
 {

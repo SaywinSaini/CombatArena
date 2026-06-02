@@ -16,6 +16,7 @@ void UCATargetingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Cache the owning pawn's player controller for lock-on camera updates.
 	APawn* Owner = Cast<APawn>(GetOwner());
 	if (Owner)
 	{
@@ -94,6 +95,7 @@ void UCATargetingComponent::TickComponent(float DeltaTime, enum ELevelTick TickT
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
+	// Maintain target lock state and facing while a valid target is locked.
 	if (!bIsTargetLocked || !LockedTarget) return;
 	
 	if (!IsValid(LockedTarget))

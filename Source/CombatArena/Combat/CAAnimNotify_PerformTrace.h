@@ -7,9 +7,7 @@
 #include "CAAnimNotify_PerformTrace.generated.h"
 
 class ACAPlayerCharacter;
-/**
- * 
- */
+
 UCLASS()
 class COMBATARENA_API UCAAnimNotify_PerformTrace : public UAnimNotify
 {

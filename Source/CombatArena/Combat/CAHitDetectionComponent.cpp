@@ -44,8 +44,7 @@ void UCAHitDetectionComponent::PerformTrace()
 {
 	UE_LOG(LogTemp, Warning, TEXT("PerformTrace called"));
 	if (!bIsTracing || !CharacterData) return;
-		
-	    //Get the skeletal mesh to read socket position
+	
 		USkeletalMeshComponent* Mesh = GetOwner()->FindComponentByClass<USkeletalMeshComponent>();
 	
 	if (!Mesh) return;
@@ -59,7 +58,6 @@ void UCAHitDetectionComponent::PerformTrace()
 		
 		GetWorld()->SweepMultiByChannel(HitResults, StartPoint, EndPoint, FQuat::Identity,ECC_Weapon,Sphere);
 	
-	    // Debug - Visualize sweep in editor so we can confirm position
 	    DrawDebugSphere(GetWorld(),StartPoint,CharacterData->TraceRadius,12,FColor::Red,false,1.0f);
 	    DrawDebugSphere(GetWorld(), EndPoint, CharacterData->TraceRadius, 12, FColor::Green, false, 1.0f);
 	
@@ -74,7 +72,6 @@ void UCAHitDetectionComponent::PerformTrace()
 		    UE_LOG(LogTemp, Error, TEXT("DamageEffectClass is NULL")); return;
 	    }    
 	
-	    //for Camera
 	    APlayerController* PC = GetWorld()->GetFirstPlayerController();
 	    
 		for (const FHitResult& Hit : HitResults)
@@ -85,7 +82,7 @@ void UCAHitDetectionComponent::PerformTrace()
 			if (HitActors.Contains(TWeakObjectPtr<AActor>(HitActor))) continue;
 			
 				HitActors.Add(TWeakObjectPtr<AActor>(HitActor));
-			//Confirms which actor was hit 
+			
 			UE_LOG(LogTemp, Warning, TEXT("CAHitDetectionComponent: Hit %s"), *HitActor->GetName());
 			
 			// Get the target's AbilitySystemComponent — if none they cannot receive damage
@@ -96,13 +93,14 @@ void UCAHitDetectionComponent::PerformTrace()
 			
 			if (!SpecHandle.IsValid()) continue;
 			
-			//Apply damage
 			SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(),TargetASC);
 			
 			UCAHitstopComponent* EnemyHitStop = HitActor->FindComponentByClass<UCAHitstopComponent>();
 			
 			if (EnemyHitStop)
 			{   
+				// Prevent multiple hitstop applications from freezing the player more than once
+				// during a single trace window.
 				EnemyHitStop->ApplyHitstop(HitActor,!bIsPlayerFrozen,GetOwner());
 				bIsPlayerFrozen = true;
 			}
