@@ -8,12 +8,12 @@
 void UCAAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
-
-	//Check if Health was modified
+	
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
-		//clamp Health between 0 and MaxHealth
 		SetHealth(FMath::Clamp(GetHealth(), 0, GetMaxHealth()));
+		
+		// Trigger enemy death when health reaches zero.
 		if (GetHealth() <= 0)
 		{
 			ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(Data.Target.GetAvatarActor());
@@ -23,8 +23,7 @@ void UCAAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 			}
 		}
 	}
-
-	//Check if Stamina was modified
+	
 	if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
 	{
 		//clamp Stamina between 0 and MaxStamina

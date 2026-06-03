@@ -5,6 +5,7 @@
 
 #include "GameFramework/Character.h"
 
+// Assign the gameplay tag used to identify this ability as a ranged attack.
 UCAProjectileAbility::UCAProjectileAbility()
 {
 	FGameplayTagContainer NewTags;

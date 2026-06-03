@@ -5,6 +5,7 @@
 
 UCABlockAbility::UCABlockAbility()
 {
+	// Register gameplay tags associated with this ability.
 	FGameplayTagContainer NewTags;
 	NewTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Block")));
 	SetAssetTags(NewTags);

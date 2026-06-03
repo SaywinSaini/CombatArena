@@ -7,7 +7,7 @@
 #include "CABlockAbility.generated.h"
 
 /**
- * 
+ * Gameplay ability associated with blocking.
  */
 UCLASS()
 class COMBATARENA_API UCABlockAbility : public UCAGameplayAbility
@@ -19,12 +19,12 @@ class COMBATARENA_API UCABlockAbility : public UCAGameplayAbility
 	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
-	// Ends the block ability when the player releases the block button
+	// Ends the ability.
 	void OnBlockReleased(const FGameplayAbilitySpecHandle Handle,const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo);
 	
 	protected:
-	//Damage reduction percentage while blocking
+	// Configurable damage reduction value associated with this ability.
 	UPROPERTY(EditDefaultsOnly, Category = "Ability")
 	float BlockDamageReduction = 0.5f;
 };

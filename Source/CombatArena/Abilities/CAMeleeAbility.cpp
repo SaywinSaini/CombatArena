@@ -27,7 +27,6 @@ void UCAMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
-	//Get the character
 	ACAPlayerCharacter* Character = Cast<ACAPlayerCharacter>(ActorInfo->AvatarActor.Get());
 	
 	if (!Character)
@@ -36,7 +35,6 @@ void UCAMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 	
-	//CommitAbility checks cooldown and costs - must be called before doing any work
 	
 	if (!CommitAbility(Handle,ActorInfo,ActivationInfo))
 	{
@@ -44,29 +42,26 @@ void UCAMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 	
-	//Tell hit detection we are starting a swing
 	if (UCAHitDetectionComponent* HitDetection = Character->GetHitDetectionComponent())
 	{
 		HitDetection->StartTrace();
 	}
 	
-	//Create the async montage task
 	
 	MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this,NAME_None,AttackMontage,1.0f,ComboSections.IsValidIndex(0) ? ComboSections[0] :NAME_None);
 	
-	//Bind delegates — these fire when montage ends
 	
 	MontageTask->OnCompleted.AddDynamic(this, &UCAMeleeAbility::OnMontageCompleted);
 	MontageTask->OnCancelled.AddDynamic(this, &UCAMeleeAbility::OnMontageCancelled);
 	MontageTask->OnInterrupted.AddDynamic(this, &UCAMeleeAbility::OnMontageCancelled);
 	
-	//ability suspends here, montage begins playing
+	// Ability execution continues through montage task delegates after activation.
 	MontageTask->ReadyForActivation();
 	
 }
 void UCAMeleeAbility::AdvanceCombo()
 {
-	
+	// End the combo chain if no follow-up input was received before the notify window.	
 if (!bComboInputReceived)
 {
 	StopAbility();
@@ -79,7 +74,7 @@ if (!bComboInputReceived)
 		StopAbility();
 		return;
 	}
-	//Play next section
+	
 	ACAPlayerCharacter* Character = Cast<ACAPlayerCharacter>(GetCurrentActorInfo()->AvatarActor.Get());
 	if (Character)
 	{

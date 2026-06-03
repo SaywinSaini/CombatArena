@@ -7,13 +7,19 @@
 #include "Abilities/GameplayAbility.h"
 #include "CAGameplayAbility.generated.h"
 
-
+/**
+ * Defines the activation behavior for an ability.
+ */
 UENUM(BlueprintType)
 enum class ECAAbilityActivationPolicy : uint8
 {
 	OnInputTriggered,
 	OnGranted
 };
+
+/**
+ * Designer-configurable ability statistics stored in a data table.
+ */
 
 USTRUCT(BlueprintType)
 struct  FCAAbilityData : public FTableRowBase

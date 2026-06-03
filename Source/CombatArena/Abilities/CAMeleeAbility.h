@@ -9,7 +9,8 @@
 
 
 /**
- * 
+ * Gameplay ability that executes a melee combo sequence using
+ * montage sections and buffered player input.
  */
 UCLASS()
 class COMBATARENA_API UCAMeleeAbility : public UCAGameplayAbility
@@ -19,8 +20,11 @@ public:
 	
 	UCAMeleeAbility();
 	
+	// Records player input during a combo window.
 	void SetComboInputReceived();
 	int32 GetComboIndex() const { return ComboIndex;}
+	
+	// Advances to the next combo section if buffered input exists.
 	void AdvanceCombo();
 	
 protected:
@@ -39,6 +43,7 @@ private:
 	// Helper to avoid duplicating stop+end logic
 	void StopAbility();
 	
+	// Montage used to play the melee attack sequence.
 	UPROPERTY(EditDefaultsOnly, Category = "Ability")
 	TObjectPtr<UAnimMontage> AttackMontage;
 	
@@ -48,6 +53,7 @@ private:
 	int32 ComboIndex = 0;
 	bool bComboInputReceived = false;
 	
+	// Ordered montage section names defining combo progression.
 	UPROPERTY(EditDefaultsOnly, Category = "Ability")
 	TArray<FName> ComboSections;
 };
