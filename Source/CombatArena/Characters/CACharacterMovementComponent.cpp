@@ -91,7 +91,7 @@ FName UCACharacterMovementComponent::GetDodgeSectionForAngle(float AngleDegrees)
 	if (AngleDegrees >=  67.5f  && AngleDegrees < 112.5f)  return FName("RD");
 	if (AngleDegrees >=  112.5f && AngleDegrees < 157.5f)  return FName("RBWD");
 	if (AngleDegrees >= -67.5f  && AngleDegrees < -22.5f)   return FName("LFWD");
-	if (AngleDegrees >= -112.5f && AngleDegrees < -67.5f)   return FName("L");
+	if (AngleDegrees >= -112.5f && AngleDegrees < -67.5f)   return FName("LD");
 	if (AngleDegrees >= -157.5f && AngleDegrees < -112.5f)  return FName("LBWD");
 	
 	// remaining range: 157.5 to 180 and -157.5 to -180
