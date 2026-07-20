@@ -5,8 +5,11 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
+#include "AI/CAISlot.h"
 #include "CAEnemyBase.generated.h"
 
+class ACASlotActor;
+class APawn;
 class UCAHitstopComponent;
 class UCAEnemyData;
 class UAbilitySystemComponent;
@@ -30,9 +33,18 @@ public:
 	
 	UCAHitstopComponent* GetHitstopComponent() const {return HitstopComponent; };
 	
+	EApproachSlot GetClaimedSlot() const { return ClaimedSlot; }
+	
+	ACASlotActor* GetSlotActor() const {return SlotActor;}
+	
+	bool IsStrafing() const { return MovementState == EEnemyMovementState::Strafing; }
+
+	
 protected:
 	
 	virtual void BeginPlay() override;
+	
+	virtual void Tick(float DeltaSeconds) override;
 	
 	UPROPERTY(EditDefaultsOnly,Category = "Combat")
 	TObjectPtr<UAnimMontage> AttackMontage;
@@ -52,4 +64,14 @@ private:
 	
 	UPROPERTY(VisibleAnywhere,Category = "Combat")
 	TObjectPtr<UCAHitstopComponent> HitstopComponent;
+	
+	EApproachSlot ClaimedSlot = EApproachSlot::None;
+	
+	UPROPERTY()
+	TObjectPtr<ACASlotActor> SlotActor;
+	
+	UPROPERTY()
+	TObjectPtr<APawn> CachedPlayer;
+	
+	EEnemyMovementState MovementState = EEnemyMovementState::Idle;
 };
