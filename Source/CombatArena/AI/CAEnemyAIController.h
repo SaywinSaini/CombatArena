@@ -5,6 +5,7 @@
 #include "AIController.h"
 #include "CAEnemyAIController.generated.h"
 
+struct FAIStimulus;
 class UAISenseConfig_Sight;
 class UBehaviorTree;
 
@@ -35,4 +36,5 @@ private:
 	TObjectPtr<UBehaviorTree> BehaviorTree;
 	
 	FTimerHandle LostSightTimer;
+	
 };
