@@ -6,6 +6,8 @@
 #include "AIController.h"
 #include "CAEnemyBase.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "AI/CASlotActor.h"
+#include "Characters/CAEnemyData.h"
 
 UCABTTask_EnemyAttack::UCABTTask_EnemyAttack()
 {
@@ -43,17 +45,6 @@ EBTNodeResult::Type UCABTTask_EnemyAttack::ExecuteTask(UBehaviorTreeComponent& O
 		return EBTNodeResult::Failed;
 	}
 	
-	// Check attack range before committing to montage
-	
-	const float Distance = FVector::Dist(Player->GetActorLocation(), Enemy->GetActorLocation());
-	
-	// Abort attack if target moved outside melee range
-	if (Distance > 600.0f)
-	{
-		UE_LOG(LogTemp, Warning,TEXT("EnemyAttack: Player out of range"));
-
-		return EBTNodeResult::Failed;
-	}
 	// Stop navigation movement before playing attack montage
 	OwnerComp.GetAIOwner()->StopMovement();
 	

@@ -118,6 +118,11 @@ void ACAPlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+FGenericTeamId ACAPlayerCharacter::GetGenericTeamId() const
+{
+	return FGenericTeamId(0);
+}
+
 void ACAPlayerCharacter::Move(const FInputActionValue& Value)
 {
 	const FVector2D Axis = Value.Get<FVector2D>();

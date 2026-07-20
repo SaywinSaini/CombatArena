@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "AbilitySystemComponent.h"
 #include "Abilities/GameplayAbility.h"
+#include "GenericTeamAgentInterface.h"
 #include "CAPlayerCharacter.generated.h"
 
 class UCAMeleeAbility;
@@ -22,7 +23,7 @@ class UInputMappingContext;
 struct FInputActionValue;
 
 UCLASS()
-class COMBATARENA_API ACAPlayerCharacter : public ACharacter , public IAbilitySystemInterface
+class COMBATARENA_API ACAPlayerCharacter : public ACharacter , public IAbilitySystemInterface , public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -91,6 +92,9 @@ public:
 	UCATargetingComponent* GetTargetingComponent() const {return TargetingComponent;}
 	
 	UCAMeleeAbility* GetActiveMeleeAbility() const {return ActiveMeleeAbility;}
+	
+	virtual FGenericTeamId GetGenericTeamId() const override;
+	
 private: 
 	
 	UPROPERTY(VisibleAnywhere,Category = "Combat")

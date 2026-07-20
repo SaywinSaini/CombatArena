@@ -7,6 +7,9 @@
 #include "CAGameMode.generated.h"
 
 
+enum class EEnemyType : uint8;
+enum class EApproachSlot : uint8;
+
 UCLASS()
 class COMBATARENA_API ACAGameMode : public AGameModeBase
 {
@@ -14,4 +17,12 @@ class COMBATARENA_API ACAGameMode : public AGameModeBase
 	
 	public:
 	ACAGameMode();
+	
+	EApproachSlot ClaimSlot(EEnemyType EnemyType);
+	
+	void ReleaseSlot(EApproachSlot Slot);
+	
+private:
+	
+	TSet<EApproachSlot> ClaimedSlots;
 };
