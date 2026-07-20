@@ -10,21 +10,26 @@
  * Designer-tunable configuration data shared by enemy AI.
  */
 
+UENUM(BlueprintType)
+enum class EEnemyType : uint8
+{
+	Base                UMETA(DisplayName = "Base"),
+	Aggressive          UMETA(DisplayName = "Aggressive"),
+	Tank                UMETA(DisplayName = "Tank"),
+};
+
 UCLASS()
 class COMBATARENA_API UCAEnemyData : public UDataAsset
 {
 	GENERATED_BODY()
 	
 public:
-	
-	UPROPERTY(EditDefaultsOnly,Category = "Movement")
-	float MovementSpeed = 600.0f;
     
 	UPROPERTY(EditDefaultsOnly,Category = "Combat")
 	float AttackDamage = 20.0f;
 	
 	UPROPERTY(EditDefaultsOnly,Category = "Combat")
-	float AttackRange = 200.0f;
+	float AttackRange = 150.0f;
 	
 	UPROPERTY(EditDefaultsOnly,Category = "Combat")
 	float AttackCooldown = 2.0f;
@@ -46,4 +51,39 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly,Category = "AI")
 	float LostSightMemoryDuration = 5.0f;
+	
+	UPROPERTY(EditDefaultsOnly,Category = "AI")
+	float SteeringEntryDistance = 600.0f;
+	
+	UPROPERTY(EditDefaultsOnly,Category = "AI")
+	float SlotApproachDistance = 130.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "AI", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float StrafeInwardBias = 0.35f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float PatrolSpeed = 300.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float ChaseSpeed = 600.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float StrafingSpeed = 200.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	float StrafingEntryDistance = 200.0f;
+	
+	UPROPERTY(EditDefaultsOnly,Category = "AI")
+	EEnemyType EnemyType = EEnemyType::Base;
+	
+	// Spacing band: the enemy tries to hold this distance range from the player.
+	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
+	float SpacingBandMin = 140.f;   // closer than this → back off
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
+	float SpacingBandMax = 180.f;   // farther than this → approach
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
+	float SpacingSpeed = 300.f;     // how fast it adjusts spacing
+	
 };
