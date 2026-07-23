@@ -34,6 +34,9 @@ void UCABTTask_MaintainSpacing::TickTask(UBehaviorTreeComponent& OwnerComp, uint
 
     ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(AIC->GetPawn());
     if (!Enemy || !Enemy->GetEnemyData()) { FinishLatentTask(OwnerComp, EBTNodeResult::Failed); return; }
+    
+    UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent();
+    if (!BB) { FinishLatentTask(OwnerComp, EBTNodeResult::Failed); return; }
 
     // Get the player from the Blackboard
     AActor* Player = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TEXT("PlayerActor")));
@@ -43,28 +46,37 @@ void UCABTTask_MaintainSpacing::TickTask(UBehaviorTreeComponent& OwnerComp, uint
     const FVector PlayerLoc = Player->GetActorLocation();
     const float   DistToPlayer = FVector::Dist(EnemyLoc, PlayerLoc);
 
-    const float BandMin = Enemy->GetEnemyData()->SpacingBandMin;
-    const float BandMax = Enemy->GetEnemyData()->SpacingBandMax;
-
-    // TODO 1: compute the direction FROM the enemy TO the player (normalized).
+    const bool bCooldownReady = BB->GetValueAsBool(TEXT("bAttackCooldownReady"));
     
-    FVector Direction = (PlayerLoc - EnemyLoc).GetSafeNormal();
-    
-    // TODO 2: the three-zone decision.
-    if (DistToPlayer > BandMax)
+    float BandMin, BandMax;
+    if (bCooldownReady)
     {
-        Enemy->AddMovementInput(Direction,1.0f);
-    }
-    else if (DistToPlayer < BandMin)
-    {
-        Enemy->AddMovementInput(-Direction,1.0f);
+        BandMin = 100.f;
+        BandMax = 130.f;
     }
     else
     {
-        
+        BandMin = Enemy->GetEnemyData()->SpacingBandMin;
+        BandMax = Enemy->GetEnemyData()->SpacingBandMax;
     }
 
-    // TODO 3: nothing to finish — spacing runs continuously.
-    // This task stays InProgress; the BT's attack decorator will abort it when in range.
-    // So: no FinishLatentTask here on the normal path.
+    const FVector Direction = (PlayerLoc - EnemyLoc).GetSafeNormal();
+
+    if (DistToPlayer > BandMax)
+    {
+        Enemy->AddMovementInput(Direction, 1.0f);
+    }
+    else if (DistToPlayer < BandMin)
+    {
+        Enemy->AddMovementInput(-Direction, 1.0f);
+    }
+    // else: inside the band, hold position
+}
+
+
+EBTNodeResult::Type UCABTTask_MaintainSpacing::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+    UE_LOG(LogTemp, Error, TEXT("MaintainSpacing ABORTED"));
+    
+    return Super::AbortTask(OwnerComp, NodeMemory);
 }

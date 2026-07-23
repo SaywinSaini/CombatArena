@@ -78,10 +78,10 @@ public:
 	
 	// Spacing band: the enemy tries to hold this distance range from the player.
 	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
-	float SpacingBandMin = 140.f;   // closer than this → back off
+	float SpacingBandMin = 200.f;   // closer than this → back off
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
-	float SpacingBandMax = 180.f;   // farther than this → approach
+	float SpacingBandMax = 260.f;   // farther than this → approach
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
 	float SpacingSpeed = 300.f;     // how fast it adjusts spacing

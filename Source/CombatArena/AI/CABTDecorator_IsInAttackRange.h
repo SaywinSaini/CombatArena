@@ -18,8 +18,6 @@ class COMBATARENA_API UCABTDecorator_IsInAttackRange : public UBTDecorator
 	
 	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;
 	
-	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
-	
 
 private:
 	

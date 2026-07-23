@@ -3,6 +3,7 @@
 
 #include "CAMeleeAbility.h"
 #include "Characters/CAPlayerCharacter.h"
+#include "Core/CAGameplayTags.h"
 #include "Combat/CAHitDetectionComponent.h"
 #include "Combat/CATargetingComponent.h"
 
@@ -13,6 +14,8 @@ UCAMeleeAbility::UCAMeleeAbility()
 	FGameplayTagContainer NewTags;
 	NewTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Melee")));
 	SetAssetTags(NewTags);
+	
+	ActivationOwnedTags.AddTag(CATags::State_Attacking);
 }
 
 void UCAMeleeAbility::SetComboInputReceived()

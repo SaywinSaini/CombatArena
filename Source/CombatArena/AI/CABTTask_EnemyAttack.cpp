@@ -51,17 +51,18 @@ EBTNodeResult::Type UCABTTask_EnemyAttack::ExecuteTask(UBehaviorTreeComponent& O
 	// Rotate enemy toward target before attack execution
 	FVector Direction = (Player->GetActorLocation()-Enemy->GetActorLocation()).GetSafeNormal();
 	Direction.Z =0.0f;
+	Enemy->SetActorRotation(Direction.Rotation());
 	
-	FRotator FaceRotation = Direction.Rotation();
-	Enemy->SetActorRotation(FaceRotation);
+	Enemy->SetLastAttackTime(Enemy->GetWorld()->GetTimeSeconds());
 	
 	// Prevent BT branch switching during attack montage
 	OwnerComp.PauseLogic("Attacking");
 	AnimInstance->Montage_Play(Montage);
 	
 	FOnMontageEnded MontageEndedDelegate;
-	MontageEndedDelegate.BindLambda([this, &OwnerComp](UAnimMontage* Montage, bool bInterrupted)
-	{   OwnerComp.ResumeLogic("Attacking");
+	MontageEndedDelegate.BindLambda([this, &OwnerComp, Enemy](UAnimMontage* Montage, bool bInterrupted)
+	{
+		OwnerComp.ResumeLogic("Attacking");
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	});
 	AnimInstance->Montage_SetEndDelegate(MontageEndedDelegate, Montage);

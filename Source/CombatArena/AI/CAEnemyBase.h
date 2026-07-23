@@ -38,8 +38,11 @@ public:
 	ACASlotActor* GetSlotActor() const {return SlotActor;}
 	
 	bool IsStrafing() const { return MovementState == EEnemyMovementState::Strafing; }
-
 	
+public:
+	void SetLastAttackTime(float Time) { LastAttackTime = Time; }
+	float GetLastAttackTime() const { return LastAttackTime; }
+
 protected:
 	
 	virtual void BeginPlay() override;
@@ -74,4 +77,6 @@ private:
 	TObjectPtr<APawn> CachedPlayer;
 	
 	EEnemyMovementState MovementState = EEnemyMovementState::Idle;
+	
+	float LastAttackTime = -1000.f;   // far in the past so the first attack isn't blocked
 };

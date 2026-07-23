@@ -42,7 +42,6 @@ void UCAHitDetectionComponent::StopTrace()
 
 void UCAHitDetectionComponent::PerformTrace()
 {
-	UE_LOG(LogTemp, Warning, TEXT("PerformTrace called"));
 	if (!bIsTracing || !CharacterData) return;
 	
 		USkeletalMeshComponent* Mesh = GetOwner()->FindComponentByClass<USkeletalMeshComponent>();

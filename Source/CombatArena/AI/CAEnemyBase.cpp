@@ -9,6 +9,7 @@
 #include "AI/CASlotActor.h"
 #include "Core/CAGameMode.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Core/CAGameplayTags.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -101,6 +102,20 @@ void ACAEnemyBase::Tick(float DeltaSeconds)
         default:                        SlotOffset = FVector::ZeroVector; break;
         }
         SlotActor->SetActorLocation(PlayerLocation + SlotOffset);
+    }
+    if (CachedPlayer)
+    {
+        if (IAbilitySystemInterface* ASI = Cast<IAbilitySystemInterface>(CachedPlayer))
+        {
+            if (UAbilitySystemComponent* ASC = ASI->GetAbilitySystemComponent())
+            {
+                bool bAttacking = ASC->HasMatchingGameplayTag(CATags::State_Attacking);
+                if (bAttacking)
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("[TICK] Player HAS State.Attacking right now"));
+                }
+            }
+        }
     }
 }
 
