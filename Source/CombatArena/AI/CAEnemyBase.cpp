@@ -22,6 +22,30 @@ ACAEnemyBase::ACAEnemyBase()
     HitstopComponent = CreateDefaultSubobject<UCAHitstopComponent>(TEXT("HitstopComponent"));
 }
 
+void ACAEnemyBase::ApplyDashInvulnerability(float Duration)
+{
+    if (!AbilitySystemComponent) return;
+    
+    AbilitySystemComponent->AddLooseGameplayTag(CATags::State_Invulnerable);
+    
+    if (APawn* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
+    {
+        GetCapsuleComponent()->IgnoreActorWhenMoving(Player,true);
+    }
+    
+    GetWorldTimerManager().SetTimer(InvulnTimerHandle, [this]()
+    {
+        if (AbilitySystemComponent)
+        {
+            AbilitySystemComponent->RemoveLooseGameplayTag(CATags::State_Invulnerable,100);
+        }
+        if (APawn* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
+        {
+            GetCapsuleComponent()->IgnoreActorWhenMoving(Player,false);
+        }
+    },Duration,false);
+}
+
 void ACAEnemyBase::BeginPlay()
 {
     Super::BeginPlay();

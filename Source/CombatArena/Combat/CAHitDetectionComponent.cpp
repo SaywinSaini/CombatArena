@@ -7,6 +7,7 @@
 #include "CombatArena.h"
 #include "GameFramework/PlayerController.h"
 #include "Characters/CAPlayerCharacter.h"
+#include "Core/CAGameplayTags.h"
 
 
 UCAHitDetectionComponent::UCAHitDetectionComponent()
@@ -87,6 +88,12 @@ void UCAHitDetectionComponent::PerformTrace()
 			// Get the target's AbilitySystemComponent — if none they cannot receive damage
 			UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor);
 			if (!TargetASC) continue;
+			
+			if (TargetASC->HasMatchingGameplayTag(CATags::State_Invulnerable))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("CAHitDetectionComponent: %s is invulnerable, hit ignored"), *HitActor->GetName());
+				continue;
+			}
 			
 			FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass,1,SourceASC->MakeEffectContext());
 			

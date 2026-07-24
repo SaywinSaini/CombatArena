@@ -47,6 +47,8 @@ public:
 	
 	void SetLastDashTime(float Time) { LastDashTime = Time; }
 	float GetLastDashTime() const { return LastDashTime; }
+	
+	void ApplyDashInvulnerability(float Duration);
 
 protected:
 	
@@ -89,4 +91,5 @@ private:
 	
 	float LastDashTime = -1000.f;
 	
+	FTimerHandle InvulnTimerHandle;
 };

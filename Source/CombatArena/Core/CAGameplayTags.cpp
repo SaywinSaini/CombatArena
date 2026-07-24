@@ -8,4 +8,5 @@ namespace CATags
 	UE_DEFINE_GAMEPLAY_TAG(State_Comboing,  "State.Comboing");
 	UE_DEFINE_GAMEPLAY_TAG(State_Blocking,  "State.Blocking");
 	UE_DEFINE_GAMEPLAY_TAG(State_Staggered, "State.Staggered");
+	UE_DEFINE_GAMEPLAY_TAG(State_Invulnerable, "State.Invulnerable");
 }

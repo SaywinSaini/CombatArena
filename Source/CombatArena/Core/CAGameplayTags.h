@@ -12,4 +12,5 @@ namespace CATags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Comboing);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Blocking);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Staggered);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Invulnerable);
 }

@@ -39,6 +39,7 @@ EBTNodeResult::Type UCABTTask_Evade::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	
 	Enemy->LaunchCharacter(Away * EvadeImpulse, true, false);
 	Enemy->SetLastEvadeTime(Now);
+	Enemy->ApplyDashInvulnerability(0.3f);
 
 	
 	return EBTNodeResult::Succeeded;
