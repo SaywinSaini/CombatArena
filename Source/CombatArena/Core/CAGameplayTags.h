@@ -9,6 +9,7 @@ namespace CATags
 {
 	// Combat state tags — describe what a character is currently doing.
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Attacking);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Comboing);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Blocking);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Staggered);
 }

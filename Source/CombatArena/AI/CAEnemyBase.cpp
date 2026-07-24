@@ -103,20 +103,7 @@ void ACAEnemyBase::Tick(float DeltaSeconds)
         }
         SlotActor->SetActorLocation(PlayerLocation + SlotOffset);
     }
-    if (CachedPlayer)
-    {
-        if (IAbilitySystemInterface* ASI = Cast<IAbilitySystemInterface>(CachedPlayer))
-        {
-            if (UAbilitySystemComponent* ASC = ASI->GetAbilitySystemComponent())
-            {
-                bool bAttacking = ASC->HasMatchingGameplayTag(CATags::State_Attacking);
-                if (bAttacking)
-                {
-                    UE_LOG(LogTemp, Warning, TEXT("[TICK] Player HAS State.Attacking right now"));
-                }
-            }
-        }
-    }
+    
 }
 
 void ACAEnemyBase::Die()

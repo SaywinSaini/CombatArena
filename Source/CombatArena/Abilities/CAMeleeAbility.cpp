@@ -5,6 +5,7 @@
 #include "Characters/CAPlayerCharacter.h"
 #include "Core/CAGameplayTags.h"
 #include "Combat/CAHitDetectionComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Combat/CATargetingComponent.h"
 
 
@@ -20,13 +21,10 @@ UCAMeleeAbility::UCAMeleeAbility()
 
 void UCAMeleeAbility::SetComboInputReceived()
 {
-	UE_LOG(LogTemp, Warning, TEXT("SetComboInputReceived called"));
 	bComboInputReceived = true;
 }
 
-void UCAMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                      const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-                                      const FGameplayEventData* TriggerEventData)
+void UCAMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
@@ -37,7 +35,12 @@ void UCAMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		EndAbility(Handle,ActorInfo,ActivationInfo,true,true);
 		return;
 	}
-	
+	// Melee is a grounded ability — refuse to activate mid-air
+	if (Character->GetCharacterMovement() && Character->GetCharacterMovement()->IsFalling())
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		return;
+	}
 	
 	if (!CommitAbility(Handle,ActorInfo,ActivationInfo))
 	{
@@ -78,6 +81,14 @@ if (!bComboInputReceived)
 		return;
 	}
 	
+	 if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
+	 {
+	 	if (!ASC->HasMatchingGameplayTag(CATags::State_Comboing))
+	 	{
+	 		ASC->AddLooseGameplayTag(CATags::State_Comboing);
+	 	}
+	 }
+	
 	ACAPlayerCharacter* Character = Cast<ACAPlayerCharacter>(GetCurrentActorInfo()->AvatarActor.Get());
 	if (Character)
 	{
@@ -107,6 +118,11 @@ void UCAMeleeAbility::OnMontageCancelled()
 
 void UCAMeleeAbility::StopAbility()
 {
+	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
+	{
+		ASC->RemoveLooseGameplayTag(CATags::State_Comboing, 100);
+	}
+	
 	if (const FGameplayAbilityActorInfo* ActorInfo = GetCurrentActorInfo())
 	{
 		ACAPlayerCharacter* Character = Cast<ACAPlayerCharacter>(ActorInfo->AvatarActor.Get());

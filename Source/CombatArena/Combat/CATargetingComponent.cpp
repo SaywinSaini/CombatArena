@@ -2,7 +2,9 @@
 
 #include "AI/CAEnemyBase.h"
 #include "Kismet/GameplayStatics.h"
-#include "Splines/SplineMath.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
+#include "Core/CAGameplayTags.h"
 #include "GameFramework/PlayerController.h"
 
 UCATargetingComponent::UCATargetingComponent()
@@ -104,7 +106,21 @@ void UCATargetingComponent::TickComponent(float DeltaTime, enum ELevelTick TickT
 		bIsTargetLocked=false;
 		return;
 	}
-	RotateTowardsTarget(LockedTarget,DeltaTime);
+	
+	bool bIsAttacking = false;
+	if (IAbilitySystemInterface* ASI = Cast<IAbilitySystemInterface>(GetOwner()))
+	{
+		if (UAbilitySystemComponent* ASC = ASI->GetAbilitySystemComponent())
+		{
+			bIsAttacking = ASC->HasMatchingGameplayTag(CATags::State_Attacking);
+		}
+	}
+
+	if (!bIsAttacking)
+	{
+		RotateTowardsTarget(LockedTarget, DeltaTime);
+	}
+	
 	if (PlayerController)
 	{
 		FVector ToEnemy = (LockedTarget->GetActorLocation() - GetOwner()->GetActorLocation()).GetSafeNormal();

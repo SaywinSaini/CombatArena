@@ -2,7 +2,7 @@
 
 
 #include "CABTTask_Evade.h"
-
+#include "Characters/CAEnemyData.h"
 #include "AIController.h"
 #include "CAEnemyBase.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -10,30 +10,37 @@
 UCABTTask_Evade::UCABTTask_Evade()
 {
 	NodeName = TEXT("Evade");
-	bNotifyTick = true;
+	bNotifyTick = false;
 	
 }
 
 EBTNodeResult::Type UCABTTask_Evade::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	return EBTNodeResult::InProgress;
-}
-
-void UCABTTask_Evade::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
-{
 	AAIController* AIC = OwnerComp.GetAIOwner();
-	if (!AIC) { FinishLatentTask(OwnerComp, EBTNodeResult::Failed); return; }
+	if (!AIC) return EBTNodeResult::Failed;
 	
 	ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(AIC->GetPawn());
-	if (!Enemy) { FinishLatentTask(OwnerComp, EBTNodeResult::Failed); return; }
+	if (!Enemy) return EBTNodeResult::Failed;
 	
-	AActor* Player = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TEXT("PlayerActor")));
-	if (!Player) { FinishLatentTask(OwnerComp, EBTNodeResult::Failed); return; }
+	UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent();
+	if (!BB) return EBTNodeResult::Failed;
 	
-	const FVector PlayerLocation = Player->GetActorLocation();
-	const FVector EnemyLocation  = Enemy->GetActorLocation();
+	AActor* Player = Cast<AActor>(BB->GetValueAsObject(TEXT("PlayerActor")));
+	if (!Player) return EBTNodeResult::Failed;
 	
-	const FVector ToPlayer = (PlayerLocation - EnemyLocation).GetSafeNormal();
+	const float Now = Enemy->GetWorld()->GetTimeSeconds();
+	if (Now - Enemy->GetLastEvadeTime() < Enemy->GetEnemyData()->EvadeCooldown)
+	{
+		return EBTNodeResult::Failed;
+	}
 	
-	Enemy->AddMovementInput(-ToPlayer,1.0f);
+	FVector Away = (Enemy->GetActorLocation() - Player->GetActorLocation()).GetSafeNormal();
+	Away.Z = 0.f;
+	
+	Enemy->LaunchCharacter(Away * EvadeImpulse, true, false);
+	Enemy->SetLastEvadeTime(Now);
+
+	
+	return EBTNodeResult::Succeeded;
 }
+

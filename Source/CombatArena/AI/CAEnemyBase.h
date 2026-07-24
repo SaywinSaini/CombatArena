@@ -39,9 +39,14 @@ public:
 	
 	bool IsStrafing() const { return MovementState == EEnemyMovementState::Strafing; }
 	
-public:
 	void SetLastAttackTime(float Time) { LastAttackTime = Time; }
 	float GetLastAttackTime() const { return LastAttackTime; }
+	
+	void SetLastEvadeTime(float Time) { LastEvadeTime = Time; }
+	float GetLastEvadeTime() const { return LastEvadeTime; }
+	
+	void SetLastDashTime(float Time) { LastDashTime = Time; }
+	float GetLastDashTime() const { return LastDashTime; }
 
 protected:
 	
@@ -78,5 +83,10 @@ private:
 	
 	EEnemyMovementState MovementState = EEnemyMovementState::Idle;
 	
-	float LastAttackTime = -1000.f;   // far in the past so the first attack isn't blocked
+	float LastAttackTime = -1000.f;
+	
+	float LastEvadeTime  = -1000.f;
+	
+	float LastDashTime = -1000.f;
+	
 };

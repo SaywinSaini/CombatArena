@@ -76,7 +76,5 @@ void UCABTTask_MaintainSpacing::TickTask(UBehaviorTreeComponent& OwnerComp, uint
 
 EBTNodeResult::Type UCABTTask_MaintainSpacing::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-    UE_LOG(LogTemp, Error, TEXT("MaintainSpacing ABORTED"));
-    
     return Super::AbortTask(OwnerComp, NodeMemory);
 }

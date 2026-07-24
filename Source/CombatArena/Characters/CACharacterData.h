@@ -51,7 +51,7 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 	
 	// Radius of the melee sphere trace used for hit detection.
 	UPROPERTY(EditDefaultsOnly , Category= "Combat")
-	float TraceRadius = 20.0f;
+	float TraceRadius = 10.0f;
 	
 	// Forward distance of the melee sphere trace.
 	UPROPERTY(EditDefaultsOnly , Category= "Combat")

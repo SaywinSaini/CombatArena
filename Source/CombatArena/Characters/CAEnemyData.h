@@ -86,4 +86,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
 	float SpacingSpeed = 300.f;     // how fast it adjusts spacing
 	
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	float EvadeCooldown = 1.0f;
 };

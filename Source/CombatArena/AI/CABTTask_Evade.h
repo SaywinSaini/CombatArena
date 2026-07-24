@@ -17,5 +17,7 @@ public:
 	
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	
-	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+	// Impulse strength for the backstep. Tunable per BT node instance.
+	UPROPERTY(EditAnywhere, Category = "Evade")
+	float EvadeImpulse = 600.f;
 };

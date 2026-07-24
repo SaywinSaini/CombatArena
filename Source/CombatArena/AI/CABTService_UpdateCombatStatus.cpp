@@ -33,6 +33,7 @@ void UCABTService_UpdateCombatStatus::TickNode(UBehaviorTreeComponent& OwnerComp
 		BB->SetValueAsBool(TEXT("bIsInAttackRange"), false);
         BB->SetValueAsBool(TEXT("bIsPlayerAttacking"), false);
 		BB->SetValueAsBool(TEXT("bAttackCooldownReady"),false);
+		BB->SetValueAsBool(TEXT("bIsPlayerComboing"), false);
 		return;
 	}
 	
@@ -45,18 +46,18 @@ void UCABTService_UpdateCombatStatus::TickNode(UBehaviorTreeComponent& OwnerComp
 
 	BB->SetValueAsBool(TEXT("bIsInAttackRange"), bInRange && bCooldownReady);
 	BB->SetValueAsBool(TEXT("bAttackCooldownReady"), bCooldownReady);
-    
+	
 	bool bPlayerAttacking = false;
+	bool bPlayerComboing = false;
 	if (IAbilitySystemInterface* ASI = Cast<IAbilitySystemInterface>(Player))
 	{
 		if (UAbilitySystemComponent* ASC = ASI->GetAbilitySystemComponent())
 		{
 			bPlayerAttacking = ASC->HasMatchingGameplayTag(CATags::State_Attacking);
+			bPlayerComboing = ASC->HasMatchingGameplayTag(CATags::State_Comboing);
 		}
 	}
 	BB->SetValueAsBool(TEXT("bIsPlayerAttacking"), bPlayerAttacking);
-	
-	UE_LOG(LogTemp, Warning, TEXT("CombatStatus — Dist: %.0f | InRange: %s | CooldownReady: %s | PlayerAttacking: %s"),
-		Distance, bInRange ? TEXT("YES") : TEXT("NO"), bCooldownReady ? TEXT("YES") : TEXT("NO"), bPlayerAttacking ? TEXT("YES") : TEXT("NO"));
+	BB->SetValueAsBool(TEXT("bIsPlayerComboing"), bPlayerComboing);
 
 }
