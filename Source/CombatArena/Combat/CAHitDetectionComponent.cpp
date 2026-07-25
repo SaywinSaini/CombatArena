@@ -5,6 +5,8 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "CAHitstopComponent.h"
 #include "CombatArena.h"
+#include "AI/CAEnemyBase.h"
+#include "Characters/CAEnemyData.h"
 #include "GameFramework/PlayerController.h"
 #include "Characters/CAPlayerCharacter.h"
 #include "Core/CAGameplayTags.h"
@@ -100,6 +102,20 @@ void UCAHitDetectionComponent::PerformTrace()
 			if (!SpecHandle.IsValid()) continue;
 			
 			SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(),TargetASC);
+			
+			if (ACAEnemyBase* HitEnemy = Cast<ACAEnemyBase>(HitActor))
+			{
+				if (UCAEnemyData* Data = HitEnemy->GetEnemyData())
+				{
+					if (Data->HitReactMontage)
+					{
+						if (UAnimInstance* Anim = HitEnemy->GetMesh()->GetAnimInstance())
+						{
+							HitEnemy->PlayHitReact(Data->HitReactMontage, Data->HitReactPlayRate);
+						}
+					}
+				}
+			}
 			
 			UCAHitstopComponent* EnemyHitStop = HitActor->FindComponentByClass<UCAHitstopComponent>();
 			

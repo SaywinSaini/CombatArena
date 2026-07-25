@@ -49,6 +49,9 @@ public:
 	float GetLastDashTime() const { return LastDashTime; }
 	
 	void ApplyDashInvulnerability(float Duration);
+	
+	void PlayHitReact(UAnimMontage* Montage, float PlayRate);
+	bool IsReacting() const {return bIsReacting;}
 
 protected:
 	
@@ -92,4 +95,7 @@ private:
 	float LastDashTime = -1000.f;
 	
 	FTimerHandle InvulnTimerHandle;
+	
+	bool bIsReacting = false;
+	FTimerHandle HitReactTimerHandle;
 };

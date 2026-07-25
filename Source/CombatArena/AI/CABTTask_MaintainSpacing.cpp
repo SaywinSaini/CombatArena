@@ -35,6 +35,8 @@ void UCABTTask_MaintainSpacing::TickTask(UBehaviorTreeComponent& OwnerComp, uint
     ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(AIC->GetPawn());
     if (!Enemy || !Enemy->GetEnemyData()) { FinishLatentTask(OwnerComp, EBTNodeResult::Failed); return; }
     
+    if (Enemy->IsReacting()) return;
+    
     UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent();
     if (!BB) { FinishLatentTask(OwnerComp, EBTNodeResult::Failed); return; }
 

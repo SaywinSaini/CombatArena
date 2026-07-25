@@ -88,4 +88,10 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	float EvadeCooldown = 1.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> HitReactMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float HitReactPlayRate = 1.5f;
 };

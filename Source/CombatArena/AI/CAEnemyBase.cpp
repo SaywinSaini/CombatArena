@@ -46,6 +46,24 @@ void ACAEnemyBase::ApplyDashInvulnerability(float Duration)
     },Duration,false);
 }
 
+void ACAEnemyBase::PlayHitReact(UAnimMontage* Montage, float PlayRate)
+{
+    if (!Montage) return;
+    
+    if (UAnimInstance* Anim = GetMesh()->GetAnimInstance())
+    {
+        const float Duration = Anim->Montage_Play(Montage,PlayRate);
+        bIsReacting = true;
+        GetCharacterMovement()->StopMovementImmediately();
+    
+        GetWorldTimerManager().SetTimer(HitReactTimerHandle, [this]()
+        {
+            bIsReacting = false;
+        },Duration / PlayRate,false);
+    }
+}
+
+
 void ACAEnemyBase::BeginPlay()
 {
     Super::BeginPlay();
