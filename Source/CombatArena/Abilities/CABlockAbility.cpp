@@ -21,9 +21,3 @@ void UCABlockAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
-
-void UCABlockAbility::OnBlockReleased(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
-{
-	EndAbility(Handle,ActorInfo,ActivationInfo,true,false);
-}

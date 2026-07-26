@@ -1,6 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
+﻿
 #include "CAPlayerCharacter.h"
 #include "AbilitySystemComponent.h"
 #include "CACharacterData.h"
@@ -203,6 +201,9 @@ void ACAPlayerCharacter::ActivateRangedAbility()
 
 void ACAPlayerCharacter::StartBlockAbility()
 {
+	
+	if (!AbilitySystemComponent) return;
+	
 	FGameplayTagContainer AbilityTags;
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Block")));
 	AbilitySystemComponent->TryActivateAbilitiesByTag(AbilityTags);
@@ -210,7 +211,11 @@ void ACAPlayerCharacter::StartBlockAbility()
 
 void ACAPlayerCharacter::StopBlockAbility()
 {
-	// nothing
+	if (!AbilitySystemComponent) return;
+
+	FGameplayTagContainer AbilityTags;
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Block")));
+	AbilitySystemComponent->CancelAbilities(&AbilityTags);
 }
 
 void ACAPlayerCharacter::ToggleTargetLock()
