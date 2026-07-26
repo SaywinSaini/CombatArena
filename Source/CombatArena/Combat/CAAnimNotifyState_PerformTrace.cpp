@@ -11,12 +11,9 @@ void UCAAnimNotifyState_PerformTrace::NotifyBegin(USkeletalMeshComponent* MeshCo
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 	
-	if (!MeshComp) return;
+	if (!MeshComp || !MeshComp->GetOwner()) return;
 	
-	ACAPlayerCharacter* Player = Cast<ACAPlayerCharacter>(MeshComp->GetOwner());
-	if (!Player) return;
-	
-	if (UCAHitDetectionComponent* HitDetectionComp = Player->GetHitDetectionComponent())
+	if (UCAHitDetectionComponent* HitDetectionComp = MeshComp->GetOwner()->FindComponentByClass<UCAHitDetectionComponent>())
 	{
 		HitDetectionComp->StartTrace();
 	}
@@ -27,12 +24,9 @@ void UCAAnimNotifyState_PerformTrace::NotifyTick(USkeletalMeshComponent* MeshCom
 {
 	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
 
-	if (!MeshComp) return;
+	if (!MeshComp || !MeshComp->GetOwner()) return;
 	
-	ACAPlayerCharacter* Player = Cast<ACAPlayerCharacter>(MeshComp->GetOwner());
-	if (!Player) return;
-	
-	if (UCAHitDetectionComponent* HitDetectionComp = Player->GetHitDetectionComponent())
+	if (UCAHitDetectionComponent* HitDetectionComp = MeshComp->GetOwner()->FindComponentByClass<UCAHitDetectionComponent>())
 	{
 		HitDetectionComp->PerformTrace();
 	}
@@ -43,13 +37,10 @@ void UCAAnimNotifyState_PerformTrace::NotifyEnd(USkeletalMeshComponent* MeshComp
 {
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
 
-	if (!MeshComp) return;
+	if (!MeshComp || !MeshComp->GetOwner()) return;
 	
-	ACAPlayerCharacter* Player = Cast<ACAPlayerCharacter>(MeshComp->GetOwner());
-	if (!Player) return;
-	
-	if (UCAHitDetectionComponent* HitDetectionComp = Player->GetHitDetectionComponent())
+	if (UCAHitDetectionComponent* HitDetectionComp = MeshComp->GetOwner()->FindComponentByClass<UCAHitDetectionComponent>())
 	{
-		HitDetectionComp->StopTrace();
+		HitDetectionComp->PerformTrace();
 	}
 }

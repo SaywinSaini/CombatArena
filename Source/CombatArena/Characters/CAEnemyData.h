@@ -94,4 +94,13 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	float HitReactPlayRate = 1.5f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	FName WeaponSocketName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float TraceRange = 50.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float TraceRadius = 10.f;
 };

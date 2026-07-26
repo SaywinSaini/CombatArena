@@ -35,6 +35,11 @@ public:
 	UPROPERTY()
 	TObjectPtr<UCACharacterData> CharacterData;
 	
+	// Trace config, populated in BeginPlay from whichever data asset the owner has
+	FName TraceSocketName;
+	float TraceRange = 50.f;
+	float TraceRadius = 20.f;
+	
 	//GameplayEffect applied to hit actors , set in editor
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;

@@ -1,5 +1,5 @@
 ﻿#include "CAHitDetectionComponent.h"
-
+#include "AbilitySystemInterface.h"
 #include "Characters/CACharacterData.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
@@ -11,6 +11,7 @@
 #include "Characters/CAPlayerCharacter.h"
 #include "Core/CAGameplayTags.h"
 
+TAutoConsoleVariable<bool> CVarHitDetectionDebugDrawing(TEXT("game.HitDetection.DebugDraw"), false,TEXT("Enable HitDetection component debug rendering.(0 = off , 1 = enabled"),ECVF_Cheat);
 
 UCAHitDetectionComponent::UCAHitDetectionComponent()
 {
@@ -21,16 +22,25 @@ void UCAHitDetectionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	ACAPlayerCharacter* Player = Cast<ACAPlayerCharacter>(GetOwner());
-	
-	if (!Player) return;
-	
-	CharacterData = Player->GetCharacterData();
-	
-	if (!CharacterData) return;
-	
+	if (ACAPlayerCharacter* Player = Cast<ACAPlayerCharacter>(GetOwner()))
+	{
+		if (UCACharacterData* Data = Player->GetCharacterData())
+		{
+			TraceSocketName = Data->WeaponSocketName;
+			TraceRange = Data->TraceRange;
+			TraceRadius = Data->TraceRadius;
+		}
+	}
+	else if (ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(GetOwner()))
+	{
+		if (UCAEnemyData* Data = Enemy->GetEnemyData())
+		{
+			TraceSocketName = Data->WeaponSocketName;
+			TraceRange      = Data->TraceRange;
+			TraceRadius     = Data->TraceRadius;
+		}
+	}
 }
-
 void UCAHitDetectionComponent::StartTrace()
 {
 	bIsTracing = true;
@@ -45,28 +55,32 @@ void UCAHitDetectionComponent::StopTrace()
 
 void UCAHitDetectionComponent::PerformTrace()
 {
-	if (!bIsTracing || !CharacterData) return;
+	if (!bIsTracing || TraceSocketName.IsNone()) return;
 	
 		USkeletalMeshComponent* Mesh = GetOwner()->FindComponentByClass<USkeletalMeshComponent>();
 	
 	if (!Mesh) return;
 	
-		const FVector StartPoint = Mesh->GetSocketLocation(CharacterData->WeaponSocketName);
-		const FVector EndPoint = StartPoint + GetOwner()->GetActorForwardVector() * CharacterData->TraceRange;
+		const FVector StartPoint = Mesh->GetSocketLocation(TraceSocketName);
+		const FVector EndPoint = StartPoint + GetOwner()->GetActorForwardVector() * TraceRange;
 	
 		TArray<FHitResult> HitResults;
 		
-		const FCollisionShape Sphere = FCollisionShape::MakeSphere(CharacterData->TraceRadius);
+		const FCollisionShape Sphere = FCollisionShape::MakeSphere(TraceRadius);
 		
 		GetWorld()->SweepMultiByChannel(HitResults, StartPoint, EndPoint, FQuat::Identity,ECC_Weapon,Sphere);
 	
-	    DrawDebugSphere(GetWorld(),StartPoint,CharacterData->TraceRadius,12,FColor::Red,false,1.0f);
-	    DrawDebugSphere(GetWorld(), EndPoint, CharacterData->TraceRadius, 12, FColor::Green, false, 1.0f);
+	    bool bEnabledDebugDraw = CVarHitDetectionDebugDrawing.GetValueOnGameThread();
 	
-	    ACAPlayerCharacter* Player = Cast<ACAPlayerCharacter>(GetOwner());
-	    if (!Player) return;
-			
-	    UAbilitySystemComponent* SourceASC = Player->GetAbilitySystemComponent();
+	if (bEnabledDebugDraw)
+	{
+		DrawDebugSphere(GetWorld(),StartPoint,TraceRadius,12,FColor::Red,false,1.0f);
+		DrawDebugSphere(GetWorld(), EndPoint, TraceRadius, 12, FColor::Green, false, 1.0f);
+	}
+		IAbilitySystemInterface* OwnerASI = Cast<IAbilitySystemInterface>(GetOwner());
+		if (!OwnerASI) return;
+		
+	    UAbilitySystemComponent* SourceASC = OwnerASI->GetAbilitySystemComponent();
 	    if (!SourceASC) return;
 	
 	    if (!DamageEffectClass)
@@ -85,17 +99,11 @@ void UCAHitDetectionComponent::PerformTrace()
 			
 				HitActors.Add(TWeakObjectPtr<AActor>(HitActor));
 			
-			UE_LOG(LogTemp, Warning, TEXT("CAHitDetectionComponent: Hit %s"), *HitActor->GetName());
-			
 			// Get the target's AbilitySystemComponent — if none they cannot receive damage
 			UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor);
 			if (!TargetASC) continue;
 			
-			if (TargetASC->HasMatchingGameplayTag(CATags::State_Invulnerable))
-			{
-				UE_LOG(LogTemp, Warning, TEXT("CAHitDetectionComponent: %s is invulnerable, hit ignored"), *HitActor->GetName());
-				continue;
-			}
+			if (TargetASC->HasMatchingGameplayTag(CATags::State_Invulnerable)) continue;
 			
 			FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass,1,SourceASC->MakeEffectContext());
 			
@@ -135,7 +143,6 @@ void UCAHitDetectionComponent::PerformTrace()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Camera shake failed — PC: %d | Shake: %d"), PC != nullptr, HitCameraShake != nullptr);
 			}
-			UE_LOG(LogTemp, Warning, TEXT("CAHitDetectionComponent: Applied damage to %s"), *HitActor->GetName());
 		}
 		
 		

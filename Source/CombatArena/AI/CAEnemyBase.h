@@ -8,6 +8,7 @@
 #include "AI/CAISlot.h"
 #include "CAEnemyBase.generated.h"
 
+class UCAHitDetectionComponent;
 class ACASlotActor;
 class APawn;
 class UCAHitstopComponent;
@@ -52,6 +53,8 @@ public:
 	
 	void PlayHitReact(UAnimMontage* Montage, float PlayRate);
 	bool IsReacting() const {return bIsReacting;}
+	
+	UCAHitDetectionComponent* GetHitDetectionComponent() const { return HitDetectionComponent; }
 
 protected:
 	
@@ -77,6 +80,9 @@ private:
 	
 	UPROPERTY(VisibleAnywhere,Category = "Combat")
 	TObjectPtr<UCAHitstopComponent> HitstopComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UCAHitDetectionComponent> HitDetectionComponent;
 	
 	EApproachSlot ClaimedSlot = EApproachSlot::None;
 	

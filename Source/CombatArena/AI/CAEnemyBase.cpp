@@ -9,6 +9,7 @@
 #include "AI/CASlotActor.h"
 #include "Core/CAGameMode.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Combat/CAHitDetectionComponent.h"
 #include "Core/CAGameplayTags.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -20,6 +21,8 @@ ACAEnemyBase::ACAEnemyBase()
     AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
     AttributeSet = CreateDefaultSubobject<UCAAttributeSet>(TEXT("AttributeSet"));
     HitstopComponent = CreateDefaultSubobject<UCAHitstopComponent>(TEXT("HitstopComponent"));
+    
+    HitDetectionComponent = CreateDefaultSubobject<UCAHitDetectionComponent>(TEXT("HitDetectionComponent"));
 }
 
 void ACAEnemyBase::ApplyDashInvulnerability(float Duration)
