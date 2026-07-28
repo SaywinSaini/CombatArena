@@ -6,6 +6,7 @@
 #include "CAHitstopComponent.h"
 #include "CombatArena.h"
 #include "AI/CAEnemyBase.h"
+#include "Abilities/CAAttributeSet.h"
 #include "Characters/CAEnemyData.h"
 #include "GameFramework/PlayerController.h"
 #include "Characters/CAPlayerCharacter.h"
@@ -105,11 +106,23 @@ void UCAHitDetectionComponent::PerformTrace()
 			
 			if (TargetASC->HasMatchingGameplayTag(CATags::State_Invulnerable)) continue;
 			
+			// Blocked hits are negated when the attacker is in the defender's front arc.
+			if (TargetASC->HasMatchingGameplayTag(CATags::State_Blocking))
+			{
+				const FVector TargetForward = HitActor->GetActorForwardVector();
+				const FVector ToAttacker = (GetOwner()->GetActorLocation() - HitActor->GetActorLocation()).GetSafeNormal();
+				const float FacingDot = FVector::DotProduct(TargetForward, ToAttacker);
+
+				if (FacingDot > 0.f) continue;
+			}
+			
 			FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass,1,SourceASC->MakeEffectContext());
 			
 			if (!SpecHandle.IsValid()) continue;
 			
 			SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(),TargetASC);
+			
+			UE_LOG(LogTemp, Warning, TEXT("DAMAGE APPLIED to %s | Health: %f"), *HitActor->GetName(), TargetASC->GetNumericAttribute(UCAAttributeSet::GetHealthAttribute()));
 			
 			if (ACAEnemyBase* HitEnemy = Cast<ACAEnemyBase>(HitActor))
 			{
