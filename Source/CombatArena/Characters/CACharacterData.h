@@ -60,4 +60,10 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 	//Socket used as origin for both melee traces and projectile spawning
 	UPROPERTY(EditDefaultsOnly ,Category= "Combat")
 	FName WeaponSocketName = FName("hand_r");
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
+	float MaxHealth = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
+	float MaxStamina = 100.0f;
 };

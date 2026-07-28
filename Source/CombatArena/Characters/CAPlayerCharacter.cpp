@@ -110,6 +110,16 @@ void ACAPlayerCharacter::BeginPlay()
     
     PerceptionStimuliSource->RegisterForSense(TSubclassOf<UAISense>(UAISense_Sight::StaticClass()));
     PerceptionStimuliSource->RegisterWithPerceptionSystem();
+	
+	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
+	{
+		if (!AbilitySystemComponent || !CharacterData) return;
+		
+		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxHealthAttribute(),CharacterData->MaxHealth);
+		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetHealthAttribute(), CharacterData->MaxHealth);
+		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxStaminaAttribute(), CharacterData->MaxStamina);
+		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetStaminaAttribute(), CharacterData->MaxStamina);
+	});
 }
 
 void ACAPlayerCharacter::Tick(float DeltaTime)
