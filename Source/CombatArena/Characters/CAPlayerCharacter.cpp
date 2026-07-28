@@ -13,6 +13,7 @@
 #include "Abilities/CAProjectileAbility.h"
 #include "Combat/CAHitDetectionComponent.h"
 #include "Combat/CATargetingComponent.h"
+#include "Core/CAGameplayTags.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
@@ -126,6 +127,11 @@ void ACAPlayerCharacter::Move(const FInputActionValue& Value)
 	const FVector2D Axis = Value.Get<FVector2D>();
 	
 	if (!Controller) return;
+	
+	if (AbilitySystemComponent && AbilitySystemComponent->HasMatchingGameplayTag(CATags::State_Blocking))
+	{
+		return;
+	}
 	
 	if (TargetingComponent && TargetingComponent->IsTargetLocked())
 	{
