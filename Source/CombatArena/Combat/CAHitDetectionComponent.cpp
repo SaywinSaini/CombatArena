@@ -113,7 +113,33 @@ void UCAHitDetectionComponent::PerformTrace()
 				const FVector ToAttacker = (GetOwner()->GetActorLocation() - HitActor->GetActorLocation()).GetSafeNormal();
 				const float FacingDot = FVector::DotProduct(TargetForward, ToAttacker);
 
-				if (FacingDot > 0.f) continue;
+				if (FacingDot > 0.f)
+				{
+					if (UCAHitstopComponent* BlockHitstop = HitActor->FindComponentByClass<UCAHitstopComponent>())
+					{
+						BlockHitstop->ApplyHitstop(HitActor, true, GetOwner());
+					}
+					
+					if (ACAPlayerCharacter* BlockingPlayer = Cast<ACAPlayerCharacter>(HitActor))
+					{
+						if (UCACharacterData* Data = BlockingPlayer->GetCharacterData())
+						{
+							if (Data->BlockFlinchMontage)
+							{
+								BlockingPlayer->PlayAnimMontage(Data->BlockFlinchMontage, Data->BlockFlinchPlayRate, FName("Flinch"));
+							}
+						}
+					}
+					if (PC)
+					{
+						const TSubclassOf<UCameraShakeBase> ShakeToPlay = BlockCameraShake ? BlockCameraShake : HitCameraShake;
+						if (ShakeToPlay)
+						{
+							PC->ClientStartCameraShake(ShakeToPlay);
+						}
+					}
+					continue;
+				}
 			}
 			
 			FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass,1,SourceASC->MakeEffectContext());

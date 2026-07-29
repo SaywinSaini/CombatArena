@@ -12,6 +12,7 @@
 #include "Abilities/CAMeleeAbility.h"
 #include "Abilities/CAProjectileAbility.h"
 #include "Combat/CAHitDetectionComponent.h"
+#include "Combat/CAHitstopComponent.h"
 #include "Combat/CATargetingComponent.h"
 #include "Core/CAGameplayTags.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -52,6 +53,8 @@ ACAPlayerCharacter::ACAPlayerCharacter(const FObjectInitializer& ObjectInitializ
 	CreateDefaultSubobject<UCAAttributeSet>(TEXT("AttributeSet"));
 	
 	HitDetectionComponent = CreateDefaultSubobject<UCAHitDetectionComponent>(TEXT("HitDetectionComponent"));
+	
+	HitstopComponent = CreateDefaultSubobject<UCAHitstopComponent>(TEXT("HitstopComponent"));
 	
 	PerceptionStimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionStimuliSource"));
 	PerceptionStimuliSource->bAutoRegister = true;

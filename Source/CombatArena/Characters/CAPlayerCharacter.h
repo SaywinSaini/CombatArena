@@ -10,6 +10,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "CAPlayerCharacter.generated.h"
 
+class UCAHitstopComponent;
 class UCAMeleeAbility;
 class UCATargetingComponent;
 class UAIPerceptionStimuliSourceComponent;
@@ -99,6 +100,9 @@ private:
 	
 	UPROPERTY(VisibleAnywhere,Category = "Combat")
 	TObjectPtr<UCAHitDetectionComponent> HitDetectionComponent;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Combat")
+	TObjectPtr<UCAHitstopComponent> HitstopComponent;
 	
 	UPROPERTY(VisibleAnywhere, Category = "GAS")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;

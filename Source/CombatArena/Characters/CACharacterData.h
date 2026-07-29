@@ -9,7 +9,7 @@
 /**
  * Designer-tunable movement and combat parameters for the player character.
  */
-
+class UAnimMontage;
 UCLASS()
 class COMBATARENA_API UCACharacterData : public UDataAsset
 {
@@ -60,6 +60,13 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 	//Socket used as origin for both melee traces and projectile spawning
 	UPROPERTY(EditDefaultsOnly ,Category= "Combat")
 	FName WeaponSocketName = FName("hand_r");
+	
+	// Played on the player when an incoming attack is blocked.
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> BlockFlinchMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float BlockFlinchPlayRate = 0.5f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
 	float MaxHealth = 100.0f;

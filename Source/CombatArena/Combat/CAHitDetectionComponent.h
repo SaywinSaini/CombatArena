@@ -51,5 +51,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TSubclassOf<UCameraShakeBase> HitCameraShake;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TSubclassOf<UCameraShakeBase> BlockCameraShake;
+	
 	
 };

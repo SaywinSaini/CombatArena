@@ -13,6 +13,8 @@ void UCAHitstopComponent::ApplyHitstop(AActor* HitActor,bool bFreezePlayer,AActo
 {
 	if (HitActor == nullptr) return;
 	
+	if (GetWorld()->GetTimerManager().IsTimerActive(HitstopTimerHandle)) return;
+	
 	HitActor->CustomTimeDilation = HitstopTimeDilation;
 	
 	if (bFreezePlayer && PlayerActor)
@@ -28,7 +30,12 @@ void UCAHitstopComponent::ApplyHitstop(AActor* HitActor,bool bFreezePlayer,AActo
 	{
 		if (WeakHitActor.IsValid())
 		{
-			ResetHitstop(WeakHitActor.Get(),bFreezePlayer,WeakPlayer.Get());
+			WeakHitActor->CustomTimeDilation = 1.0f;
+		}
+		
+		if (bFreezePlayer && WeakHitActor.IsValid())
+		{
+			WeakPlayer->CustomTimeDilation = 1.0f;
 		}
 	},HitstopDuration,false);
 }
