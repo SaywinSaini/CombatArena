@@ -41,32 +41,29 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float DodgeImpulse = 1500.0f;
 	
-	//How long a buffered input stays valid in seconds
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float BufferWindow = 0.2f;
 	
-	// Interpolation speed for transitioning between walk and sprint
 	UPROPERTY(EditDefaultsOnly,Category= "Movement")
 	float SpeedInterpSpeed = 10.0f;
 	
-	// Radius of the melee sphere trace used for hit detection.
 	UPROPERTY(EditDefaultsOnly , Category= "Combat")
 	float TraceRadius = 10.0f;
 	
-	// Forward distance of the melee sphere trace.
 	UPROPERTY(EditDefaultsOnly , Category= "Combat")
 	float TraceRange = 50.0f;
 	
-	//Socket used as origin for both melee traces and projectile spawning
 	UPROPERTY(EditDefaultsOnly ,Category= "Combat")
 	FName WeaponSocketName = FName("hand_r");
 	
-	// Played on the player when an incoming attack is blocked.
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TObjectPtr<UAnimMontage> BlockFlinchMontage;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	float BlockFlinchPlayRate = 0.5f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float BlockKnockbackStrength = 400.0f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
 	float MaxHealth = 100.0f;

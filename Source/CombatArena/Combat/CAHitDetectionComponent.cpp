@@ -127,6 +127,9 @@ void UCAHitDetectionComponent::PerformTrace()
 							if (Data->BlockFlinchMontage)
 							{
 								BlockingPlayer->PlayAnimMontage(Data->BlockFlinchMontage, Data->BlockFlinchPlayRate, FName("Flinch"));
+								
+								const FVector KnockbackDir = (HitActor->GetActorLocation() - GetOwner()->GetActorLocation()).GetSafeNormal2D();
+								BlockingPlayer->LaunchCharacter(KnockbackDir* Data->BlockKnockbackStrength,true, false);
 							}
 						}
 					}
