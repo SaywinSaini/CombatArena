@@ -96,6 +96,8 @@ public:
 	
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	
+	virtual void FellOutOfWorld(const UDamageType& DmgType) override;
+	
 private: 
 	
 	UPROPERTY(VisibleAnywhere,Category = "Combat")

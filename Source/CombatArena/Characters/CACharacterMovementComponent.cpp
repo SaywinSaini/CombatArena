@@ -1,10 +1,8 @@
 ﻿
 #include "CACharacterMovementComponent.h"
-
 #include "CACharacterData.h"
 #include "GameFramework/Character.h"
 #include "Characters/CAPlayerCharacter.h"
-#include "Kismet/KismetMathLibrary.h"
 
 
 UCACharacterMovementComponent::UCACharacterMovementComponent()
@@ -36,46 +34,22 @@ void UCACharacterMovementComponent::Dodge()
 	// Prevent dodge while airborne
 	if (!IsMovingOnGround()) return;
 	
-	FVector DodgeDirection = GetLastInputVector();
+	const bool bNoInput = GetLastInputVector().IsNearlyZero();
 	
-	// Backstep when no movement input is provided
-	if (DodgeDirection.IsNearlyZero())
-	{
-		DodgeDirection = -GetCharacterOwner()->GetActorForwardVector();
-	}
+	UAnimMontage* MontageToPlay = (bNoInput && DodgeBackMontage)
+		? DodgeBackMontage
+		: DodgeForwardMontage;
 	
-	// Signed angle between facing direction and dodge direction, used to pick montage section
-	const FVector Forward = GetCharacterOwner()->GetActorForwardVector();
-	
-	const FVector ForwardNorm = Forward.GetSafeNormal();
-	const FVector DodgeNorm = DodgeDirection.GetSafeNormal();
-
-	const float DotResult = FVector::DotProduct(ForwardNorm, DodgeNorm);
-	const float UnsignedAngle = UKismetMathLibrary::DegAcos(DotResult);
-
-	// Cross product Z component tells us left vs right on the horizontal plane
-	const float CrossZ = FVector::CrossProduct(ForwardNorm, DodgeNorm).Z;
-
-	const float SignedAngle = (CrossZ >= 0.f) ? UnsignedAngle : -UnsignedAngle;
-	
-	const FName SectionName = GetDodgeSectionForAngle(SignedAngle);
-	
-	if (DodgeMontage)
+	if (MontageToPlay)
 	{
 		if (USkeletalMeshComponent* Mesh = GetCharacterOwner()->GetMesh())
 		{
 			if (UAnimInstance* AnimInstance = Mesh->GetAnimInstance())
 			{
-				AnimInstance->Montage_Play(DodgeMontage,DodgeMontagePlayRate);
-				AnimInstance->Montage_JumpToSection(SectionName,DodgeMontage);
+				AnimInstance->Montage_Play(MontageToPlay, DodgeMontagePlayRate);
 			}
 		}
 	}
-	
-	
-	// Apply dodge impulse immediately using CharacterMovement
-	const float ImpulseMultiplier = bIsSprinting ? SprintDodgeImpulseMultiplier : 1.0f;
-	GetCharacterOwner()->LaunchCharacter(DodgeDirection * CachedOwner->GetCharacterData()->DodgeImpulse * ImpulseMultiplier , true,true);
 		
 	bCanDodge = false;
 	
@@ -84,19 +58,6 @@ void UCACharacterMovementComponent::Dodge()
 	
 }
 
-FName UCACharacterMovementComponent::GetDodgeSectionForAngle(float AngleDegrees) const
-{
-	if (AngleDegrees >= -22.5f  && AngleDegrees < 22.5f)   return FName("FWD");
-	if (AngleDegrees >=  22.5f  && AngleDegrees < 67.5f)   return FName("RFWD");
-	if (AngleDegrees >=  67.5f  && AngleDegrees < 112.5f)  return FName("RD");
-	if (AngleDegrees >=  112.5f && AngleDegrees < 157.5f)  return FName("RBWD");
-	if (AngleDegrees >= -67.5f  && AngleDegrees < -22.5f)   return FName("LFWD");
-	if (AngleDegrees >= -112.5f && AngleDegrees < -67.5f)   return FName("LD");
-	if (AngleDegrees >= -157.5f && AngleDegrees < -112.5f)  return FName("LBWD");
-	
-	// remaining range: 157.5 to 180 and -157.5 to -180
-	return FName("BWD");
-}
 
 void UCACharacterMovementComponent::BeginPlay()
 {

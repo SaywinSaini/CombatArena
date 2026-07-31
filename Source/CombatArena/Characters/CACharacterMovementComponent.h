@@ -30,8 +30,13 @@ protected:
 	TObjectPtr<ACAPlayerCharacter> CachedOwner;
 	
 	virtual void BeginPlay() override;
-
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dodge")
+	TObjectPtr<UAnimMontage> DodgeForwardMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dodge")
+	TObjectPtr<UAnimMontage> DodgeBackMontage;
+
 public:
 	
 	UCACharacterMovementComponent();
@@ -42,21 +47,14 @@ public:
 	
 	void Dodge(); 
 	
-	// Converts a signed angle (-180 to 180, relative to facing) into a dodge montage section name
-	FName GetDodgeSectionForAngle(float AngleDegrees) const;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "Dodge")
-	float SprintDodgeImpulseMultiplier = 2.0f;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Dodge")
-	float DodgeMontagePlayRate = 1.3f;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Dodge")
-	TObjectPtr<UAnimMontage> DodgeMontage;
+	float DodgeMontagePlayRate = 1.4f;
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
+	
 	FTimerHandle DodgeTimerHandle;
+	
 };

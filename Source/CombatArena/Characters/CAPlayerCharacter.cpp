@@ -135,6 +135,13 @@ FGenericTeamId ACAPlayerCharacter::GetGenericTeamId() const
 	return FGenericTeamId(0);
 }
 
+void ACAPlayerCharacter::FellOutOfWorld(const UDamageType& DmgType)
+{
+	UE_LOG(LogTemp, Error, TEXT("FellOutOfWorld at %s vel=%s"),
+		*GetActorLocation().ToString(), *GetVelocity().ToString());
+	// Deliberately not calling Super:: — keeps the pawn alive so the launch is visible.
+}
+
 void ACAPlayerCharacter::Move(const FInputActionValue& Value)
 {
 	const FVector2D Axis = Value.Get<FVector2D>();
@@ -298,7 +305,7 @@ void ACAPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		
 			EIC->BindAction(SprintAction,ETriggerEvent::Completed,CMC,&UCACharacterMovementComponent::StopSprinting);
 			
-			EIC->BindAction(DodgeAction,ETriggerEvent::Triggered,CMC,&UCACharacterMovementComponent::Dodge);
+			EIC->BindAction(DodgeAction,ETriggerEvent::Started,CMC,&UCACharacterMovementComponent::Dodge);
 		}
 	}
 }
