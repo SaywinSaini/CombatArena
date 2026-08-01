@@ -37,7 +37,6 @@ void ACAEnemyAIController::OnPossess(APawn* InPawn)
         SightConfig->SightRadius = Enemy->GetEnemyData()->SightRadius;
         SightConfig->LoseSightRadius = Enemy->GetEnemyData()->LoseSightRadius;
         SightConfig->PeripheralVisionAngleDegrees = Enemy->GetEnemyData()->PeripheralVisionAngle;
-        SightConfig->SetMaxAge(5.0f);
 
         if (UAIPerceptionComponent* Perception = GetPerceptionComponent())
         {
@@ -76,28 +75,28 @@ void ACAEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus 
     }
     else
     {
-        if (GetBlackboardComponent())
+        if (UBlackboardComponent* BB = GetBlackboardComponent())
         {
-            GetBlackboardComponent()->SetValueAsBool(TEXT("bCanSeePlayer"), false);
-            GetBlackboardComponent()->SetValueAsVector(TEXT("LastKnownLocation"), Actor->GetActorLocation());
-
             ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(GetPawn());
             if (!Enemy || !Enemy->GetEnemyData()) return;
 
             const float Distance = FVector::Dist(GetPawn()->GetActorLocation(), Actor->GetActorLocation());
 
-            // Only start memory timer if player is genuinely out of range
-            if (Distance > Enemy->GetEnemyData()->LoseSightRadius)
+            // Ignore stimulus expiry while the player is still within lose-sight range.
+            if (Distance <= Enemy->GetEnemyData()->LoseSightRadius) return;
+
+            BB->SetValueAsBool(TEXT("bCanSeePlayer"), false);
+            BB->SetValueAsVector(TEXT("LastKnownLocation"), Actor->GetActorLocation());
+
+            const float MemoryDuration = Enemy->GetEnemyData()->LostSightMemoryDuration;
+            GetWorldTimerManager().SetTimer(LostSightTimer, [this]()
             {
-                const float MemoryDuration = Enemy->GetEnemyData()->LostSightMemoryDuration;
-                GetWorldTimerManager().SetTimer(LostSightTimer, [this]()
+                if (GetBlackboardComponent())
                 {
-                    if (GetBlackboardComponent())
-                    {
-                        GetBlackboardComponent()->SetValueAsObject(TEXT("PlayerActor"), nullptr);
-                    }
-                }, MemoryDuration, false);
-            }
+                    GetBlackboardComponent()->SetValueAsObject(TEXT("PlayerActor"), nullptr);
+                }
+                ClearFocus(EAIFocusPriority::Gameplay);
+            }, MemoryDuration, false);
         }
     }
 }

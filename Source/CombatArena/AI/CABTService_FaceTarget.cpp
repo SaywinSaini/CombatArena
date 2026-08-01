@@ -22,7 +22,11 @@ void UCABTService_FaceTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	if (!BB) return;
 	
 	ACAPlayerCharacter* Player = Cast<ACAPlayerCharacter>(BB->GetValueAsObject("PlayerActor"));
-	if (!Player) return;
+	if (!Player)
+	{
+		AIC->ClearFocus(EAIFocusPriority::Gameplay);
+		return;
+	}
 	
 		AIC->SetFocus(Player);
 	

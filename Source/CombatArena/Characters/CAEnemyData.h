@@ -35,10 +35,10 @@ public:
 	float AttackCooldown = 2.0f;
 	
 	UPROPERTY(EditDefaultsOnly,Category = "Perception")
-    float SightRadius = 800.0f;
+    float SightRadius = 1500.0f;
 	
 	UPROPERTY(EditDefaultsOnly,Category = "Perception")
-	float LoseSightRadius = 1000.0f;
+	float LoseSightRadius = 1700.0f;
 	
 	UPROPERTY(EditDefaultsOnly,Category = "Perception")
 	float PeripheralVisionAngle = 120.0f;
@@ -85,6 +85,20 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
 	float SpacingSpeed = 300.f;     // how fast it adjusts spacing
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
+	float SpacingApproachRange = 200.0f;
+
+	// Floor on input scale so the enemy still closes the last few units.
+	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
+	float MinSpacingInputScale = 0.25f;
+
+	// Tighter band used when the attack cooldown is ready.
+	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
+	float AttackBandMin = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
+	float AttackBandMax = 130.0f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	float EvadeCooldown = 1.0f;

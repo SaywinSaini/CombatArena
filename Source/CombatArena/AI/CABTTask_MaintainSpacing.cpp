@@ -13,17 +13,6 @@ UCABTTask_MaintainSpacing::UCABTTask_MaintainSpacing()
 
 EBTNodeResult::Type UCABTTask_MaintainSpacing::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-    AAIController* AIC = OwnerComp.GetAIOwner();
-    if (AIC)
-    {
-        if (ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(AIC->GetPawn()))
-        {
-            if (Enemy->GetEnemyData())
-            {
-                Enemy->GetCharacterMovement()->MaxWalkSpeed = Enemy->GetEnemyData()->SpacingSpeed;
-            }
-        }
-    }
     return EBTNodeResult::InProgress;
 }
 
@@ -53,14 +42,21 @@ void UCABTTask_MaintainSpacing::TickTask(UBehaviorTreeComponent& OwnerComp, uint
     float BandMin, BandMax;
     if (bCooldownReady)
     {
-        BandMin = 100.f;
-        BandMax = 130.f;
+        BandMin = Enemy->GetEnemyData()->AttackBandMin;
+        BandMax = Enemy->GetEnemyData()->AttackBandMax;
     }
     else
     {
         BandMin = Enemy->GetEnemyData()->SpacingBandMin;
         BandMax = Enemy->GetEnemyData()->SpacingBandMax;
     }
+    
+    const UCAEnemyData* Data = Enemy->GetEnemyData();
+
+    // Run when far outside the band, walk when settling into it.
+    const bool bFarFromBand = DistToPlayer > BandMax + Data->SpacingApproachRange;
+    
+    Enemy->GetCharacterMovement()->MaxWalkSpeed = bFarFromBand ? Data->ChaseSpeed : Data->SpacingSpeed;
 
     const FVector Direction = (PlayerLoc - EnemyLoc).GetSafeNormal();
 
