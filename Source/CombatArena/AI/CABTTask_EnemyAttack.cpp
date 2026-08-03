@@ -6,8 +6,8 @@
 #include "AIController.h"
 #include "CAEnemyBase.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "AI/CASlotActor.h"
-#include "Characters/CAEnemyData.h"
+#include "Core/CAGameMode.h"
+
 
 UCABTTask_EnemyAttack::UCABTTask_EnemyAttack()
 {
@@ -23,6 +23,7 @@ EBTNodeResult::Type UCABTTask_EnemyAttack::ExecuteTask(UBehaviorTreeComponent& O
 		UE_LOG(LogTemp, Error, TEXT("CABTTask_EnemyAttack: Enemy cast failed"));
 		return EBTNodeResult::Failed;
 	}
+	
 	UAnimInstance* AnimInstance = Enemy->GetMesh()->GetAnimInstance();
 	if (!AnimInstance)
 	{
@@ -36,11 +37,15 @@ EBTNodeResult::Type UCABTTask_EnemyAttack::ExecuteTask(UBehaviorTreeComponent& O
 		UE_LOG(LogTemp, Error, TEXT("CABTTask_EnemyAttack: AttackMontage is null"));
 		return EBTNodeResult::Failed;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("CABTTask_EnemyAttack: Playing montage %s"), 
-	   *Montage->GetName());
 	
 	AActor* Player = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TEXT("PlayerActor")));
 	if (!Player)
+	{
+		return EBTNodeResult::Failed;
+	}
+	
+	ACAGameMode* GameMode = Cast<ACAGameMode>(Enemy->GetWorld()->GetAuthGameMode());
+	if (!GameMode || !GameMode->TryClaimAttackToken(Enemy))
 	{
 		return EBTNodeResult::Failed;
 	}
@@ -60,8 +65,9 @@ EBTNodeResult::Type UCABTTask_EnemyAttack::ExecuteTask(UBehaviorTreeComponent& O
 	AnimInstance->Montage_Play(Montage);
 	
 	FOnMontageEnded MontageEndedDelegate;
-	MontageEndedDelegate.BindLambda([this, &OwnerComp, Enemy](UAnimMontage* Montage, bool bInterrupted)
+	MontageEndedDelegate.BindLambda([this, &OwnerComp, Enemy, GameMode](UAnimMontage* Montage, bool bInterrupted)
 	{
+		if (GameMode) GameMode->ReleaseAttackToken(Enemy);
 		OwnerComp.ResumeLogic("Attacking");
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	});
@@ -69,5 +75,22 @@ EBTNodeResult::Type UCABTTask_EnemyAttack::ExecuteTask(UBehaviorTreeComponent& O
 
 	
 	return EBTNodeResult::InProgress;
+}
+
+EBTNodeResult::Type UCABTTask_EnemyAttack::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+	if (AAIController* AIC = OwnerComp.GetAIOwner())
+	{
+		if (ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(AIC->GetPawn()))
+		{
+			if (ACAGameMode* GameMode = Cast<ACAGameMode>(Enemy->GetWorld()->GetAuthGameMode()))
+			{
+				GameMode->ReleaseAttackToken(Enemy);
+			}
+		}
+	}
+
+	OwnerComp.ResumeLogic("Attacking");
+	return Super::AbortTask(OwnerComp, NodeMemory);
 }
 

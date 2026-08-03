@@ -100,6 +100,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
 	float AttackBandMax = 130.0f;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
+	float StrafeInputScale = 0.5f;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	float EvadeCooldown = 1.0f;
 	
@@ -117,4 +120,5 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	float TraceRadius = 10.f;
+	
 };

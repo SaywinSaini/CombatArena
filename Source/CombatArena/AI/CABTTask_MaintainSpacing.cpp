@@ -13,6 +13,7 @@ UCABTTask_MaintainSpacing::UCABTTask_MaintainSpacing()
 
 EBTNodeResult::Type UCABTTask_MaintainSpacing::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+    StrafeDirection = FMath::RandBool() ? 1.0f : -1.0f;
     return EBTNodeResult::InProgress;
 }
 
@@ -68,7 +69,13 @@ void UCABTTask_MaintainSpacing::TickTask(UBehaviorTreeComponent& OwnerComp, uint
     {
         Enemy->AddMovementInput(-Direction, 1.0f);
     }
-    // else: inside the band, hold position
+    else
+    {
+        // Inside the band: circle the player rather than standing idle.
+        // Waiting enemies that hold still read as broken AI.
+        const FVector Right = FVector::CrossProduct(FVector::UpVector, Direction).GetSafeNormal();
+        Enemy->AddMovementInput(Right * StrafeDirection, Data->StrafeInputScale);
+    }
 }
 
 

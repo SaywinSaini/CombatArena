@@ -22,7 +22,18 @@ class COMBATARENA_API ACAGameMode : public AGameModeBase
 	
 	void ReleaseSlot(EApproachSlot Slot);
 	
+	bool TryClaimAttackToken(AActor* Claimant);
+
+	void ReleaseAttackToken(AActor* Claimant);
+	
 private:
 	
 	TSet<EApproachSlot> ClaimedSlots;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	int32 MaxConcurrentAttackers = 2;
+
+	UPROPERTY()
+	TSet<TWeakObjectPtr<AActor>> AttackTokenHolders;
+	
 };

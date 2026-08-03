@@ -23,6 +23,10 @@ ACAEnemyBase::ACAEnemyBase()
     HitstopComponent = CreateDefaultSubobject<UCAHitstopComponent>(TEXT("HitstopComponent"));
     
     HitDetectionComponent = CreateDefaultSubobject<UCAHitDetectionComponent>(TEXT("HitDetectionComponent"));
+    
+    GetCharacterMovement()->bUseRVOAvoidance = true;
+    GetCharacterMovement()->AvoidanceConsiderationRadius = 300.0f;
+    GetCharacterMovement()->AvoidanceWeight = 0.5f;
 }
 
 void ACAEnemyBase::ApplyDashInvulnerability(float Duration)
@@ -66,6 +70,12 @@ void ACAEnemyBase::PlayHitReact(UAnimMontage* Montage, float PlayRate)
     }
 }
 
+
+FGenericTeamId ACAEnemyBase::GetGenericTeamId() const
+{
+    // Player is team 0; enemies share team 1 so they neither damage nor target each other.
+    return FGenericTeamId(1);
+}
 
 void ACAEnemyBase::BeginPlay()
 {
@@ -126,8 +136,8 @@ void ACAEnemyBase::Tick(float DeltaSeconds)
 
     const FVector PlayerLocation = CachedPlayer->GetActorLocation();
 
-    // --- Slot positioning (legacy — only runs if a slot is claimed) ---
-    if (SlotActor && ClaimedSlot != EApproachSlot::None)
+    // Slot positioning (legacy — only runs if a slot is claimed)
+   if (SlotActor && ClaimedSlot != EApproachSlot::None)
     {
         const FVector PlayerForward = CachedPlayer->GetActorForwardVector();
         const FVector PlayerRight   = CachedPlayer->GetActorRightVector();
@@ -148,6 +158,7 @@ void ACAEnemyBase::Tick(float DeltaSeconds)
         }
         SlotActor->SetActorLocation(PlayerLocation + SlotOffset);
     }
+    
     
 }
 

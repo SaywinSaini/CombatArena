@@ -20,4 +20,7 @@ protected:
 	virtual EBTNodeResult::Type AbortTask(
 	UBehaviorTreeComponent& OwnerComp,
 	uint8* NodeMemory) override;
+	
+	// Per-instance circling direction so enemies don't all orbit the same way.
+	float StrafeDirection = 1.0f;
 };

@@ -6,6 +6,7 @@
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "AI/CAISlot.h"
+#include "GenericTeamAgentInterface.h"
 #include "CAEnemyBase.generated.h"
 
 class UCAHitDetectionComponent;
@@ -17,7 +18,7 @@ class UAbilitySystemComponent;
 class UCAAttributeSet;
 
 UCLASS()
-class COMBATARENA_API ACAEnemyBase : public ACharacter, public IAbilitySystemInterface
+class COMBATARENA_API ACAEnemyBase : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -55,6 +56,8 @@ public:
 	bool IsReacting() const {return bIsReacting;}
 	
 	UCAHitDetectionComponent* GetHitDetectionComponent() const { return HitDetectionComponent; }
+	
+	virtual FGenericTeamId GetGenericTeamId() const override;
 
 protected:
 	

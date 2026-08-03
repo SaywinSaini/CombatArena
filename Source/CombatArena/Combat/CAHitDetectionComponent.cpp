@@ -9,6 +9,7 @@
 #include "Abilities/CAAttributeSet.h"
 #include "Characters/CAEnemyData.h"
 #include "GameFramework/PlayerController.h"
+#include "GenericTeamAgentInterface.h"
 #include "Characters/CAPlayerCharacter.h"
 #include "Core/CAGameplayTags.h"
 
@@ -98,6 +99,16 @@ void UCAHitDetectionComponent::PerformTrace()
 			
 			if (HitActors.Contains(TWeakObjectPtr<AActor>(HitActor))) continue;
 			
+			// Skip same-team actors so enemies cannot damage each other.
+			const IGenericTeamAgentInterface* OwnerTeam = Cast<IGenericTeamAgentInterface>(GetOwner());
+			const IGenericTeamAgentInterface* TargetTeam = Cast<IGenericTeamAgentInterface>(HitActor);
+
+			if (OwnerTeam && TargetTeam &&
+				OwnerTeam->GetGenericTeamId() == TargetTeam->GetGenericTeamId())
+			{
+				continue;
+			}
+			
 				HitActors.Add(TWeakObjectPtr<AActor>(HitActor));
 			
 			// Get the target's AbilitySystemComponent — if none they cannot receive damage
@@ -127,10 +138,10 @@ void UCAHitDetectionComponent::PerformTrace()
 							if (Data->BlockFlinchMontage)
 							{
 								BlockingPlayer->PlayAnimMontage(Data->BlockFlinchMontage, Data->BlockFlinchPlayRate, FName("Flinch"));
-								
+							}	
 								const FVector KnockbackDir = (HitActor->GetActorLocation() - GetOwner()->GetActorLocation()).GetSafeNormal2D();
 								BlockingPlayer->LaunchCharacter(KnockbackDir* Data->BlockKnockbackStrength,true, false);
-							}
+							
 						}
 					}
 					if (PC)
@@ -150,8 +161,6 @@ void UCAHitDetectionComponent::PerformTrace()
 			if (!SpecHandle.IsValid()) continue;
 			
 			SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(),TargetASC);
-			
-			UE_LOG(LogTemp, Warning, TEXT("DAMAGE APPLIED to %s | Health: %f"), *HitActor->GetName(), TargetASC->GetNumericAttribute(UCAAttributeSet::GetHealthAttribute()));
 			
 			if (ACAEnemyBase* HitEnemy = Cast<ACAEnemyBase>(HitActor))
 			{
