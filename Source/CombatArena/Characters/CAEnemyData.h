@@ -52,27 +52,12 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category = "AI")
 	float LostSightMemoryDuration = 5.0f;
 	
-	UPROPERTY(EditDefaultsOnly,Category = "AI")
-	float SteeringEntryDistance = 600.0f;
-	
-	UPROPERTY(EditDefaultsOnly,Category = "AI")
-	float SlotApproachDistance = 130.0f;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "AI", meta = (ClampMin = "0.0", ClampMax = "1.0"))
-	float StrafeInwardBias = 0.35f;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float PatrolSpeed = 300.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float ChaseSpeed = 600.0f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Movement")
-	float StrafingSpeed = 200.0f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	float StrafingEntryDistance = 200.0f;
-	
 	UPROPERTY(EditDefaultsOnly,Category = "AI")
 	EEnemyType EnemyType = EEnemyType::Base;
 	

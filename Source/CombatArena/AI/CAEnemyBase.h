@@ -35,10 +35,6 @@ public:
 	
 	UCAHitstopComponent* GetHitstopComponent() const {return HitstopComponent; };
 	
-	EApproachSlot GetClaimedSlot() const { return ClaimedSlot; }
-	
-	ACASlotActor* GetSlotActor() const {return SlotActor;}
-	
 	bool IsStrafing() const { return MovementState == EEnemyMovementState::Strafing; }
 	
 	void SetLastAttackTime(float Time) { LastAttackTime = Time; }
@@ -86,11 +82,6 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UCAHitDetectionComponent> HitDetectionComponent;
-	
-	EApproachSlot ClaimedSlot = EApproachSlot::None;
-	
-	UPROPERTY()
-	TObjectPtr<ACASlotActor> SlotActor;
 	
 	UPROPERTY()
 	TObjectPtr<APawn> CachedPlayer;

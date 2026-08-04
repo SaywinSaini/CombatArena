@@ -18,17 +18,11 @@ class COMBATARENA_API ACAGameMode : public AGameModeBase
 	public:
 	ACAGameMode();
 	
-	EApproachSlot ClaimSlot(EEnemyType EnemyType);
-	
-	void ReleaseSlot(EApproachSlot Slot);
-	
 	bool TryClaimAttackToken(AActor* Claimant);
 
 	void ReleaseAttackToken(AActor* Claimant);
 	
 private:
-	
-	TSet<EApproachSlot> ClaimedSlots;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	int32 MaxConcurrentAttackers = 2;
