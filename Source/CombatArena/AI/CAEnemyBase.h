@@ -5,12 +5,13 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
-#include "AI/CAISlot.h"
+#include "AI/CAEnemyMovementState.h"
+#include "AI/CAEnemyRole.h"
 #include "GenericTeamAgentInterface.h"
 #include "CAEnemyBase.generated.h"
 
+class UCASteeringComponent;
 class UCAHitDetectionComponent;
-class ACASlotActor;
 class APawn;
 class UCAHitstopComponent;
 class UCAEnemyData;
@@ -54,7 +55,13 @@ public:
 	UCAHitDetectionComponent* GetHitDetectionComponent() const { return HitDetectionComponent; }
 	
 	virtual FGenericTeamId GetGenericTeamId() const override;
-
+	
+	EEnemyRole GetRole() const;
+	
+	const FEnemyRoleData& GetRoleData() const;
+	
+	UCASteeringComponent* GetSteeringComponent() const { return SteeringComponent; }
+	
 protected:
 	
 	virtual void BeginPlay() override;
@@ -98,4 +105,7 @@ private:
 	
 	bool bIsReacting = false;
 	FTimerHandle HitReactTimerHandle;
+	
+	UPROPERTY(VisibleAnywhere, Category = "AI")
+	TObjectPtr<UCASteeringComponent> SteeringComponent;
 };

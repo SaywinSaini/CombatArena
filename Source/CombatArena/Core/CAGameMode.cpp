@@ -1,7 +1,8 @@
 ﻿#include "CAGameMode.h"
 
-#include "AI/CAISlot.h"
+#include "AI/CAEnemyMovementState.h"
 #include "Characters/CAEnemyData.h"
+#include "AI/CAEnemyBase.h"
 #include "GameFramework/Actor.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -42,4 +43,26 @@ void ACAGameMode::ReleaseAttackToken(AActor* Claimant)
 {
 	if (!Claimant) return;
 	AttackTokenHolders.Remove(Claimant);
+}
+
+void ACAGameMode::RegisterEnemy(ACAEnemyBase* Enemy)
+{
+	if (!Enemy) return;
+	ActiveEnemies.AddUnique(Enemy);
+}
+
+void ACAGameMode::UnregisterEnemy(ACAEnemyBase* Enemy)
+{
+	if (!Enemy) return;
+	ActiveEnemies.Remove(Enemy);
+}
+
+const TArray<TWeakObjectPtr<ACAEnemyBase>>& ACAGameMode::GetActiveEnemies()
+{
+	ActiveEnemies.RemoveAll([](const TWeakObjectPtr<ACAEnemyBase>& E)
+	{
+		return !E.IsValid();
+	});
+	
+	return ActiveEnemies;
 }

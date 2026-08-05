@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "AI/CAEnemyRole.h"
 #include "CAEnemyData.generated.h"
 
 /**
@@ -52,14 +53,24 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category = "AI")
 	float LostSightMemoryDuration = 5.0f;
 	
+	UPROPERTY(EditDefaultsOnly,Category = "AI")
+	EEnemyType EnemyType = EEnemyType::Base;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	float EvadeCooldown = 1.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	EEnemyRole Role = EEnemyRole::Attacker;
+	
+	// Positional constraints for this enemy's role.
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	FEnemyRoleData RoleData;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float PatrolSpeed = 300.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float ChaseSpeed = 600.0f;
-
-	UPROPERTY(EditDefaultsOnly,Category = "AI")
-	EEnemyType EnemyType = EEnemyType::Base;
 	
 	// Spacing band: the enemy tries to hold this distance range from the player.
 	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
@@ -87,9 +98,6 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
 	float StrafeInputScale = 0.5f;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	float EvadeCooldown = 1.0f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;

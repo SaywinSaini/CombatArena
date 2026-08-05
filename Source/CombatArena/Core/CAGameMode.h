@@ -7,6 +7,7 @@
 #include "CAGameMode.generated.h"
 
 
+class ACAEnemyBase;
 enum class EEnemyType : uint8;
 enum class EApproachSlot : uint8;
 
@@ -22,6 +23,12 @@ class COMBATARENA_API ACAGameMode : public AGameModeBase
 
 	void ReleaseAttackToken(AActor* Claimant);
 	
+	void RegisterEnemy(ACAEnemyBase* Enemy);
+	
+	void UnregisterEnemy(ACAEnemyBase* Enemy);
+	
+	const TArray<TWeakObjectPtr<ACAEnemyBase>>& GetActiveEnemies();
+	
 private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
@@ -29,5 +36,7 @@ private:
 
 	UPROPERTY()
 	TSet<TWeakObjectPtr<AActor>> AttackTokenHolders;
+	
+	TArray<TWeakObjectPtr<ACAEnemyBase>> ActiveEnemies;
 	
 };

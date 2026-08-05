@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "CAISlot.generated.h"
+#include "CAEnemyMovementState.generated.h"
 
 UENUM(BlueprintType)
 enum class EEnemyMovementState : uint8

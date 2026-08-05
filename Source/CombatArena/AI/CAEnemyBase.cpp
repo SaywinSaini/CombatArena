@@ -2,11 +2,13 @@
 #include "AbilitySystemComponent.h"
 #include "BrainComponent.h"
 #include "CAEnemyAIController.h"
+#include "CASteeringComponent.h"
 #include "Characters/CAEnemyData.h"
 #include "Abilities/CAAttributeSet.h"
 #include "Combat/CAHitstopComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Combat/CAHitDetectionComponent.h"
+#include "Core/CAGameMode.h"
 #include "Core/CAGameplayTags.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -24,6 +26,8 @@ ACAEnemyBase::ACAEnemyBase()
     GetCharacterMovement()->bUseRVOAvoidance = true;
     GetCharacterMovement()->AvoidanceConsiderationRadius = 300.0f;
     GetCharacterMovement()->AvoidanceWeight = 0.5f;
+    
+    SteeringComponent = CreateDefaultSubobject<UCASteeringComponent>(TEXT("SteeringComponent"));
 }
 
 void ACAEnemyBase::ApplyDashInvulnerability(float Duration)
@@ -92,6 +96,11 @@ void ACAEnemyBase::BeginPlay()
             }
 
         });
+        
+        if (ACAGameMode* GameMode = Cast<ACAGameMode>(GetWorld()->GetAuthGameMode()))
+        {
+         GameMode->RegisterEnemy(this);   
+        }
     }
     else
     {
@@ -104,12 +113,28 @@ void ACAEnemyBase::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
 }
 
+EEnemyRole ACAEnemyBase::GetRole() const
+{
+    return EnemyData ? EnemyData->Role : EEnemyRole::Attacker;
+}
+
+const FEnemyRoleData& ACAEnemyBase::GetRoleData() const
+{
+    static const FEnemyRoleData Fallback;
+    return EnemyData ? EnemyData->RoleData : Fallback;
+}
+
 void ACAEnemyBase::Die()
 {
     AAIController* AIController = Cast<AAIController>(GetController());
     if (AIController)
     {
         AIController->GetBrainComponent()->StopLogic(TEXT("Dead"));
+    }
+    
+    if (ACAGameMode* GameMode = Cast<ACAGameMode>(GetWorld()->GetAuthGameMode()))
+    {
+        GameMode->UnregisterEnemy(this);
     }
 
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
