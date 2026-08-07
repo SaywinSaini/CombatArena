@@ -113,17 +113,6 @@ void ACAEnemyBase::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
 }
 
-EEnemyRole ACAEnemyBase::GetRole() const
-{
-    return EnemyData ? EnemyData->Role : EEnemyRole::Attacker;
-}
-
-const FEnemyRoleData& ACAEnemyBase::GetRoleData() const
-{
-    static const FEnemyRoleData Fallback;
-    return EnemyData ? EnemyData->RoleData : Fallback;
-}
-
 void ACAEnemyBase::Die()
 {
     AAIController* AIController = Cast<AAIController>(GetController());

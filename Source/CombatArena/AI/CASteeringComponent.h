@@ -18,7 +18,7 @@ public:
 	
 	UCASteeringComponent();
 	
-	FVector GetBestDirection(const AActor* Target);
+	FVector GetBestDirection(const AActor* Target, float BandMin, float BandMax);
 
 protected:
 
@@ -31,13 +31,25 @@ protected:
 	float ScoreInterval = 0.2f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Steering")
-	float ProbeDistance = 100.0f;
+	float ProbeDistance = 60.0f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Steering")
-	float RangeWeight = 1.0f;
+	float RangeWeight = 2.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Steering")
-	float AngleWeight = 1.0f;
+	float SwitchMargin = 15.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Steering")
+	float DirectionInterpSpeed = 240.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Steering")
+    float AvoidanceWeight = 3.0f;
+    
+    UPROPERTY(EditDefaultsOnly, Category = "Steering")
+    float AvoidanceRadius = 120.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Steering")
+	float FormationWeight = 3.0f;
 	
 private:
 	

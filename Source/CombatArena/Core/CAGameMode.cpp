@@ -66,3 +66,25 @@ const TArray<TWeakObjectPtr<ACAEnemyBase>>& ACAGameMode::GetActiveEnemies()
 	
 	return ActiveEnemies;
 }
+
+void ACAGameMode::GetFormationSlot(const ACAEnemyBase* Enemy, int32& OutIndex, int32& OutCount)
+{
+	OutIndex = 0;
+	OutCount = 1;
+
+	if (!Enemy) return;
+
+	// Index derives from position in the registry, so death and spawning
+	// redistribute survivors without any explicit reassignment.
+	const TArray<TWeakObjectPtr<ACAEnemyBase>>& Enemies = GetActiveEnemies();
+	OutCount = FMath::Max(Enemies.Num(), 1);
+
+	for (int32 i = 0; i < Enemies.Num(); ++i)
+	{
+		if (Enemies[i].Get() == Enemy)
+		{
+			OutIndex = i;
+			return;
+		}
+	}
+}

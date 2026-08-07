@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "AI/CAEnemyRole.h"
 #include "CAEnemyData.generated.h"
 
 /**
@@ -58,13 +57,6 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	float EvadeCooldown = 1.0f;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	EEnemyRole Role = EEnemyRole::Attacker;
-	
-	// Positional constraints for this enemy's role.
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	FEnemyRoleData RoleData;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float PatrolSpeed = 300.0f;

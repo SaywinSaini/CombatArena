@@ -29,6 +29,8 @@ class COMBATARENA_API ACAGameMode : public AGameModeBase
 	
 	const TArray<TWeakObjectPtr<ACAEnemyBase>>& GetActiveEnemies();
 	
+	void GetFormationSlot(const ACAEnemyBase* Enemy, int32& OutIndex, int32& OutCount);
+	
 private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")

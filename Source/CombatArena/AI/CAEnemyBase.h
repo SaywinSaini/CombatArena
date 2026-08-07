@@ -6,7 +6,6 @@
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "AI/CAEnemyMovementState.h"
-#include "AI/CAEnemyRole.h"
 #include "GenericTeamAgentInterface.h"
 #include "CAEnemyBase.generated.h"
 
@@ -55,10 +54,6 @@ public:
 	UCAHitDetectionComponent* GetHitDetectionComponent() const { return HitDetectionComponent; }
 	
 	virtual FGenericTeamId GetGenericTeamId() const override;
-	
-	EEnemyRole GetRole() const;
-	
-	const FEnemyRoleData& GetRoleData() const;
 	
 	UCASteeringComponent* GetSteeringComponent() const { return SteeringComponent; }
 	
