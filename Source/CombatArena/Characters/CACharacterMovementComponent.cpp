@@ -47,6 +47,12 @@ void UCACharacterMovementComponent::Dodge()
 			if (UAnimInstance* AnimInstance = Mesh->GetAnimInstance())
 			{
 				AnimInstance->Montage_Play(MontageToPlay, DodgeMontagePlayRate);
+				
+				bIsDodging = true;
+
+				FOnMontageEnded EndDelegate;
+				EndDelegate.BindLambda([this](UAnimMontage*, bool) { bIsDodging = false; });
+				AnimInstance->Montage_SetEndDelegate(EndDelegate, MontageToPlay);
 			}
 		}
 	}

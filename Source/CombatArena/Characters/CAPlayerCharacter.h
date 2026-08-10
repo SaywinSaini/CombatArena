@@ -98,6 +98,8 @@ public:
 	
 	virtual void FellOutOfWorld(const UDamageType& DmgType) override;
 	
+	virtual bool CanJumpInternal_Implementation() const override;
+	
 private: 
 	
 	UPROPERTY(VisibleAnywhere,Category = "Combat")

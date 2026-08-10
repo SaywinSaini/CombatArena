@@ -142,6 +142,17 @@ void ACAPlayerCharacter::FellOutOfWorld(const UDamageType& DmgType)
 	// Deliberately not calling Super:: — keeps the pawn alive so the launch is visible.
 }
 
+bool ACAPlayerCharacter::CanJumpInternal_Implementation() const
+{
+	const UCACharacterMovementComponent* CMC = Cast<UCACharacterMovementComponent>(GetCharacterMovement());
+
+	UE_LOG(LogTemp, Warning, TEXT("CanJump: cmc=%d dodging=%d"),
+		CMC != nullptr, CMC ? CMC->IsDodging() : -1);
+
+	if (CMC && CMC->IsDodging()) return false;
+
+	return Super::CanJumpInternal_Implementation();
+}
 void ACAPlayerCharacter::Move(const FInputActionValue& Value)
 {
 	const FVector2D Axis = Value.Get<FVector2D>();

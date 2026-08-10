@@ -66,30 +66,22 @@ public:
 	
 	// Spacing band: the enemy tries to hold this distance range from the player.
 	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
-	float SpacingBandMin = 200.f;   // closer than this → back off
+	float SpacingBandMin = 200.f; 
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
-	float SpacingBandMax = 260.f;   // farther than this → approach
+	float SpacingBandMax = 260.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
-	float SpacingSpeed = 300.f;     // how fast it adjusts spacing
+	float SpacingSpeed = 300.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
 	float SpacingApproachRange = 200.0f;
-
-	// Floor on input scale so the enemy still closes the last few units.
-	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
-	float MinSpacingInputScale = 0.25f;
-
-	// Tighter band used when the attack cooldown is ready.
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
 	float AttackBandMin = 100.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
 	float AttackBandMax = 130.0f;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Spacing")
-	float StrafeInputScale = 0.5f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;

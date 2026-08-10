@@ -20,6 +20,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Movement")
 	bool bCanDodge = true;
 	
+	bool bIsDodging = false;
+	
 	//Time when dodge input was buffered
 	float BufferedInputTime = 0.0f;
 	
@@ -49,6 +51,8 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Dodge")
 	float DodgeMontagePlayRate = 1.4f;
+	
+	bool IsDodging() const { return bIsDodging; }
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
