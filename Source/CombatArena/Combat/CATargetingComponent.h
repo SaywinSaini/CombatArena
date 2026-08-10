@@ -39,10 +39,10 @@ public:
 	bool bIsTargetLocked = false;
 	
 	UPROPERTY(EditDefaultsOnly,Category = "Combat")
-	float TargetSearchRadius = 500.0f;
+	float TargetSearchRadius = 1500.0f;
 	
 	UPROPERTY(EditDefaultsOnly,Category = "Combat")
-	float TargetingConeAngle = 90.0f;
+	float TargetingConeAngle = 60.0f;
 	
 	UPROPERTY(EditDefaultsOnly,Category = "Combat")
 	float RotationInterpSpeed = 10.0f;
@@ -55,5 +55,11 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly,Category = "Targeting")
 	float CameraVerticalOffset = -25.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	float AimWeight = 1.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
+	float ProximityWeight = 0.3f;
 	
 };

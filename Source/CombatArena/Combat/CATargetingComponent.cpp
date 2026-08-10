@@ -32,26 +32,35 @@ AActor* UCATargetingComponent::FindBestTarget()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(),ACAEnemyBase::StaticClass(),Enemy);
 	
 	AActor* BestTarget = nullptr;
-	float BestDot = -1.0f;
+	float BestScore = -FLT_MAX;
 	
 	FVector OwnerForward = GetOwner()->GetActorForwardVector();
+	if (PlayerController)
+	{
+		OwnerForward = PlayerController->GetControlRotation().Vector().GetSafeNormal2D();
+	}
 	float ConeThreshold = FMath::Cos(FMath::DegreesToRadians(TargetingConeAngle * 0.5f));
 	
 	for (AActor* Actor : Enemy)
 	{
 		if (!Actor) continue;
 		
-		FVector DirectionToActor = (Actor->GetActorLocation() - GetOwner()->GetActorLocation()).GetSafeNormal();
-		float Dot = FVector::DotProduct(OwnerForward, DirectionToActor);
+		const float Dist = FVector::Dist(Actor->GetActorLocation(), GetOwner()->GetActorLocation());
+		if (Dist > TargetSearchRadius) continue;
+		
+		const FVector DirectionToActor = (Actor->GetActorLocation() - GetOwner()->GetActorLocation()).GetSafeNormal();
+		const float Dot = FVector::DotProduct(OwnerForward, DirectionToActor);
 		
 		if (Dot < ConeThreshold) continue;
 		
-		if (Dot > BestDot)
+		const float Proximity = 1.f - FMath::Clamp(Dist / TargetSearchRadius, 0.f, 1.f);
+		const float Score = (Dot * AimWeight) + (Proximity * ProximityWeight);
+		
+		if (Score > BestScore)
 		{
-			BestDot = Dot;
+			BestScore = Score;
 			BestTarget = Actor;
 		}
-		
 	}
 	return BestTarget;
 	
