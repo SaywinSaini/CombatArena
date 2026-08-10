@@ -45,7 +45,7 @@ public:
 	float TargetingConeAngle = 60.0f;
 	
 	UPROPERTY(EditDefaultsOnly,Category = "Combat")
-	float RotationInterpSpeed = 10.0f;
+	float RotationInterpSpeed = 20.0f;
 	
 	UPROPERTY()
 	TObjectPtr<APlayerController> PlayerController;	

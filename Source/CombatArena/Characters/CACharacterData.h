@@ -33,7 +33,7 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 	float GravityScale = 1.75f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
-	float RotationRate = 500.f;
+	float RotationRate = 800.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float DodgeCooldown = 0.8f;

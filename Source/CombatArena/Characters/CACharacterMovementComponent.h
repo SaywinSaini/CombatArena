@@ -38,6 +38,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dodge")
 	TObjectPtr<UAnimMontage> DodgeBackMontage;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dodge")
+	TObjectPtr<UAnimMontage> DodgeLeftMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dodge")
+	TObjectPtr<UAnimMontage> DodgeRightMontage;
 
 public:
 	

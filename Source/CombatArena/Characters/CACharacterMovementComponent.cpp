@@ -2,6 +2,7 @@
 #include "CACharacterMovementComponent.h"
 #include "CACharacterData.h"
 #include "GameFramework/Character.h"
+#include "Combat/CATargetingComponent.h"
 #include "Characters/CAPlayerCharacter.h"
 
 
@@ -34,11 +35,41 @@ void UCACharacterMovementComponent::Dodge()
 	// Prevent dodge while airborne
 	if (!IsMovingOnGround()) return;
 	
-	const bool bNoInput = GetLastInputVector().IsNearlyZero();
-	
+	FVector DodgeDirection = GetCurrentAcceleration().GetSafeNormal2D();
+	if (DodgeDirection.IsNearlyZero())
+	{
+		DodgeDirection = GetLastInputVector().GetSafeNormal2D();
+	}
+	const bool bNoInput = DodgeDirection.IsNearlyZero();
+
 	UAnimMontage* MontageToPlay = (bNoInput && DodgeBackMontage)
-		? DodgeBackMontage
-		: DodgeForwardMontage;
+	   ? DodgeBackMontage
+	   : DodgeForwardMontage;
+
+	const UCATargetingComponent* Targeting = CachedOwner->GetTargetingComponent();
+	if (!bNoInput && Targeting && Targeting->IsTargetLocked())
+	{
+		const FVector ForwardNorm = GetCharacterOwner()->GetActorForwardVector().GetSafeNormal2D();
+		const FVector DodgeNorm = DodgeDirection.GetSafeNormal2D();
+
+		const float Dot = FMath::Clamp(FVector::DotProduct(ForwardNorm, DodgeNorm), -1.f, 1.f);
+		const float Angle = FMath::RadiansToDegrees(FMath::Acos(Dot));
+		const float CrossZ = FVector::CrossProduct(ForwardNorm, DodgeNorm).Z;
+		const float SignedAngle = (CrossZ >= 0.f) ? Angle : -Angle;
+
+		if (SignedAngle >= -30.f && SignedAngle < 30.f)        MontageToPlay = DodgeForwardMontage;
+		else if (SignedAngle >= 30.f && SignedAngle < 150.f)   MontageToPlay = DodgeRightMontage;
+		else if (SignedAngle <= -30.f && SignedAngle > -150.f) MontageToPlay = DodgeLeftMontage;
+		else                                                   MontageToPlay = DodgeBackMontage;
+	}
+	
+	if (!bNoInput && !(Targeting && Targeting->IsTargetLocked()))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Dodge snap: input=%s facingBefore=%s"),
+		   *DodgeDirection.ToString(), *GetCharacterOwner()->GetActorForwardVector().ToString());
+
+		GetCharacterOwner()->SetActorRotation(DodgeDirection.Rotation());
+	}
 	
 	if (MontageToPlay)
 	{
