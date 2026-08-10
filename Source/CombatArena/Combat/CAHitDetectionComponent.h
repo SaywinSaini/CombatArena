@@ -27,6 +27,10 @@ public:
 	
 	void PerformTrace();
 	
+	void SetTraceSocket(FName SocketName);
+
+	void ResetTraceSocket();
+	
 	private:
 	
 	// Tracks actors already hit this swing to prevent multiple hits per attack
@@ -53,6 +57,8 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TSubclassOf<UCameraShakeBase> BlockCameraShake;
+	
+	FName DefaultTraceSocketName;
 	
 	
 };

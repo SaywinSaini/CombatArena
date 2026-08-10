@@ -31,6 +31,7 @@ void UCAHitDetectionComponent::BeginPlay()
 			TraceSocketName = Data->WeaponSocketName;
 			TraceRange = Data->TraceRange;
 			TraceRadius = Data->TraceRadius;
+			DefaultTraceSocketName = TraceSocketName;
 		}
 	}
 	else if (ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(GetOwner()))
@@ -40,6 +41,7 @@ void UCAHitDetectionComponent::BeginPlay()
 			TraceSocketName = Data->WeaponSocketName;
 			TraceRange      = Data->TraceRange;
 			TraceRadius     = Data->TraceRadius;
+			DefaultTraceSocketName = TraceSocketName;
 		}
 	}
 }
@@ -198,5 +200,15 @@ void UCAHitDetectionComponent::PerformTrace()
 		
 		
 	
+}
+
+void UCAHitDetectionComponent::SetTraceSocket(FName SocketName)
+{
+	TraceSocketName = SocketName.IsNone() ? DefaultTraceSocketName : SocketName;
+}
+
+void UCAHitDetectionComponent::ResetTraceSocket()
+{
+	TraceSocketName = DefaultTraceSocketName;
 }
 

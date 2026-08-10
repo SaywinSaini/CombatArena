@@ -16,5 +16,10 @@ class COMBATARENA_API UCAAnimNotifyState_PerformTrace : public UAnimNotifyState
 	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference) override;
 
 	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
+	
+public:
+	
+	UPROPERTY(EditAnywhere, Category = "Trace")
+	FName TraceSocketOverride = NAME_None;
 };
 
