@@ -172,7 +172,8 @@ void UCAHitDetectionComponent::PerformTrace()
 					{
 						if (UAnimInstance* Anim = HitEnemy->GetMesh()->GetAnimInstance())
 						{
-							HitEnemy->PlayHitReact(Data->HitReactMontage, Data->HitReactPlayRate);
+							UE_LOG(LogTemp, Warning, TEXT("HitReact section: %s"), *PendingHitReactSection.ToString());
+							HitEnemy->PlayHitReact(Data->HitReactMontage, Data->HitReactPlayRate, PendingHitReactSection);
 						}
 					}
 				}
@@ -210,5 +211,10 @@ void UCAHitDetectionComponent::SetTraceSocket(FName SocketName)
 void UCAHitDetectionComponent::ResetTraceSocket()
 {
 	TraceSocketName = DefaultTraceSocketName;
+}
+
+void UCAHitDetectionComponent::SetHitReactSection(FName SectionName)
+{
+	PendingHitReactSection = SectionName;
 }
 

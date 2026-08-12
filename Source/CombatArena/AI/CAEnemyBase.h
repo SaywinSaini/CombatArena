@@ -48,7 +48,7 @@ public:
 	
 	void ApplyDashInvulnerability(float Duration);
 	
-	void PlayHitReact(UAnimMontage* Montage, float PlayRate);
+	void PlayHitReact(UAnimMontage* Montage, float PlayRate, FName Section = NAME_None);
 	bool IsReacting() const {return bIsReacting;}
 	
 	UCAHitDetectionComponent* GetHitDetectionComponent() const { return HitDetectionComponent; }

@@ -54,20 +54,38 @@ void ACAEnemyBase::ApplyDashInvulnerability(float Duration)
     },Duration,false);
 }
 
-void ACAEnemyBase::PlayHitReact(UAnimMontage* Montage, float PlayRate)
+void ACAEnemyBase::PlayHitReact(UAnimMontage* Montage, float PlayRate, FName Section)
 {
     if (!Montage) return;
-    
+
     if (UAnimInstance* Anim = GetMesh()->GetAnimInstance())
     {
-        const float Duration = Anim->Montage_Play(Montage,PlayRate);
+        float Duration = 0.f;
+
+        if (!Section.IsNone())
+        {
+            const int32 SectionIndex = Montage->GetSectionIndex(Section);
+            if (SectionIndex != INDEX_NONE)
+            {
+                float Start = 0.f, End = 0.f;
+                Montage->GetSectionStartAndEndTime(SectionIndex, Start, End);
+                
+                Anim->Montage_Play(Montage, PlayRate, EMontagePlayReturnType::MontageLength, Start);
+                Duration = (End - Start) / PlayRate;
+            }
+        }
+        if (Duration <= 0.f)
+        {
+            Duration = Anim->Montage_Play(Montage, PlayRate) / PlayRate;
+        }
+
         bIsReacting = true;
         GetCharacterMovement()->StopMovementImmediately();
-    
+
         GetWorldTimerManager().SetTimer(HitReactTimerHandle, [this]()
         {
             bIsReacting = false;
-        },Duration / PlayRate,false);
+        }, Duration, false);
     }
 }
 

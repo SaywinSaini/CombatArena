@@ -31,6 +31,8 @@ public:
 
 	void ResetTraceSocket();
 	
+	void SetHitReactSection(FName SectionName);
+	
 	private:
 	
 	// Tracks actors already hit this swing to prevent multiple hits per attack
@@ -59,6 +61,8 @@ public:
 	TSubclassOf<UCameraShakeBase> BlockCameraShake;
 	
 	FName DefaultTraceSocketName;
+	
+	FName PendingHitReactSection;
 	
 	
 };

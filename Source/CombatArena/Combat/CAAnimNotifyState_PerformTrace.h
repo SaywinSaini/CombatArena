@@ -21,5 +21,8 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Trace")
 	FName TraceSocketOverride = NAME_None;
+	
+	UPROPERTY(EditAnywhere, Category = "Trace")
+	FName HitReactSection = NAME_None;
 };
 
