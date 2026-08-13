@@ -27,9 +27,7 @@ void UCABTService_FaceTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		AIC->ClearFocus(EAIFocusPriority::Gameplay);
 		return;
 	}
-	
 		AIC->SetFocus(Player);
-	
 }
 
 void UCABTService_FaceTarget::OnCeaseRelevant(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)

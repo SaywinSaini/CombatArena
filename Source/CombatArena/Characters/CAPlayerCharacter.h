@@ -100,6 +100,12 @@ public:
 	
 	virtual bool CanJumpInternal_Implementation() const override;
 	
+	void Die();
+
+	bool IsDead() const { return bIsDead; }
+	
+	void SetPendingDeath(AActor* Killer, FName SectionOverride);
+	
 private: 
 	
 	UPROPERTY(VisibleAnywhere,Category = "Combat")
@@ -146,4 +152,16 @@ private:
 	
 	void OnAbilityActivated(UGameplayAbility* Ability);
 	void OnAbilityEnded(UGameplayAbility* Ability);
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> DeathMontage;
+
+	bool bIsDead = false;
+	
+	FName ResolveDeathSection() const;
+
+	UPROPERTY()
+	TObjectPtr<AActor> PendingKiller;
+
+	FName PendingDeathSection;
 };

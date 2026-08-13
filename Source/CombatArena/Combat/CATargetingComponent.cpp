@@ -116,6 +116,24 @@ void UCATargetingComponent::TickComponent(float DeltaTime, enum ELevelTick TickT
 		return;
 	}
 	
+	if (!IsValid(LockedTarget))
+	{
+		LockedTarget = nullptr;
+		bIsTargetLocked = false;
+		return;
+	}
+
+	// Drop the lock when the target dies rather than waiting for despawn.
+	if (const ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(LockedTarget))
+	{
+		if (Enemy->IsDead())
+		{
+			LockedTarget = nullptr;
+			bIsTargetLocked = false;
+			return;
+		}
+	}
+	
 	bool bIsAttacking = false;
 	if (IAbilitySystemInterface* ASI = Cast<IAbilitySystemInterface>(GetOwner()))
 	{

@@ -158,21 +158,33 @@ void UCAHitDetectionComponent::PerformTrace()
 				}
 			}
 			
-			FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass,1,SourceASC->MakeEffectContext());
+			FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
+			Context.AddInstigator(GetOwner(), GetOwner());
+
+			FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, 1, Context);
 			
 			if (!SpecHandle.IsValid()) continue;
+			
+			if (ACAEnemyBase* DyingEnemy = Cast<ACAEnemyBase>(HitActor))
+			{
+				DyingEnemy->SetPendingDeath(GetOwner(), PendingDeathSection);
+			}
+			else if (ACAPlayerCharacter* DyingPlayer = Cast<ACAPlayerCharacter>(HitActor))
+			{
+				DyingPlayer->SetPendingDeath(GetOwner(), PendingDeathSection);
+			}
 			
 			SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(),TargetASC);
 			
 			if (ACAEnemyBase* HitEnemy = Cast<ACAEnemyBase>(HitActor))
 			{
-				if (UCAEnemyData* Data = HitEnemy->GetEnemyData())
+				// A fatal hit plays the death montage instead of a reaction.
+				if (!HitEnemy->IsDead())
 				{
-					if (Data->HitReactMontage)
+					if (UCAEnemyData* Data = HitEnemy->GetEnemyData())
 					{
-						if (UAnimInstance* Anim = HitEnemy->GetMesh()->GetAnimInstance())
+						if (Data->HitReactMontage)
 						{
-							UE_LOG(LogTemp, Warning, TEXT("HitReact section: %s"), *PendingHitReactSection.ToString());
 							HitEnemy->PlayHitReact(Data->HitReactMontage, Data->HitReactPlayRate, PendingHitReactSection);
 						}
 					}
@@ -182,9 +194,7 @@ void UCAHitDetectionComponent::PerformTrace()
 			UCAHitstopComponent* EnemyHitStop = HitActor->FindComponentByClass<UCAHitstopComponent>();
 			
 			if (EnemyHitStop)
-			{   
-				// Prevent multiple hitstop applications from freezing the player more than once
-				// during a single trace window.
+			{
 				EnemyHitStop->ApplyHitstop(HitActor,!bIsPlayerFrozen,GetOwner());
 				bIsPlayerFrozen = true;
 			}
@@ -216,5 +226,10 @@ void UCAHitDetectionComponent::ResetTraceSocket()
 void UCAHitDetectionComponent::SetHitReactSection(FName SectionName)
 {
 	PendingHitReactSection = SectionName;
+}
+
+void UCAHitDetectionComponent::SetDeathSection(FName SectionName)
+{
+	PendingDeathSection = SectionName;
 }
 

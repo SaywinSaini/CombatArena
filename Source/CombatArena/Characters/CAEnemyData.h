@@ -98,4 +98,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	float TraceRadius = 10.f;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> DeathMontage;
+	
 };

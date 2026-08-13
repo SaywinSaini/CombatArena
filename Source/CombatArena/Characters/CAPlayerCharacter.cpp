@@ -15,6 +15,10 @@
 #include "Combat/CAHitstopComponent.h"
 #include "Combat/CATargetingComponent.h"
 #include "Core/CAGameplayTags.h"
+#include "Core/CAGameMode.h"
+#include "AI/CAEnemyBase.h"
+#include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
@@ -153,6 +157,90 @@ bool ACAPlayerCharacter::CanJumpInternal_Implementation() const
 
 	return Super::CanJumpInternal_Implementation();
 }
+
+void ACAPlayerCharacter::Die()
+{
+	if (bIsDead) return;
+	bIsDead = true;
+
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		DisableInput(PC);
+	}
+
+	GetCharacterMovement()->StopMovementImmediately();
+	GetCharacterMovement()->DisableMovement();
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->CancelAllAbilities();
+		AbilitySystemComponent->AddLooseGameplayTag(CATags::State_Dead);
+	}
+
+	if (PerceptionStimuliSource)
+	{
+		PerceptionStimuliSource->UnregisterFromPerceptionSystem();
+	}
+	
+	if (TargetingComponent && TargetingComponent->IsTargetLocked())
+	{
+		TargetingComponent->ToggleTargetLock();
+	}
+	
+	if (DeathMontage)
+	{
+		if (UAnimInstance* Anim = GetMesh()->GetAnimInstance())
+		{
+			const FName Section = ResolveDeathSection();
+
+			float Duration = 0.f;
+			const int32 SectionIndex = DeathMontage->GetSectionIndex(Section);
+			if (SectionIndex != INDEX_NONE)
+			{
+				float Start = 0.f, End = 0.f;
+				DeathMontage->GetSectionStartAndEndTime(SectionIndex, Start, End);
+
+				Anim->Montage_Play(DeathMontage, 1.f, EMontagePlayReturnType::MontageLength, Start);
+				Duration = End - Start;
+			}
+
+			if (Duration > 0.f)
+			{
+				FTimerHandle FreezeHandle;
+				GetWorldTimerManager().SetTimer(FreezeHandle, [Anim]()
+				{
+				   Anim->Montage_Pause();
+				}, Duration - 0.05f, false);
+			}
+		}
+	}
+	// Clear the player from every enemy's Blackboard so they disengage at once.
+	if (ACAGameMode* GameMode = Cast<ACAGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		for (const TWeakObjectPtr<ACAEnemyBase>& Enemy : GameMode->GetActiveEnemies())
+		{
+			if (!Enemy.IsValid()) continue;
+
+			if (AAIController* AIC = Cast<AAIController>(Enemy->GetController()))
+			{
+				if (UBlackboardComponent* BB = AIC->GetBlackboardComponent())
+				{
+					BB->SetValueAsObject(TEXT("PlayerActor"), nullptr);
+				}
+				AIC->ClearFocus(EAIFocusPriority::Gameplay);
+			}
+		}
+	}
+	
+}
+
+void ACAPlayerCharacter::SetPendingDeath(AActor* Killer, FName SectionOverride)
+{
+	PendingKiller = Killer;
+	PendingDeathSection = SectionOverride;
+}
+
 void ACAPlayerCharacter::Move(const FInputActionValue& Value)
 {
 	const FVector2D Axis = Value.Get<FVector2D>();
@@ -279,6 +367,21 @@ void ACAPlayerCharacter::OnAbilityEnded(UGameplayAbility* Ability)
 	{
 		ActiveMeleeAbility = nullptr;
 	}
+}
+
+FName ACAPlayerCharacter::ResolveDeathSection() const
+{
+	if (!PendingDeathSection.IsNone()) return PendingDeathSection;
+
+	if (!PendingKiller) return FName("Side");
+
+	const FVector Forward = GetActorForwardVector().GetSafeNormal2D();
+	const FVector ToKiller = (PendingKiller->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+
+	const float Dot = FMath::Clamp(FVector::DotProduct(Forward, ToKiller), -1.f, 1.f);
+	const float Angle = FMath::RadiansToDegrees(FMath::Acos(Dot));
+	
+	return (Angle > 135.f) ? FName("Front") : FName("Side");
 }
 
 void ACAPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

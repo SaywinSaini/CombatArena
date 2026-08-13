@@ -96,6 +96,12 @@ FGenericTeamId ACAEnemyBase::GetGenericTeamId() const
     return FGenericTeamId(1);
 }
 
+void ACAEnemyBase::SetPendingDeath(AActor* Killer, FName SectionOverride)
+{
+    PendingKiller = Killer;
+    PendingDeathSection = SectionOverride;
+}
+
 void ACAEnemyBase::BeginPlay()
 {
     Super::BeginPlay();
@@ -131,19 +137,71 @@ void ACAEnemyBase::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
 }
 
+FName ACAEnemyBase::ResolveDeathSection() const
+{
+    if (!PendingDeathSection.IsNone()) return PendingDeathSection;
+
+    if (!PendingKiller) return FName("Side");
+
+    const FVector Forward = GetActorForwardVector().GetSafeNormal2D();
+    const FVector ToKiller = (PendingKiller->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+
+    const float Dot = FMath::Clamp(FVector::DotProduct(Forward, ToKiller), -1.f, 1.f);
+    const float Angle = FMath::RadiansToDegrees(FMath::Acos(Dot));
+    
+    return (Angle > 90.f) ? FName("Front") : FName("Side");
+}
+
 void ACAEnemyBase::Die()
 {
-    AAIController* AIController = Cast<AAIController>(GetController());
-    if (AIController)
-    {
-        AIController->GetBrainComponent()->StopLogic(TEXT("Dead"));
-    }
-    
+    if (bIsDead) return;
+    bIsDead = true;
+
     if (ACAGameMode* GameMode = Cast<ACAGameMode>(GetWorld()->GetAuthGameMode()))
     {
         GameMode->UnregisterEnemy(this);
     }
 
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    SetLifeSpan(3.0f);
+
+    if (EnemyData && EnemyData->DeathMontage)
+    {
+        if (UAnimInstance* Anim = GetMesh()->GetAnimInstance())
+        {
+            const FName Section = ResolveDeathSection();
+
+            float Duration = 0.f;
+            const int32 SectionIndex = EnemyData->DeathMontage->GetSectionIndex(Section);
+            if (SectionIndex != INDEX_NONE)
+            {
+                float Start = 0.f, End = 0.f;
+                EnemyData->DeathMontage->GetSectionStartAndEndTime(SectionIndex, Start, End);
+
+                Anim->Montage_Play(EnemyData->DeathMontage, 1.f, EMontagePlayReturnType::MontageLength, Start);
+                Duration = End - Start;
+            }
+
+            if (Duration > 0.f)
+            {
+                FTimerHandle FreezeHandle;
+                GetWorldTimerManager().SetTimer(FreezeHandle, [Anim]()
+                {
+                    Anim->Montage_Pause();
+                }, Duration - 0.05f, false);
+            }
+        }
+    }
+
+    if (AAIController* AIController = Cast<AAIController>(GetController()))
+    {
+        AIController->GetBrainComponent()->StopLogic(TEXT("Dead"));
+        AIController->ClearFocus(EAIFocusPriority::Gameplay);
+    }
+
+    GetCharacterMovement()->StopMovementImmediately();
+    GetCharacterMovement()->DisableMovement();
+    GetCharacterMovement()->bOrientRotationToMovement = false;
+    GetCharacterMovement()->bUseControllerDesiredRotation = false;
+
+    SetLifeSpan(5.0f);
 }

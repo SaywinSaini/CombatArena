@@ -33,6 +33,8 @@ public:
 	
 	void SetHitReactSection(FName SectionName);
 	
+	void SetDeathSection(FName SectionName);
+	
 	private:
 	
 	// Tracks actors already hit this swing to prevent multiple hits per attack
@@ -64,5 +66,6 @@ public:
 	
 	FName PendingHitReactSection;
 	
+	FName PendingDeathSection;
 	
 };

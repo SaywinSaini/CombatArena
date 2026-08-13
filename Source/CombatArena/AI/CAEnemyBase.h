@@ -57,6 +57,10 @@ public:
 	
 	UCASteeringComponent* GetSteeringComponent() const { return SteeringComponent; }
 	
+	void SetPendingDeath(AActor* Killer, FName SectionOverride);
+	
+	bool IsDead() const { return bIsDead; }
+	
 protected:
 	
 	virtual void BeginPlay() override;
@@ -103,4 +107,14 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	TObjectPtr<UCASteeringComponent> SteeringComponent;
+	
+	FName ResolveDeathSection() const;
+
+	UPROPERTY()
+	TObjectPtr<AActor> PendingKiller;
+
+	FName PendingDeathSection;
+	
+	bool bIsDead = false;
+	
 };

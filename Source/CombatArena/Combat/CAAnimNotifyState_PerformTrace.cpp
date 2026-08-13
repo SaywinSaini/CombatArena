@@ -17,6 +17,7 @@ void UCAAnimNotifyState_PerformTrace::NotifyBegin(USkeletalMeshComponent* MeshCo
 	{
 		HitDetectionComp->SetTraceSocket(TraceSocketOverride);
 		HitDetectionComp->SetHitReactSection(HitReactSection);
+		HitDetectionComp->SetDeathSection(DeathSectionOverride);
 		HitDetectionComp->StartTrace();
 	}
 }

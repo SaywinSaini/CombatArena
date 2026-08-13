@@ -20,6 +20,11 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "State")
 	bool bIsBlocking = false;
 	
+	UPROPERTY(BlueprintReadOnly, Category = "State")
+	bool bIsDead = false;
+	
 private:
 	void OnBlockTagChanged(const FGameplayTag Tag, int32 NewCount);
+	
+	void OnDeadTagChanged(const FGameplayTag Tag, int32 NewCount);
 };

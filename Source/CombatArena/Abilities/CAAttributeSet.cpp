@@ -4,6 +4,7 @@
 #include "Abilities/CAAttributeSet.h"
 #include "GameplayEffectExtension.h"
 #include "AI/CAEnemyBase.h"
+#include "Characters/CAPlayerCharacter.h"
 
 void UCAAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
@@ -16,10 +17,16 @@ void UCAAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 		// Trigger enemy death when health reaches zero.
 		if (GetHealth() <= 0)
 		{
-			ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(Data.Target.GetAvatarActor());
+			AActor* Avatar = Data.Target.GetAvatarActor();
+			
+			ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(Avatar);
 			if (Enemy)
 			{
 				Enemy->Die();
+			}
+			else if (ACAPlayerCharacter* Player = Cast<ACAPlayerCharacter>(Avatar))
+			{
+				Player->Die();
 			}
 		}
 	}
