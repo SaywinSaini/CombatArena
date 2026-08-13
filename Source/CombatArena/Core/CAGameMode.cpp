@@ -3,6 +3,8 @@
 #include "AI/CAEnemyMovementState.h"
 #include "Characters/CAEnemyData.h"
 #include "AI/CAEnemyBase.h"
+#include "Core/CASpawnPoint.h"
+#include "Kismet/GameplayStatics.h"
 #include "GameFramework/Actor.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -15,6 +17,23 @@ ACAGameMode::ACAGameMode()
        {
            DefaultPawnClass = PlayerPawnClass.Class;
        }
+}
+
+void ACAGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	TArray<AActor*> Found;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACASpawnPoint::StaticClass(), Found);
+	SpawnPoints = Found;
+
+	if (SpawnPoints.Num() == 0)
+	{
+		UE_LOG(LogTemp, Error, TEXT("CAGameMode: no spawn points placed in the level"));
+		return;
+	}
+
+	SpawnWave(0);
 }
 
 bool ACAGameMode::TryClaimAttackToken(AActor* Claimant)
@@ -87,4 +106,54 @@ void ACAGameMode::GetFormationSlot(const ACAEnemyBase* Enemy, int32& OutIndex, i
 			return;
 		}
 	}
+}
+void ACAGameMode::SpawnWave(int32 WaveIndex)
+{
+	if (!Waves.IsValidIndex(WaveIndex)) return;
+
+	CurrentWaveIndex = WaveIndex;
+
+	int32 PointIndex = 0;
+
+	for (const FCAWaveEntry& Entry : Waves[WaveIndex].Entries)
+	{
+		if (!Entry.EnemyClass) continue;
+
+		for (int32 i = 0; i < Entry.Count; ++i)
+		{
+			// Cycle the points so more enemies than points still spawn.
+			AActor* Point = SpawnPoints[PointIndex % SpawnPoints.Num()];
+			++PointIndex;
+
+			FActorSpawnParameters Params;
+			Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+			GetWorld()->SpawnActor<ACAEnemyBase>(Entry.EnemyClass, Point->GetActorTransform(), Params);
+		}
+	}
+
+	// Enemies register on BeginPlay, so start checking after a short delay.
+	GetWorldTimerManager().SetTimer(WaveCheckHandle, this, &ACAGameMode::CheckWaveComplete, 1.0f, true, 2.0f);
+}
+void ACAGameMode::CheckWaveComplete()
+{
+	if (GetActiveEnemies().Num() > 0) return;
+
+	GetWorldTimerManager().ClearTimer(WaveCheckHandle);
+	OnWaveCleared();
+}
+void ACAGameMode::OnWaveCleared()
+{
+	const int32 NextWave = CurrentWaveIndex + 1;
+
+	if (!Waves.IsValidIndex(NextWave))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("All waves cleared"));
+		return;
+	}
+
+	GetWorldTimerManager().SetTimer(NextWaveHandle, [this, NextWave]()
+	{
+		SpawnWave(NextWave);
+	}, DelayBetweenWaves, false);
 }
