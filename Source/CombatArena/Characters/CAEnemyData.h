@@ -101,4 +101,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TObjectPtr<UAnimMontage> DeathMontage;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> SlipMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	float SlipCooldown = 1.5f;
+	
 };

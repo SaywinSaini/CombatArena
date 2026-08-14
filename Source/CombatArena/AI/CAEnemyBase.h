@@ -46,6 +46,9 @@ public:
 	void SetLastDashTime(float Time) { LastDashTime = Time; }
 	float GetLastDashTime() const { return LastDashTime; }
 	
+	void SetLastSlipTime(float Time) { LastSlipTime = Time; }
+	float GetLastSlipTime() const { return LastSlipTime; }
+	
 	void ApplyDashInvulnerability(float Duration);
 	
 	void PlayHitReact(UAnimMontage* Montage, float PlayRate, FName Section = NAME_None);
@@ -60,6 +63,8 @@ public:
 	void SetPendingDeath(AActor* Killer, FName SectionOverride);
 	
 	bool IsDead() const { return bIsDead; }
+	
+	void SetReacting(float Duration);
 	
 protected:
 	
@@ -116,5 +121,7 @@ private:
 	FName PendingDeathSection;
 	
 	bool bIsDead = false;
+	
+	float LastSlipTime = -1000.f;
 	
 };

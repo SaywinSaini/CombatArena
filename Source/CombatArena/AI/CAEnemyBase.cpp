@@ -102,6 +102,17 @@ void ACAEnemyBase::SetPendingDeath(AActor* Killer, FName SectionOverride)
     PendingDeathSection = SectionOverride;
 }
 
+void ACAEnemyBase::SetReacting(float Duration)
+{
+    bIsReacting = true;
+    GetCharacterMovement()->StopMovementImmediately();
+
+    GetWorldTimerManager().SetTimer(HitReactTimerHandle, [this]()
+    {
+        bIsReacting = false;
+    }, Duration, false);
+}
+
 void ACAEnemyBase::BeginPlay()
 {
     Super::BeginPlay();
