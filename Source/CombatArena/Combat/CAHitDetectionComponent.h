@@ -35,6 +35,8 @@ public:
 	
 	void SetDeathSection(FName SectionName);
 	
+	void SetStunAmount(float Amount);
+	
 	private:
 	
 	// Tracks actors already hit this swing to prevent multiple hits per attack
@@ -67,5 +69,7 @@ public:
 	FName PendingHitReactSection;
 	
 	FName PendingDeathSection;
+	
+	float PendingStunAmount = 0.f;
 	
 };

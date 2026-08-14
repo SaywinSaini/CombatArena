@@ -27,5 +27,8 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Trace")
 	FName DeathSectionOverride = NAME_None;
+	
+	UPROPERTY(EditAnywhere, Category = "Trace")
+	float StunAmount = 5.0f;
 };
 

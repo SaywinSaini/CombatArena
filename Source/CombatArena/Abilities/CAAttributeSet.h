@@ -39,4 +39,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData MaxStamina;
 	ATTRIBUTE_ACCESSORS(UCAAttributeSet, MaxStamina)
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	FGameplayAttributeData Stun;
+	ATTRIBUTE_ACCESSORS(UCAAttributeSet, Stun)
+
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	FGameplayAttributeData MaxStun;
+	ATTRIBUTE_ACCESSORS(UCAAttributeSet, MaxStun)
 };

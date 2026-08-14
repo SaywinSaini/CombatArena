@@ -9,6 +9,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "CAEnemyBase.generated.h"
 
+class UCAStunComponent;
 class UCASteeringComponent;
 class UCAHitDetectionComponent;
 class APawn;
@@ -65,6 +66,10 @@ public:
 	bool IsDead() const { return bIsDead; }
 	
 	void SetReacting(float Duration);
+	
+	UCAStunComponent* GetStunComponent() const { return StunComponent; }
+	
+	void EnterStagger();
 	
 protected:
 	
@@ -123,5 +128,8 @@ private:
 	bool bIsDead = false;
 	
 	float LastSlipTime = -1000.f;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Combat")
+	TObjectPtr<UCAStunComponent> StunComponent;
 	
 };

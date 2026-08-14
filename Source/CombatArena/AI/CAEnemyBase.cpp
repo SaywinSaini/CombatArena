@@ -8,6 +8,7 @@
 #include "Combat/CAHitstopComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Combat/CAHitDetectionComponent.h"
+#include "Combat/CAStunComponent.h"
 #include "Core/CAGameMode.h"
 #include "Core/CAGameplayTags.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -28,6 +29,8 @@ ACAEnemyBase::ACAEnemyBase()
     GetCharacterMovement()->AvoidanceWeight = 0.5f;
     
     SteeringComponent = CreateDefaultSubobject<UCASteeringComponent>(TEXT("SteeringComponent"));
+   
+    StunComponent = CreateDefaultSubobject<UCAStunComponent>(TEXT("StunComponent"));
 }
 
 void ACAEnemyBase::ApplyDashInvulnerability(float Duration)
@@ -113,6 +116,11 @@ void ACAEnemyBase::SetReacting(float Duration)
     }, Duration, false);
 }
 
+void ACAEnemyBase::EnterStagger()
+{
+    UE_LOG(LogTemp, Warning, TEXT("Enemy staggered"));
+}
+
 void ACAEnemyBase::BeginPlay()
 {
     Super::BeginPlay();
@@ -128,6 +136,7 @@ void ACAEnemyBase::BeginPlay()
             {
                 AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetHealthAttribute(), EnemyData->MaxHealth);
                 AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxHealthAttribute(), EnemyData->MaxHealth);
+                AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxStunAttribute(), 100.f);
             }
 
         });
@@ -141,6 +150,7 @@ void ACAEnemyBase::BeginPlay()
     {
         UE_LOG(LogTemp, Error, TEXT("CAEnemyBase: EnemyData is null on %s"), *GetName());
     }
+    
 }
 
 void ACAEnemyBase::Tick(float DeltaSeconds)

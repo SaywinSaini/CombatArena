@@ -19,6 +19,7 @@
 #include "AI/CAEnemyBase.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Combat/CAStunComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
@@ -64,6 +65,8 @@ ACAPlayerCharacter::ACAPlayerCharacter(const FObjectInitializer& ObjectInitializ
 	PerceptionStimuliSource->bAutoRegister = true;
 	
 	TargetingComponent = CreateDefaultSubobject<UCATargetingComponent>(TEXT("TargetingComponent"));
+	
+	StunComponent = CreateDefaultSubobject<UCAStunComponent>(TEXT("StunComponent"));
 }
 
 
@@ -122,11 +125,13 @@ void ACAPlayerCharacter::BeginPlay()
 	{
 		if (!AbilitySystemComponent || !CharacterData) return;
 		
-		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxHealthAttribute(),CharacterData->MaxHealth);
+		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxHealthAttribute(), CharacterData->MaxHealth);
 		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetHealthAttribute(), CharacterData->MaxHealth);
 		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxStaminaAttribute(), CharacterData->MaxStamina);
 		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetStaminaAttribute(), CharacterData->MaxStamina);
+		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxStunAttribute(), 100.f);
 	});
+	
 }
 
 void ACAPlayerCharacter::Tick(float DeltaTime)
@@ -139,19 +144,9 @@ FGenericTeamId ACAPlayerCharacter::GetGenericTeamId() const
 	return FGenericTeamId(0);
 }
 
-void ACAPlayerCharacter::FellOutOfWorld(const UDamageType& DmgType)
-{
-	UE_LOG(LogTemp, Error, TEXT("FellOutOfWorld at %s vel=%s"),
-		*GetActorLocation().ToString(), *GetVelocity().ToString());
-	// Deliberately not calling Super:: — keeps the pawn alive so the launch is visible.
-}
-
 bool ACAPlayerCharacter::CanJumpInternal_Implementation() const
 {
 	const UCACharacterMovementComponent* CMC = Cast<UCACharacterMovementComponent>(GetCharacterMovement());
-
-	UE_LOG(LogTemp, Warning, TEXT("CanJump: cmc=%d dodging=%d"),
-		CMC != nullptr, CMC ? CMC->IsDodging() : -1);
 
 	if (CMC && CMC->IsDodging()) return false;
 
@@ -239,6 +234,11 @@ void ACAPlayerCharacter::SetPendingDeath(AActor* Killer, FName SectionOverride)
 {
 	PendingKiller = Killer;
 	PendingDeathSection = SectionOverride;
+}
+
+void ACAPlayerCharacter::EnterStagger()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Player staggered"));
 }
 
 void ACAPlayerCharacter::Move(const FInputActionValue& Value)

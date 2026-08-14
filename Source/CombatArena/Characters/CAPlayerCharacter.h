@@ -10,6 +10,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "CAPlayerCharacter.generated.h"
 
+class UCAStunComponent;
 class UCAHitstopComponent;
 class UCAMeleeAbility;
 class UCATargetingComponent;
@@ -96,8 +97,6 @@ public:
 	
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	
-	virtual void FellOutOfWorld(const UDamageType& DmgType) override;
-	
 	virtual bool CanJumpInternal_Implementation() const override;
 	
 	void Die();
@@ -105,6 +104,10 @@ public:
 	bool IsDead() const { return bIsDead; }
 	
 	void SetPendingDeath(AActor* Killer, FName SectionOverride);
+	
+	UCAStunComponent* GetStunComponent() const { return StunComponent; }
+	
+	void EnterStagger();
 	
 private: 
 	
@@ -164,4 +167,7 @@ private:
 	TObjectPtr<AActor> PendingKiller;
 
 	FName PendingDeathSection;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Combat")
+	TObjectPtr<UCAStunComponent> StunComponent;
 };

@@ -4,6 +4,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "CAHitstopComponent.h"
+#include "CAStunComponent.h"
 #include "CombatArena.h"
 #include "AI/CAEnemyBase.h"
 #include "Abilities/CAAttributeSet.h"
@@ -176,9 +177,16 @@ void UCAHitDetectionComponent::PerformTrace()
 			
 			SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(),TargetASC);
 			
+			if (PendingStunAmount > 0.f)
+			{
+				if (UCAStunComponent* Stun = HitActor->FindComponentByClass<UCAStunComponent>())
+				{
+					Stun->AddStun(PendingStunAmount);
+				}
+			}
+			
 			if (ACAEnemyBase* HitEnemy = Cast<ACAEnemyBase>(HitActor))
 			{
-				// A fatal hit plays the death montage instead of a reaction.
 				if (!HitEnemy->IsDead())
 				{
 					if (UCAEnemyData* Data = HitEnemy->GetEnemyData())
@@ -231,5 +239,10 @@ void UCAHitDetectionComponent::SetHitReactSection(FName SectionName)
 void UCAHitDetectionComponent::SetDeathSection(FName SectionName)
 {
 	PendingDeathSection = SectionName;
+}
+
+void UCAHitDetectionComponent::SetStunAmount(float Amount)
+{
+	PendingStunAmount = Amount;
 }
 

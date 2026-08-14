@@ -12,7 +12,6 @@ UCABTTask_Slip::UCABTTask_Slip()
 {
 	NodeName = TEXT("Slip");
 	bNotifyTick = false;
-	UE_LOG(LogTemp, Warning, TEXT("Slip task constructed"));
 }
 
 EBTNodeResult::Type UCABTTask_Slip::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -28,8 +27,6 @@ EBTNodeResult::Type UCABTTask_Slip::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	
 	AActor* Player = Cast<AActor>(BB->GetValueAsObject(TEXT("PlayerActor")));
 	if (!Player) return EBTNodeResult::Failed;
-	
-	UE_LOG(LogTemp, Warning, TEXT("Slip: executing"));
 	
 	const float Distance = FVector::Dist2D(Enemy->GetActorLocation(), Player->GetActorLocation());
 	if (Distance > MaxSlipDistance) return EBTNodeResult::Failed;
@@ -54,10 +51,6 @@ EBTNodeResult::Type UCABTTask_Slip::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 		
 		float Start = 0.f, End = 0.f;
 		Data->SlipMontage->GetSectionStartAndEndTime(SectionIndex, Start, End);
-		
-		UE_LOG(LogTemp, Warning, TEXT("Slip: executing dist=%.1f max=%.1f"), Distance, MaxSlipDistance);
-		
-		UE_LOG(LogTemp, Warning, TEXT("Slip: section=%s index=%d"), *Section.ToString(), SectionIndex);
 		
 		Anim->Montage_Play(Data->SlipMontage, SlipPlayRate, EMontagePlayReturnType::MontageLength, Start);
 		
