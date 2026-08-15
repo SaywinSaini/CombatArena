@@ -70,6 +70,8 @@ public:
 	UCAStunComponent* GetStunComponent() const { return StunComponent; }
 	
 	void EnterStagger();
+
+	bool IsStaggered() const { return bIsStaggered; }
 	
 protected:
 	
@@ -131,5 +133,20 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, Category = "Combat")
 	TObjectPtr<UCAStunComponent> StunComponent;
+	
+	void ExitStagger();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float StaggerDuration = 20.0f;
+
+	bool bIsStaggered = false;
+
+	FTimerHandle StaggerTimerHandle;
+	
+	FTimerHandle StaggerPauseHandle;
+	
+	float PlayMontage(UAnimMontage* Montage, float PlayRate = 1.f);
+
+	void RestartBrain();
 	
 };

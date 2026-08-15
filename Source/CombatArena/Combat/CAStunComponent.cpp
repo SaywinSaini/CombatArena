@@ -3,6 +3,8 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/CAAttributeSet.h"
+#include "AI/CAEnemyBase.h"
+#include "Characters/CAPlayerCharacter.h"
 
 UCAStunComponent::UCAStunComponent()
 {
@@ -18,10 +20,21 @@ void UCAStunComponent::AddStun(float Amount)
 	const float Current = ASC->GetNumericAttribute(UCAAttributeSet::GetStunAttribute());
 
 	const float NewStun = FMath::Clamp(Current + Amount, 0.f, Max);
-	
 	ASC->SetNumericAttributeBase(UCAAttributeSet::GetStunAttribute(), NewStun);
 
 	LastStunTime = GetWorld()->GetTimeSeconds();
+	
+	if (NewStun >= Max && Max > 0.f)
+	{
+		if (ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(GetOwner()))
+		{
+			Enemy->EnterStagger();
+		}
+		else if (ACAPlayerCharacter* Player = Cast<ACAPlayerCharacter>(GetOwner()))
+		{
+			Player->EnterStagger();
+		}
+	}
 }
 
 void UCAStunComponent::ResetStun()

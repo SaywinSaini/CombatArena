@@ -187,7 +187,8 @@ void UCAHitDetectionComponent::PerformTrace()
 			
 			if (ACAEnemyBase* HitEnemy = Cast<ACAEnemyBase>(HitActor))
 			{
-				if (!HitEnemy->IsDead())
+				// A fatal or staggering hit plays its own montage instead of a reaction.
+				if (!HitEnemy->IsDead() && !HitEnemy->IsStaggered())
 				{
 					if (UCAEnemyData* Data = HitEnemy->GetEnemyData())
 					{

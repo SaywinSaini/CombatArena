@@ -36,25 +36,4 @@ void UCAAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 		//clamp Stamina between 0 and MaxStamina
 		SetStamina(FMath::Clamp(GetStamina(), 0, GetMaxStamina()));
 	}
-	
-	if (Data.EvaluatedData.Attribute == GetStunAttribute())
-	{
-		SetStun(FMath::Clamp(GetStun(), 0.f, GetMaxStun()));
-
-		if (GetStun() >= GetMaxStun())
-		{
-			AActor* Avatar = Data.Target.GetAvatarActor();
-
-			if (ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(Avatar))
-			{
-				Enemy->EnterStagger();
-			}
-			else if (ACAPlayerCharacter* Player = Cast<ACAPlayerCharacter>(Avatar))
-			{
-				Player->EnterStagger();
-			}
-		}
-	}
-	
-	
 }

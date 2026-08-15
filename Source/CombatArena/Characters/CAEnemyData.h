@@ -107,4 +107,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	float SlipCooldown = 1.5f;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> StaggerEnterMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> StaggerExitMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float StaggerPlayRate = 0.48f;
+	
 };

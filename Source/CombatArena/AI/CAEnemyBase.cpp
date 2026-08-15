@@ -9,6 +9,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Combat/CAHitDetectionComponent.h"
 #include "Combat/CAStunComponent.h"
+#include "Combat/CAStunComponent.h"
+#include "AIController.h"
 #include "Core/CAGameMode.h"
 #include "Core/CAGameplayTags.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -118,8 +120,75 @@ void ACAEnemyBase::SetReacting(float Duration)
 
 void ACAEnemyBase::EnterStagger()
 {
-    UE_LOG(LogTemp, Warning, TEXT("Enemy staggered"));
+    if (bIsDead || bIsStaggered) return;
+    bIsStaggered = true;
+
+    if (AbilitySystemComponent)
+    {
+        AbilitySystemComponent->AddLooseGameplayTag(CATags::State_Staggered);
+    }
+    
+    if (AAIController* AIC = Cast<AAIController>(GetController()))
+    {
+        AIC->GetBrainComponent()->StopLogic(TEXT("Staggered"));
+    }
+    
+    GetCharacterMovement()->StopMovementImmediately();
+    
+    if (const float Dur = PlayMontage(EnemyData ? EnemyData->StaggerEnterMontage : nullptr))
+    {
+        UAnimInstance* Anim = GetMesh()->GetAnimInstance();
+        GetWorldTimerManager().SetTimer(StaggerPauseHandle, [Anim]() {Anim->Montage_Pause(); }, Dur - 0.05f, false);
+    }
+    
+    GetWorldTimerManager().SetTimer(StaggerTimerHandle, this, &ACAEnemyBase::ExitStagger, StaggerDuration, false);
 }
+
+
+void ACAEnemyBase::ExitStagger()
+{
+    if (bIsDead) return;
+
+    bIsStaggered = false;
+
+    if (AbilitySystemComponent)
+    {
+        AbilitySystemComponent->RemoveLooseGameplayTag(CATags::State_Staggered, 100);
+    }
+
+    if (StunComponent)
+    {
+        StunComponent->ResetStun();
+    }
+
+    const float ExitDuration = PlayMontage(EnemyData ? EnemyData->StaggerExitMontage : nullptr);
+
+    if (ExitDuration > 0.f)
+    {
+        GetWorldTimerManager().SetTimer(StaggerTimerHandle, this, &ACAEnemyBase::RestartBrain, ExitDuration, false);
+    }
+    else
+    {
+        RestartBrain();
+    }
+}
+
+float ACAEnemyBase::PlayMontage(UAnimMontage* Montage, float PlayRate)
+{
+    if (!Montage) return 0.f;
+
+    UAnimInstance* Anim = GetMesh() ? GetMesh()->GetAnimInstance() : nullptr;
+    return Anim ? Anim->Montage_Play(Montage, PlayRate) : 0.f;
+}
+
+void ACAEnemyBase::RestartBrain()
+{
+    if (AAIController* AIC = Cast<AAIController>(GetController()))
+    {
+        AIC->GetBrainComponent()->RestartLogic();
+    }
+}
+
 
 void ACAEnemyBase::BeginPlay()
 {
