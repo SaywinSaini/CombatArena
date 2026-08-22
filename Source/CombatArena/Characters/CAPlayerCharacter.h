@@ -10,6 +10,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "CAPlayerCharacter.generated.h"
 
+class ACAEnemyBase;
 class UCAStunComponent;
 class UCAHitstopComponent;
 class UCAMeleeAbility;
@@ -73,6 +74,21 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "GAS")
 	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+    TObjectPtr<UInputAction> TakedownAction;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TSubclassOf<UCameraShakeBase> TakedownCameraShake;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float TakedownSlowMoScale = 0.3f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float TakedownSlowMoDuration = 0.5f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TSubclassOf<UCameraShakeBase> TakedownWithdrawShake;
+	
 	virtual void BeginPlay() override;
 
 	
@@ -108,6 +124,10 @@ public:
 	UCAStunComponent* GetStunComponent() const { return StunComponent; }
 	
 	void EnterStagger();
+	
+	void OnTakedownImpact();
+	
+	void OnTakedownWithdraw();
 	
 private: 
 	
@@ -170,4 +190,23 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, Category = "Combat")
 	TObjectPtr<UCAStunComponent> StunComponent;
+	
+	void TryTakedown();
+
+	void StartTakedown(ACAEnemyBase* Target);
+	
+	void FinishTakedown();
+
+	TWeakObjectPtr<ACAEnemyBase> TakedownTarget;
+
+	FTimerHandle TakedownTimerHandle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float TakedownRange = 200.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float TakedownArcDegrees = 60.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float TakedownDistance = 90.0f;
 };

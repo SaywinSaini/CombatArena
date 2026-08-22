@@ -131,6 +131,7 @@ void ACAEnemyBase::EnterStagger()
     if (AAIController* AIC = Cast<AAIController>(GetController()))
     {
         AIC->GetBrainComponent()->StopLogic(TEXT("Staggered"));
+        AIC->ClearFocus(EAIFocusPriority::Gameplay);
     }
     
     GetCharacterMovement()->StopMovementImmediately();
@@ -190,6 +191,22 @@ void ACAEnemyBase::RestartBrain()
 }
 
 
+void ACAEnemyBase::PlayTakedownVictim()
+{
+    if (bIsDead) return;
+    
+    GetWorldTimerManager().ClearTimer(StaggerTimerHandle);
+    GetWorldTimerManager().ClearTimer(StaggerPauseHandle);
+
+    if (AAIController* AIC = Cast<AAIController>(GetController()))
+    {
+        AIC->GetBrainComponent()->StopLogic(TEXT("Takedown"));
+    }
+
+    GetCharacterMovement()->StopMovementImmediately();
+
+    PlayMontage(EnemyData ? EnemyData->TakedownVictimMontage : nullptr);
+}
 void ACAEnemyBase::BeginPlay()
 {
     Super::BeginPlay();

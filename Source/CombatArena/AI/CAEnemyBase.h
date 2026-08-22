@@ -73,6 +73,8 @@ public:
 
 	bool IsStaggered() const { return bIsStaggered; }
 	
+	void PlayTakedownVictim();
+	
 protected:
 	
 	virtual void BeginPlay() override;

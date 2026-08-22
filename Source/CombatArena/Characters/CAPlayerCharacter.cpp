@@ -22,6 +22,7 @@
 #include "Combat/CAStunComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 
@@ -241,6 +242,45 @@ void ACAPlayerCharacter::EnterStagger()
 	UE_LOG(LogTemp, Warning, TEXT("Player staggered"));
 }
 
+void ACAPlayerCharacter::OnTakedownImpact()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Takedown impact: shake=%d"), TakedownCameraShake != nullptr);
+	
+	if (TakedownTarget.IsValid())
+	{
+		TakedownTarget->Die();
+	}
+
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		if (TakedownCameraShake)
+		{
+			PC->ClientStartCameraShake(TakedownCameraShake);
+		}
+	}
+
+	// Brief global slow-motion to punctuate the finisher.
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), TakedownSlowMoScale);
+
+	FTimerHandle SlowMoHandle;
+	GetWorldTimerManager().SetTimer(SlowMoHandle, [this]()
+	{
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
+	}, TakedownSlowMoDuration * TakedownSlowMoScale, false);
+}
+
+void ACAPlayerCharacter::OnTakedownWithdraw()
+{
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		const TSubclassOf<UCameraShakeBase> Shake = TakedownWithdrawShake ? TakedownWithdrawShake : TakedownCameraShake;
+		if (Shake)
+		{
+			PC->ClientStartCameraShake(Shake);
+		}
+	}
+}
+
 void ACAPlayerCharacter::Move(const FInputActionValue& Value)
 {
 	const FVector2D Axis = Value.Get<FVector2D>();
@@ -384,6 +424,66 @@ FName ACAPlayerCharacter::ResolveDeathSection() const
 	return (Angle > 135.f) ? FName("Front") : FName("Side");
 }
 
+void ACAPlayerCharacter::TryTakedown()
+{
+	if (bIsDead) return;
+
+	ACAGameMode* GameMode = Cast<ACAGameMode>(GetWorld()->GetAuthGameMode());
+	if (!GameMode) return;
+
+	for (const TWeakObjectPtr<ACAEnemyBase>& Enemy : GameMode->GetActiveEnemies())
+	{
+		if (!Enemy.IsValid() || !Enemy->IsStaggered()) continue;
+
+		const FVector EnemyLoc = Enemy->GetActorLocation();
+
+		if (FVector::Dist2D(GetActorLocation(), EnemyLoc) > TakedownRange) continue;
+		
+		const FVector EnemyForward = Enemy->GetActorForwardVector().GetSafeNormal2D();
+		const FVector ToPlayer = (GetActorLocation() - EnemyLoc).GetSafeNormal2D();
+
+		const float Dot = FMath::Clamp(FVector::DotProduct(EnemyForward, ToPlayer), -1.f, 1.f);
+		if (FMath::RadiansToDegrees(FMath::Acos(Dot)) > TakedownArcDegrees) continue;
+
+		StartTakedown(Enemy.Get());
+		return;
+	}
+}
+
+void ACAPlayerCharacter::StartTakedown(ACAEnemyBase* Target)
+{
+	if (!Target || !CharacterData || !CharacterData->TakedownMontage) return;
+
+	const FVector EnemyForward = Target->GetActorForwardVector().GetSafeNormal2D();
+
+	SetActorLocation(Target->GetActorLocation() + EnemyForward * TakedownDistance, false, nullptr, ETeleportType::TeleportPhysics);
+	SetActorRotation((-EnemyForward).Rotation());
+
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		DisableInput(PC);
+	}
+
+	GetCharacterMovement()->StopMovementImmediately();
+
+	TakedownTarget = Target;
+	Target->PlayTakedownVictim();
+
+	const float Duration = PlayAnimMontage(CharacterData->TakedownMontage);
+
+	GetWorldTimerManager().SetTimer(TakedownTimerHandle, this, &ACAPlayerCharacter::FinishTakedown, Duration, false);
+}
+
+void ACAPlayerCharacter::FinishTakedown()
+{
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		EnableInput(PC);
+	}
+
+	TakedownTarget = nullptr;
+}
+
 void ACAPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -411,6 +511,8 @@ void ACAPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EIC->BindAction(BlockAction,ETriggerEvent::Completed,this,&ACAPlayerCharacter::StopBlockAbility);
 		
 		EIC->BindAction(TargetLockAction,ETriggerEvent::Started,this,&ACAPlayerCharacter::ToggleTargetLock);
+		
+		EIC->BindAction(TakedownAction, ETriggerEvent::Started, this, &ACAPlayerCharacter::TryTakedown);
 		
 		UCACharacterMovementComponent* CMC = Cast<UCACharacterMovementComponent>(GetCharacterMovement());
 		if (CMC)

@@ -70,4 +70,7 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 
 	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
 	float MaxStamina = 100.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> TakedownMontage;
 };

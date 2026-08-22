@@ -116,4 +116,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	float StaggerPlayRate = 0.48f;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> TakedownVictimMontage;
 };
