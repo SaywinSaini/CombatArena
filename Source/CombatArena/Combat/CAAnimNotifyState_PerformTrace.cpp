@@ -20,6 +20,7 @@ void UCAAnimNotifyState_PerformTrace::NotifyBegin(USkeletalMeshComponent* MeshCo
 		HitDetectionComp->SetDeathSection(DeathSectionOverride);
 		HitDetectionComp->SetStunAmount(StunAmount);
 		HitDetectionComp->StartTrace();
+		HitDetectionComp->SetBlockedStunAmount(BlockedStunAmount);
 	}
 }
 

@@ -20,6 +20,9 @@ void UCAStunComponent::AddStun(float Amount)
 	const float Current = ASC->GetNumericAttribute(UCAAttributeSet::GetStunAttribute());
 
 	const float NewStun = FMath::Clamp(Current + Amount, 0.f, Max);
+	
+	UE_LOG(LogTemp, Warning, TEXT("Stun on %s: +%.1f = %.1f / %.1f"), *GetNameSafe(GetOwner()), Amount, NewStun, Max);
+	
 	ASC->SetNumericAttributeBase(UCAAttributeSet::GetStunAttribute(), NewStun);
 
 	LastStunTime = GetWorld()->GetTimeSeconds();

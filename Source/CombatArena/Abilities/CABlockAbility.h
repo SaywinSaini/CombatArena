@@ -18,10 +18,5 @@ class COMBATARENA_API UCABlockAbility : public UCAGameplayAbility
 	UCABlockAbility();
 	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-
-	protected:
-	// Configurable damage reduction value associated with this ability.
-	UPROPERTY(EditDefaultsOnly, Category = "Ability")
-	float BlockDamageReduction = 0.5f;
 };
 

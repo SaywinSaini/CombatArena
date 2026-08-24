@@ -155,6 +155,15 @@ void UCAHitDetectionComponent::PerformTrace()
 							PC->ClientStartCameraShake(ShakeToPlay);
 						}
 					}
+					// Blocking costs more stun than absorbing, so guarding is
+					// not a free defence.
+					if (PendingBlockedStunAmount > 0.f)
+					{
+						if (UCAStunComponent* Stun = HitActor->FindComponentByClass<UCAStunComponent>())
+						{
+							Stun->AddStun(PendingBlockedStunAmount);
+						}
+					}
 					continue;
 				}
 			}
@@ -245,5 +254,10 @@ void UCAHitDetectionComponent::SetDeathSection(FName SectionName)
 void UCAHitDetectionComponent::SetStunAmount(float Amount)
 {
 	PendingStunAmount = Amount;
+}
+
+void UCAHitDetectionComponent::SetBlockedStunAmount(float Amount)
+{
+	PendingBlockedStunAmount = Amount;
 }
 
