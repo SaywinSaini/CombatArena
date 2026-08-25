@@ -274,6 +274,28 @@ void ACAPlayerCharacter::OnTakedownWithdraw()
 	}
 }
 
+void ACAPlayerCharacter::PlayHitReact(UAnimMontage* Montage, float PlayRate, FName Section)
+{
+	if (!Montage || bIsDead || bIsStaggered) return;
+
+	if (UAnimInstance* Anim = GetMesh()->GetAnimInstance())
+	{
+		if (!Section.IsNone())
+		{
+			const int32 SectionIndex = Montage->GetSectionIndex(Section);
+			if (SectionIndex != INDEX_NONE)
+			{
+				float Start = 0.f, End = 0.f;
+				Montage->GetSectionStartAndEndTime(SectionIndex, Start, End);
+
+				Anim->Montage_Play(Montage, PlayRate, EMontagePlayReturnType::MontageLength, Start);
+				return;
+			}
+		}
+
+		Anim->Montage_Play(Montage, PlayRate);
+	}
+}
 void ACAPlayerCharacter::Move(const FInputActionValue& Value)
 {
 	const FVector2D Axis = Value.Get<FVector2D>();

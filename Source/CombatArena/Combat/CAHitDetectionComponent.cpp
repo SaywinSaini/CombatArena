@@ -209,6 +209,27 @@ void UCAHitDetectionComponent::PerformTrace()
 				}
 			}
 			
+			else if (ACAPlayerCharacter* HitPlayer = Cast<ACAPlayerCharacter>(HitActor))
+			{
+				const bool bCanReact = !HitPlayer->IsDead() &&
+					(!HitPlayer->IsStaggered() || bPendingReactWhileStaggered);
+
+				if (bCanReact)
+				{
+					if (UCACharacterData* Data = HitPlayer->GetCharacterData())
+					{
+						UAnimMontage* ReactMontage = (bPendingReactWhileStaggered && Data->StaggerBreakReactMontage)
+							? Data->StaggerBreakReactMontage
+							: Data->HitReactMontage;
+
+						if (ReactMontage)
+						{
+							HitPlayer->PlayHitReact(ReactMontage, Data->HitReactPlayRate, PendingHitReactSection);
+						}
+					}
+				}
+			}
+			
 			UCAHitstopComponent* EnemyHitStop = HitActor->FindComponentByClass<UCAHitstopComponent>();
 			
 			if (EnemyHitStop)
@@ -259,5 +280,10 @@ void UCAHitDetectionComponent::SetStunAmount(float Amount)
 void UCAHitDetectionComponent::SetBlockedStunAmount(float Amount)
 {
 	PendingBlockedStunAmount = Amount;
+}
+
+void UCAHitDetectionComponent::SetReactWhileStaggered(bool bAllow)
+{
+	bPendingReactWhileStaggered = bAllow;
 }
 

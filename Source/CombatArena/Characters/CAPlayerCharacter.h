@@ -129,6 +129,8 @@ public:
 	
 	void OnTakedownWithdraw();
 	
+	void PlayHitReact(UAnimMontage* Montage, float PlayRate, FName Section = NAME_None);
+	
 private: 
 	
 	UPROPERTY(VisibleAnywhere,Category = "Combat")

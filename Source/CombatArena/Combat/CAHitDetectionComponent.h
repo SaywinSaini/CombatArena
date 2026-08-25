@@ -39,6 +39,8 @@ public:
 	
 	void SetBlockedStunAmount(float Amount);
 	
+	void SetReactWhileStaggered(bool bAllow);
+	
 	private:
 	
 	// Tracks actors already hit this swing to prevent multiple hits per attack
@@ -75,5 +77,7 @@ public:
 	float PendingStunAmount = 0.f;
 	
 	float PendingBlockedStunAmount = 0.f;
+	
+	bool bPendingReactWhileStaggered = false;
 	
 };

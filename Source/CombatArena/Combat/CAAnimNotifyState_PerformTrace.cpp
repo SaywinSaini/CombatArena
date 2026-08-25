@@ -21,6 +21,7 @@ void UCAAnimNotifyState_PerformTrace::NotifyBegin(USkeletalMeshComponent* MeshCo
 		HitDetectionComp->SetStunAmount(StunAmount);
 		HitDetectionComp->StartTrace();
 		HitDetectionComp->SetBlockedStunAmount(BlockedStunAmount);
+		HitDetectionComp->SetReactWhileStaggered(bReactWhileStaggered);
 	}
 }
 

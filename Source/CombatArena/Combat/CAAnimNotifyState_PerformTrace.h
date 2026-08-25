@@ -33,5 +33,8 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Trace")
     float BlockedStunAmount = 70.0f;
+	
+	UPROPERTY(EditAnywhere, Category = "Trace")
+	bool bReactWhileStaggered = false;
 };
 

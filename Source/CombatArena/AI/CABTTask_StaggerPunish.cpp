@@ -15,8 +15,6 @@ UCABTTask_StaggerPunish::UCABTTask_StaggerPunish()
 
 EBTNodeResult::Type UCABTTask_StaggerPunish::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	UE_LOG(LogTemp, Warning, TEXT("StaggerPunish: executing"));
-	
 	AAIController* AIC = OwnerComp.GetAIOwner();
 	if (!AIC) return EBTNodeResult::Failed;
 
@@ -35,9 +33,6 @@ EBTNodeResult::Type UCABTTask_StaggerPunish::ExecuteTask(UBehaviorTreeComponent&
 	}
 
 	UAnimMontage* Montage = Enemy->GetEnemyData()->StaggerPunishMontage;
-	
-	UE_LOG(LogTemp, Warning, TEXT("StaggerPunish: staggered=%d montage=%s"),
-	Player->IsStaggered(), *GetNameSafe(Enemy->GetEnemyData()->StaggerPunishMontage));
 	
 	if (!Montage) return EBTNodeResult::Failed;
 

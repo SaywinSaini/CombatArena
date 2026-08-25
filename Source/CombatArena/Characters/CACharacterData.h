@@ -79,4 +79,13 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TObjectPtr<UAnimMontage> StaggerExitMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float HitReactPlayRate = 1.5f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> StaggerBreakReactMontage;
 };
