@@ -4,6 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
+#include "Characters/CAPlayerCharacter.h"
 #include "Core/CAGameplayTags.h"
 #include "GameFramework/PlayerController.h"
 
@@ -123,6 +124,12 @@ void UCATargetingComponent::TickComponent(float DeltaTime, enum ELevelTick TickT
 		return;
 	}
 
+	// Neither death nor stagger should let the component keep rotating the pawn.
+	if (const ACAPlayerCharacter* Player = Cast<ACAPlayerCharacter>(GetOwner()))
+	{
+		if (Player->IsDead() || Player->IsStaggered()) return;
+	}
+	
 	// Drop the lock when the target dies rather than waiting for despawn.
 	if (const ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(LockedTarget))
 	{

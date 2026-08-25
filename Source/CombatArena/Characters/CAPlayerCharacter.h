@@ -1,6 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
@@ -125,6 +123,8 @@ public:
 	
 	void EnterStagger();
 	
+	bool IsStaggered() const { return bIsStaggered; }
+	
 	void OnTakedownImpact();
 	
 	void OnTakedownWithdraw();
@@ -209,4 +209,15 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	float TakedownDistance = 90.0f;
+	
+	void ExitStagger();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float StaggerDuration = 3.0f;
+
+	bool bIsStaggered = false;
+
+	FTimerHandle StaggerTimerHandle;
+
+	FTimerHandle StaggerPauseHandle;
 };

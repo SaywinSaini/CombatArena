@@ -237,15 +237,8 @@ void ACAPlayerCharacter::SetPendingDeath(AActor* Killer, FName SectionOverride)
 	PendingDeathSection = SectionOverride;
 }
 
-void ACAPlayerCharacter::EnterStagger()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Player staggered"));
-}
-
 void ACAPlayerCharacter::OnTakedownImpact()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Takedown impact: shake=%d"), TakedownCameraShake != nullptr);
-	
 	if (TakedownTarget.IsValid())
 	{
 		TakedownTarget->Die();
@@ -482,6 +475,83 @@ void ACAPlayerCharacter::FinishTakedown()
 	}
 
 	TakedownTarget = nullptr;
+}
+
+
+void ACAPlayerCharacter::EnterStagger()
+{
+	if (bIsDead || bIsStaggered) return;
+	bIsStaggered = true;
+
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->CancelAllAbilities();
+		AbilitySystemComponent->AddLooseGameplayTag(CATags::State_Staggered);
+	}
+
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		DisableInput(PC);
+	}
+
+	GetCharacterMovement()->StopMovementImmediately();
+	
+	if (CharacterData && CharacterData->StaggerEnterMontage)
+	{
+		if (UAnimInstance* Anim = GetMesh()->GetAnimInstance())
+		{
+			const float Dur = Anim->Montage_Play(CharacterData->StaggerEnterMontage);
+
+			GetWorldTimerManager().SetTimer(StaggerPauseHandle, [Anim]()
+			{
+				Anim->Montage_Pause();
+			}, Dur - 0.05f, false);
+		}
+	}
+
+	GetWorldTimerManager().SetTimer(StaggerTimerHandle, this, &ACAPlayerCharacter::ExitStagger, StaggerDuration, false);
+}
+
+void ACAPlayerCharacter::ExitStagger()
+{
+	if (bIsDead) return;
+
+	bIsStaggered = false;
+
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->RemoveLooseGameplayTag(CATags::State_Staggered, 100);
+	}
+
+	if (StunComponent)
+	{
+		StunComponent->ResetStun();
+	}
+
+	float ExitDuration = 0.f;
+
+	if (CharacterData && CharacterData->StaggerExitMontage)
+	{
+		if (UAnimInstance* Anim = GetMesh()->GetAnimInstance())
+		{
+			ExitDuration = Anim->Montage_Play(CharacterData->StaggerExitMontage);
+		}
+	}
+	
+	if (ExitDuration > 0.f)
+	{
+		GetWorldTimerManager().SetTimer(StaggerTimerHandle, [this]()
+		{
+			if (APlayerController* PC = Cast<APlayerController>(GetController()))
+			{
+				EnableInput(PC);
+			}
+		}, ExitDuration, false);
+	}
+	else if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		EnableInput(PC);
+	}
 }
 
 void ACAPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

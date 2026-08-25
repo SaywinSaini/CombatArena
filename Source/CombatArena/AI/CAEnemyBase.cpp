@@ -204,8 +204,6 @@ void ACAEnemyBase::PlayTakedownVictim()
     }
 
     GetCharacterMovement()->StopMovementImmediately();
-
-    PlayMontage(EnemyData ? EnemyData->TakedownVictimMontage : nullptr);
 }
 void ACAEnemyBase::BeginPlay()
 {

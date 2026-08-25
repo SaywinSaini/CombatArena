@@ -6,6 +6,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
+#include "Characters/CAPlayerCharacter.h"
 
 UCABTService_UpdateCombatStatus::UCABTService_UpdateCombatStatus()
 {
@@ -34,6 +35,7 @@ void UCABTService_UpdateCombatStatus::TickNode(UBehaviorTreeComponent& OwnerComp
         BB->SetValueAsBool(TEXT("bIsPlayerAttacking"), false);
 		BB->SetValueAsBool(TEXT("bAttackCooldownReady"),false);
 		BB->SetValueAsBool(TEXT("bIsPlayerComboing"), false);
+		BB->SetValueAsBool(TEXT("bIsPlayerStaggered"), false);
 		return;
 	}
 	
@@ -59,5 +61,7 @@ void UCABTService_UpdateCombatStatus::TickNode(UBehaviorTreeComponent& OwnerComp
 	}
 	BB->SetValueAsBool(TEXT("bIsPlayerAttacking"), bPlayerAttacking);
 	BB->SetValueAsBool(TEXT("bIsPlayerComboing"), bPlayerComboing);
+	    const ACAPlayerCharacter* PlayerChar = Cast<ACAPlayerCharacter>(Player);
+        BB->SetValueAsBool(TEXT("bIsPlayerStaggered"), PlayerChar && PlayerChar->IsStaggered());
 
 }

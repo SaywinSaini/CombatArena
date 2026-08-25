@@ -32,6 +32,6 @@ public:
 	float StunAmount = 5.0f;
 	
 	UPROPERTY(EditAnywhere, Category = "Trace")
-    float BlockedStunAmount = 10.0f;
+    float BlockedStunAmount = 70.0f;
 };
 

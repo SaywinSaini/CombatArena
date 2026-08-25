@@ -73,4 +73,10 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TObjectPtr<UAnimMontage> TakedownMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> StaggerEnterMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> StaggerExitMontage;
 };
