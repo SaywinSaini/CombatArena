@@ -120,13 +120,15 @@ void UCAMeleeAbility::StopAbility()
 {
 	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
 	{
-		ASC->RemoveLooseGameplayTag(CATags::State_Comboing, 100);
+		if (ASC->HasMatchingGameplayTag(CATags::State_Comboing))
+		{
+			ASC->RemoveLooseGameplayTag(CATags::State_Comboing, 100);
+		}
 	}
-	
-	if (const FGameplayAbilityActorInfo* ActorInfo = GetCurrentActorInfo())
+
+	if (const FGameplayAbilityActorInfo* Info = GetCurrentActorInfo())
 	{
-		ACAPlayerCharacter* Character = Cast<ACAPlayerCharacter>(ActorInfo->AvatarActor.Get());
-		if (Character)
+		if (ACAPlayerCharacter* Character = Cast<ACAPlayerCharacter>(Info->AvatarActor.Get()))
 		{
 			if (UCAHitDetectionComponent* HitDetection = Character->GetHitDetectionComponent())
 			{
@@ -134,11 +136,14 @@ void UCAMeleeAbility::StopAbility()
 			}
 		}
 	}
+
 	ComboIndex = 0;
 	bComboInputReceived = false;
+
 	const FGameplayAbilitySpecHandle Handle = GetCurrentAbilitySpecHandle();
 	const FGameplayAbilityActorInfo* ActorInfo = GetCurrentActorInfo();
 	const FGameplayAbilityActivationInfo ActivationInfo = GetCurrentActivationInfo();
-    
-	EndAbility(Handle,ActorInfo,ActivationInfo,true,false);
+
+	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
+

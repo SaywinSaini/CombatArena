@@ -31,16 +31,14 @@ protected:
 	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
-	// Called when montage finishes naturally
 	UFUNCTION()
 	void OnMontageCompleted();
 	
-	// Called when montage is interrupted or cancelled
 	UFUNCTION()
 	void OnMontageCancelled();
 	
 private:
-	// Helper to avoid duplicating stop+end logic
+	
 	void StopAbility();
 	
 	// Montage used to play the melee attack sequence.
@@ -53,7 +51,6 @@ private:
 	int32 ComboIndex = 0;
 	bool bComboInputReceived = false;
 	
-	// Ordered montage section names defining combo progression.
 	UPROPERTY(EditDefaultsOnly, Category = "Ability")
 	TArray<FName> ComboSections;
 };

@@ -116,6 +116,7 @@ void UCAHitDetectionComponent::PerformTrace()
 			
 			// Get the target's AbilitySystemComponent — if none they cannot receive damage
 			UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor);
+			
 			if (!TargetASC) continue;
 			
 			if (TargetASC->HasMatchingGameplayTag(CATags::State_Invulnerable)) continue;
@@ -164,6 +165,16 @@ void UCAHitDetectionComponent::PerformTrace()
 							Stun->AddStun(PendingBlockedStunAmount);
 						}
 					}
+					
+					if (PC)
+					{
+						const TSubclassOf<UCameraShakeBase> ShakeToPlay = BlockCameraShake ? BlockCameraShake : HitCameraShake;
+						if (ShakeToPlay)
+						{
+							PC->ClientStartCameraShake(ShakeToPlay);
+						}
+					}
+					
 					continue;
 				}
 			}
@@ -230,16 +241,13 @@ void UCAHitDetectionComponent::PerformTrace()
 				}
 			}
 			
-			UCAHitstopComponent* EnemyHitStop = HitActor->FindComponentByClass<UCAHitstopComponent>();
-			
-			if (EnemyHitStop)
+			if (UCAHitstopComponent* EnemyHitStop = HitActor->FindComponentByClass<UCAHitstopComponent>())
 			{
-				EnemyHitStop->ApplyHitstop(HitActor,!bIsPlayerFrozen,GetOwner());
-				bIsPlayerFrozen = true;
+				EnemyHitStop->ApplyHitstop(HitActor, !bIsPlayerFrozen, GetOwner());
 			}
 			
 			if (PC && HitCameraShake)
-			{  
+			{
 				PC->ClientStartCameraShake(HitCameraShake);
 			}
 			else
