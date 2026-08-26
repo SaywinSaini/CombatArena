@@ -220,6 +220,24 @@ void UCAHitDetectionComponent::PerformTrace()
 				}
 			}
 			
+			if (ACAEnemyBase* HitEnemy = Cast<ACAEnemyBase>(HitActor))
+			{
+				if (!HitEnemy->IsDead() && !HitEnemy->IsStaggered())
+				{
+					if (!HitEnemy->HasTakenFirstHit() && HitEnemy->GetEnemyData() && HitEnemy->GetEnemyData()->FirstHitReactMontage)
+					{
+						HitEnemy->PlayFirstHitReact(GetOwner());
+					}
+					else if (UCAEnemyData* Data = HitEnemy->GetEnemyData())
+					{
+						if (Data->HitReactMontage)
+						{
+							HitEnemy->PlayHitReact(Data->HitReactMontage, Data->HitReactPlayRate, PendingHitReactSection);
+						}
+					}
+				}
+			}
+			
 			else if (ACAPlayerCharacter* HitPlayer = Cast<ACAPlayerCharacter>(HitActor))
 			{
 				const bool bCanReact = !HitPlayer->IsDead() &&

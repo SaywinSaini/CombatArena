@@ -75,6 +75,10 @@ public:
 	
 	void PlayTakedownVictim();
 	
+	void PlayFirstHitReact(AActor* Attacker);
+
+	bool HasTakenFirstHit() const { return bHasTakenFirstHit; }
+	
 protected:
 	
 	virtual void BeginPlay() override;
@@ -147,8 +151,11 @@ private:
 	
 	FTimerHandle StaggerPauseHandle;
 	
+	FTimerHandle FirstHitTimerHandle;
+	
 	float PlayMontage(UAnimMontage* Montage, float PlayRate = 1.f);
 
 	void RestartBrain();
 	
+	bool bHasTakenFirstHit = false;
 };

@@ -131,6 +131,8 @@ public:
 	
 	void PlayHitReact(UAnimMontage* Montage, float PlayRate, FName Section = NAME_None);
 	
+	bool IsReacting() const { return bIsReacting; }
+	
 private: 
 	
 	UPROPERTY(VisibleAnywhere,Category = "Combat")
@@ -222,4 +224,8 @@ private:
 	FTimerHandle StaggerTimerHandle;
 
 	FTimerHandle StaggerPauseHandle;
+	
+	bool bIsReacting = false;
+
+	FTimerHandle ReactTimerHandle;
 };

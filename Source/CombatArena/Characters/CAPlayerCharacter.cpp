@@ -278,29 +278,42 @@ void ACAPlayerCharacter::PlayHitReact(UAnimMontage* Montage, float PlayRate, FNa
 {
 	if (!Montage || bIsDead || bIsStaggered) return;
 
-	if (UAnimInstance* Anim = GetMesh()->GetAnimInstance())
+	UAnimInstance* Anim = GetMesh() ? GetMesh()->GetAnimInstance() : nullptr;
+	if (!Anim) return;
+
+	float Duration = 0.f;
+
+	if (!Section.IsNone())
 	{
-		if (!Section.IsNone())
+		const int32 SectionIndex = Montage->GetSectionIndex(Section);
+		if (SectionIndex != INDEX_NONE)
 		{
-			const int32 SectionIndex = Montage->GetSectionIndex(Section);
-			if (SectionIndex != INDEX_NONE)
-			{
-				float Start = 0.f, End = 0.f;
-				Montage->GetSectionStartAndEndTime(SectionIndex, Start, End);
+			float Start = 0.f, End = 0.f;
+			Montage->GetSectionStartAndEndTime(SectionIndex, Start, End);
 
-				Anim->Montage_Play(Montage, PlayRate, EMontagePlayReturnType::MontageLength, Start);
-				return;
-			}
+			Anim->Montage_Play(Montage, PlayRate, EMontagePlayReturnType::MontageLength, Start);
+			Duration = (End - Start) / PlayRate;
 		}
-
-		Anim->Montage_Play(Montage, PlayRate);
 	}
+
+	if (Duration <= 0.f)
+	{
+		Duration = Anim->Montage_Play(Montage, PlayRate) / PlayRate;
+	}
+	
+	bIsReacting = true;
+	GetCharacterMovement()->StopMovementImmediately();
+
+	GetWorldTimerManager().SetTimer(ReactTimerHandle, [this]()
+	{
+	   bIsReacting = false;
+	}, Duration, false);
 }
 void ACAPlayerCharacter::Move(const FInputActionValue& Value)
 {
 	const FVector2D Axis = Value.Get<FVector2D>();
 	
-	if (!Controller) return;
+	if (!Controller || bIsReacting) return;
 	
 	if (AbilitySystemComponent && AbilitySystemComponent->HasMatchingGameplayTag(CATags::State_Blocking))
 	{

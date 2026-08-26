@@ -118,4 +118,10 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TObjectPtr<UAnimMontage> StaggerPunishMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> FirstHitReactMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float FirstHitKnockback = 1500.0f;
 };

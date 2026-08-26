@@ -205,6 +205,31 @@ void ACAEnemyBase::PlayTakedownVictim()
 
     GetCharacterMovement()->StopMovementImmediately();
 }
+
+void ACAEnemyBase::PlayFirstHitReact(AActor* Attacker)
+{
+    bHasTakenFirstHit = true;
+
+    if (!EnemyData || !EnemyData->FirstHitReactMontage) return;
+    
+    if (Attacker)
+    {
+        const FVector Away = (GetActorLocation() - Attacker->GetActorLocation()).GetSafeNormal2D();
+        LaunchCharacter(Away * EnemyData->FirstHitKnockback, true, false);
+    }
+
+    if (AAIController* AIC = Cast<AAIController>(GetController()))
+    {
+        AIC->GetBrainComponent()->StopLogic(TEXT("FirstHit"));
+    }
+
+    const float Duration = PlayMontage(EnemyData->FirstHitReactMontage);
+    UE_LOG(LogTemp, Warning, TEXT("FirstHit duration=%f"), Duration);
+    SetReacting(Duration * 0.9f);
+
+    GetWorldTimerManager().SetTimer(FirstHitTimerHandle, this, &ACAEnemyBase::RestartBrain, Duration * 0.9f, false);
+}
+
 void ACAEnemyBase::BeginPlay()
 {
     Super::BeginPlay();
