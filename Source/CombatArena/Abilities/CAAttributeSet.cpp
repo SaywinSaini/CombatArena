@@ -34,10 +34,4 @@ void UCAAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 			}
 		}
 	}
-	
-	if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
-	{
-		//clamp Stamina between 0 and MaxStamina
-		SetStamina(FMath::Clamp(GetStamina(), 0, GetMaxStamina()));
-	}
 }

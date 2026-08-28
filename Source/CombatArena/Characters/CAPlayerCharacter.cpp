@@ -128,8 +128,6 @@ void ACAPlayerCharacter::BeginPlay()
 		
 		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxHealthAttribute(), CharacterData->MaxHealth);
 		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetHealthAttribute(), CharacterData->MaxHealth);
-		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxStaminaAttribute(), CharacterData->MaxStamina);
-		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetStaminaAttribute(), CharacterData->MaxStamina);
 		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxStunAttribute(), 100.f);
 	});
 	
