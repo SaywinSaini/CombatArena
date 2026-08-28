@@ -124,4 +124,19 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	float FirstHitKnockback = 1500.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float MaxStun = 100.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Phases")
+	float PhaseTwoHealthFraction = 0.5f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Phases")
+	float PhaseTwoSpeedMultiplier = 1.3f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Phases")
+	float PhaseTwoCooldownMultiplier = 0.6f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Phases")
+	float PhaseTwoSlipChance = 1.0f;
 };

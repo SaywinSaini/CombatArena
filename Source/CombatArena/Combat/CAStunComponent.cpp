@@ -36,6 +36,7 @@ void UCAStunComponent::AddStun(float Amount)
 			Player->EnterStagger();
 		}
 	}
+	UE_LOG(LogTemp, Warning, TEXT("Stun on %s: +%.1f = %.1f / %.1f"), *GetNameSafe(GetOwner()), Amount, NewStun, Max);
 }
 
 void UCAStunComponent::ResetStun()

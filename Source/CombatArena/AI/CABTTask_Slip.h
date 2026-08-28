@@ -24,9 +24,6 @@ protected:
 	float SlipChance = 0.6f;
 	
 	UPROPERTY(EditAnywhere, Category = "Slip")
-	float InvulnerabilityDuration = 0.4f;
-	
-	UPROPERTY(EditAnywhere, Category = "Slip")
 	float MaxSlipDistance = 130.0f;
 	
 	UPROPERTY(EditAnywhere, Category = "Slip")

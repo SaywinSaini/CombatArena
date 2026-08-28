@@ -133,6 +133,8 @@ public:
 	
 	bool IsReacting() const { return bIsReacting; }
 	
+	void ApplyDodgeInvulnerability(float Duration);
+	
 private: 
 	
 	UPROPERTY(VisibleAnywhere,Category = "Combat")
@@ -228,4 +230,6 @@ private:
 	bool bIsReacting = false;
 
 	FTimerHandle ReactTimerHandle;
+	
+	FTimerHandle DodgeInvulnTimerHandle;
 };

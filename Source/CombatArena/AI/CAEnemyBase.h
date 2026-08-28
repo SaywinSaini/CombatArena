@@ -79,6 +79,14 @@ public:
 
 	bool HasTakenFirstHit() const { return bHasTakenFirstHit; }
 	
+	bool IsInPhaseTwo() const { return bIsPhaseTwo; }
+
+	float GetChaseSpeed() const;
+
+	float GetAttackCooldown() const;
+	
+	void CheckPhaseTransition();
+	
 protected:
 	
 	virtual void BeginPlay() override;
@@ -158,4 +166,6 @@ private:
 	void RestartBrain();
 	
 	bool bHasTakenFirstHit = false;
+
+	bool bIsPhaseTwo = false;
 };

@@ -65,9 +65,6 @@ void UCACharacterMovementComponent::Dodge()
 	
 	if (!bNoInput && !(Targeting && Targeting->IsTargetLocked()))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Dodge snap: input=%s facingBefore=%s"),
-		   *DodgeDirection.ToString(), *GetCharacterOwner()->GetActorForwardVector().ToString());
-
 		GetCharacterOwner()->SetActorRotation(DodgeDirection.Rotation());
 	}
 	
@@ -77,15 +74,19 @@ void UCACharacterMovementComponent::Dodge()
 		{
 			if (UAnimInstance* AnimInstance = Mesh->GetAnimInstance())
 			{
-				AnimInstance->Montage_Play(MontageToPlay, DodgeMontagePlayRate);
+				const float Duration = AnimInstance->Montage_Play(MontageToPlay, DodgeMontagePlayRate);
 				
 				bIsDodging = true;
 
 				FOnMontageEnded EndDelegate;
 				EndDelegate.BindLambda([this](UAnimMontage*, bool) { bIsDodging = false; });
 				AnimInstance->Montage_SetEndDelegate(EndDelegate, MontageToPlay);
+				
+				CachedOwner->ApplyDodgeInvulnerability(Duration * CachedOwner->GetCharacterData()->DodgeInvulnFraction);
+				
 			}
 		}
+		
 	}
 		
 	bCanDodge = false;

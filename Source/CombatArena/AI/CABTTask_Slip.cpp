@@ -38,10 +38,8 @@ EBTNodeResult::Type UCABTTask_Slip::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	if (Now - Enemy->GetLastSlipTime() < Data->SlipCooldown) return EBTNodeResult::Failed;
 	
 	Enemy->SetLastSlipTime(Now);
-	if (FMath::FRand() > SlipChance) return EBTNodeResult::Failed;
-	
-	const FVector Right = Enemy->GetActorRightVector().GetSafeNormal2D();
-	const FVector ToPlayer = (Player->GetActorLocation() - Enemy->GetActorLocation()).GetSafeNormal2D();
+	const float Chance = Enemy->IsInPhaseTwo() ? Data->PhaseTwoSlipChance : SlipChance;
+	if (FMath::FRand() > Chance) return EBTNodeResult::Failed;
 	const FName Section = FMath::RandBool() ? FName("Left") : FName("Right");
 	
 	if (UAnimInstance* Anim = Enemy->GetMesh()->GetAnimInstance())
@@ -60,9 +58,5 @@ EBTNodeResult::Type UCABTTask_Slip::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 		Enemy->ApplyDashInvulnerability(Duration);
 	}
 	
-	
-	Enemy->ApplyDashInvulnerability(InvulnerabilityDuration);
-	
 	return EBTNodeResult::Succeeded;
-	
 }

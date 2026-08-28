@@ -48,7 +48,7 @@ void UCABTTask_ContextSteer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 
 	// Run when far, walk when settling, so small corrections aren't made at sprint speed.
 	const bool bFarFromBand = DistToPlayer > BandMax + Data->SpacingApproachRange;
-	Enemy->GetCharacterMovement()->MaxWalkSpeed = bFarFromBand ? Data->ChaseSpeed : Data->SpacingSpeed;
+	Enemy->GetCharacterMovement()->MaxWalkSpeed = bFarFromBand ? Enemy->GetChaseSpeed() : Data->SpacingSpeed;
 
 	const FVector Direction = Steering->GetBestDirection(Player, BandMin, BandMax);
 	if (!Direction.IsNearlyZero())

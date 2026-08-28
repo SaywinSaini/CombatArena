@@ -33,6 +33,7 @@ ACAEnemyBase::ACAEnemyBase()
     SteeringComponent = CreateDefaultSubobject<UCASteeringComponent>(TEXT("SteeringComponent"));
    
     StunComponent = CreateDefaultSubobject<UCAStunComponent>(TEXT("StunComponent"));
+   
 }
 
 void ACAEnemyBase::ApplyDashInvulnerability(float Duration)
@@ -190,6 +191,20 @@ void ACAEnemyBase::RestartBrain()
     }
 }
 
+void ACAEnemyBase::CheckPhaseTransition()
+{
+    if (bIsPhaseTwo || !EnemyData || !AbilitySystemComponent) return;
+
+    const float Max = AbilitySystemComponent->GetNumericAttribute(UCAAttributeSet::GetMaxHealthAttribute());
+    if (Max <= 0.f) return;
+
+    const float Current = AbilitySystemComponent->GetNumericAttribute(UCAAttributeSet::GetHealthAttribute());
+
+    if (Current / Max <= EnemyData->PhaseTwoHealthFraction)
+    {
+        bIsPhaseTwo = true;
+    }
+}
 
 void ACAEnemyBase::PlayTakedownVictim()
 {
@@ -230,14 +245,37 @@ void ACAEnemyBase::PlayFirstHitReact(AActor* Attacker)
     GetWorldTimerManager().SetTimer(FirstHitTimerHandle, this, &ACAEnemyBase::RestartBrain, Duration * 0.9f, false);
 }
 
+float ACAEnemyBase::GetChaseSpeed() const
+{
+    if (!EnemyData) return 600.f;
+
+    return bIsPhaseTwo
+        ? EnemyData->ChaseSpeed * EnemyData->PhaseTwoSpeedMultiplier
+        : EnemyData->ChaseSpeed;
+}
+
+float ACAEnemyBase::GetAttackCooldown() const
+{
+    if (!EnemyData) return 2.f;
+
+    return bIsPhaseTwo
+        ? EnemyData->AttackCooldown * EnemyData->PhaseTwoCooldownMultiplier
+        : EnemyData->AttackCooldown;
+}
+
+
 void ACAEnemyBase::BeginPlay()
 {
     Super::BeginPlay();
     AbilitySystemComponent->InitAbilityActorInfo(this, this);
 
-    if (EnemyData)
+    if (!EnemyData)
     {
-        CachedPlayer = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+        UE_LOG(LogTemp, Error, TEXT("CAEnemyBase: EnemyData is null on %s"), *GetName());
+        return;
+    }
+    
+    CachedPlayer = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
         
         GetWorldTimerManager().SetTimerForNextTick([this]()
         {
@@ -245,21 +283,14 @@ void ACAEnemyBase::BeginPlay()
             {
                 AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetHealthAttribute(), EnemyData->MaxHealth);
                 AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxHealthAttribute(), EnemyData->MaxHealth);
-                AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxStunAttribute(), 100.f);
+                AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxStunAttribute(), EnemyData->MaxStun);
             }
-
         });
         
         if (ACAGameMode* GameMode = Cast<ACAGameMode>(GetWorld()->GetAuthGameMode()))
         {
          GameMode->RegisterEnemy(this);   
         }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("CAEnemyBase: EnemyData is null on %s"), *GetName());
-    }
-    
 }
 
 void ACAEnemyBase::Tick(float DeltaSeconds)

@@ -44,7 +44,7 @@ void UCABTService_UpdateCombatStatus::TickNode(UBehaviorTreeComponent& OwnerComp
 
 	// Attack is only allowed if in range AND the cooldown has elapsed since the last attack.
 	const float TimeSinceAttack = Enemy->GetWorld()->GetTimeSeconds() - Enemy->GetLastAttackTime();
-	const bool bCooldownReady = TimeSinceAttack >= Enemy->GetEnemyData()->AttackCooldown;
+	const bool bCooldownReady = TimeSinceAttack >= Enemy->GetAttackCooldown();
 
 	BB->SetValueAsBool(TEXT("bIsInAttackRange"), bInRange && bCooldownReady);
 	BB->SetValueAsBool(TEXT("bAttackCooldownReady"), bCooldownReady);

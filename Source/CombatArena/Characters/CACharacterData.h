@@ -88,4 +88,7 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TObjectPtr<UAnimMontage> StaggerBreakReactMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float DodgeInvulnFraction = 0.6f;
 };

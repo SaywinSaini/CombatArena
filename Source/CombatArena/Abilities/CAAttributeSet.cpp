@@ -13,14 +13,18 @@ void UCAAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), 0, GetMaxHealth()));
-		
-		// Trigger enemy death when health reaches zero.
+
+		AActor* Avatar = Data.Target.GetAvatarActor();
+
+		if (ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(Avatar))
+		{
+			Enemy->CheckPhaseTransition();
+		}
+
+		// Trigger death when health reaches zero.
 		if (GetHealth() <= 0)
 		{
-			AActor* Avatar = Data.Target.GetAvatarActor();
-			
-			ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(Avatar);
-			if (Enemy)
+			if (ACAEnemyBase* Enemy = Cast<ACAEnemyBase>(Avatar))
 			{
 				Enemy->Die();
 			}

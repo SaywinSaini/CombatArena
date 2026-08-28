@@ -309,6 +309,22 @@ void ACAPlayerCharacter::PlayHitReact(UAnimMontage* Montage, float PlayRate, FNa
 	   bIsReacting = false;
 	}, Duration, false);
 }
+
+void ACAPlayerCharacter::ApplyDodgeInvulnerability(float Duration)
+{
+	if (!AbilitySystemComponent) return;
+
+	AbilitySystemComponent->AddLooseGameplayTag(CATags::State_Invulnerable);
+
+	GetWorldTimerManager().SetTimer(DodgeInvulnTimerHandle, [this]()
+	{
+		if (AbilitySystemComponent)
+		{
+			AbilitySystemComponent->RemoveLooseGameplayTag(CATags::State_Invulnerable, 100);
+		}
+	}, Duration, false);
+}
+
 void ACAPlayerCharacter::Move(const FInputActionValue& Value)
 {
 	const FVector2D Axis = Value.Get<FVector2D>();
