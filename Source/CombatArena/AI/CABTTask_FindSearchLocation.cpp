@@ -1,18 +1,18 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UCABTTask_FindSearchLocation.h"
+#include "CABTTask_FindSearchLocation.h"
 
 #include "AIController.h"
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
-UUCABTTask_FindSearchLocation::UUCABTTask_FindSearchLocation()
+UCABTTask_FindSearchLocation::UCABTTask_FindSearchLocation()
 {
 	NodeName = TEXT("Find Search Location");
 }
 
-EBTNodeResult::Type UUCABTTask_FindSearchLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UCABTTask_FindSearchLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	APawn* OwnerPawn = OwnerComp.GetAIOwner()->GetPawn();
 	

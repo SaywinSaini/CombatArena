@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "UCABTTask_FindSearchLocation.generated.h"
+#include "CABTTask_FindSearchLocation.generated.h"
 
 UCLASS()
-class COMBATARENA_API UUCABTTask_FindSearchLocation : public UBTTaskNode
+class COMBATARENA_API UCABTTask_FindSearchLocation : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
 	public:
 	
-	UUCABTTask_FindSearchLocation();
+	UCABTTask_FindSearchLocation();
 	
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp,uint8* NodeMemory) override;
 	

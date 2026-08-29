@@ -26,29 +26,19 @@ void UCAHitstopComponent::ApplyHitstop(AActor* HitActor,bool bFreezePlayer,AActo
 	TWeakObjectPtr<AActor> WeakPlayer(PlayerActor);
 	
 	// Store weak references because the timer may execute after either actor has been destroyed.
-	GetWorld()->GetTimerManager().SetTimer(HitstopTimerHandle,[this,WeakHitActor,WeakPlayer,bFreezePlayer]()
+	GetWorld()->GetTimerManager().SetTimer(HitstopTimerHandle,[WeakHitActor,WeakPlayer,bFreezePlayer]()
 	{
 		if (WeakHitActor.IsValid())
 		{
 			WeakHitActor->CustomTimeDilation = 1.0f;
 		}
 		
-		if (bFreezePlayer && WeakHitActor.IsValid())
+		if (bFreezePlayer && WeakPlayer.IsValid())
 		{
 			WeakPlayer->CustomTimeDilation = 1.0f;
 		}
 	},HitstopDuration,false);
 }
 
-void UCAHitstopComponent::ResetHitstop(AActor* HitActor, bool bFreezePlayer,AActor* PlayerActor)
-{
-	if (HitActor == nullptr) return;
-	
-	HitActor->CustomTimeDilation = 1.0f;
-	if (bFreezePlayer && PlayerActor)
-	{
-		PlayerActor->CustomTimeDilation = 1.0f;
-	}
-}
 
 
