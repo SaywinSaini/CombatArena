@@ -389,6 +389,9 @@ void ACAPlayerCharacter::StopCrouch()
 // otherwise activate the granted melee ability.
 void ACAPlayerCharacter::ActivateMeleeAbility()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Melee input: dead=%d staggered=%d reacting=%d activeMelee=%d"),
+bIsDead, bIsStaggered, bIsReacting, ActiveMeleeAbility != nullptr);
+	
 	if (ActiveMeleeAbility)
 	{
 		ActiveMeleeAbility->SetComboInputReceived();
@@ -444,7 +447,9 @@ void ACAPlayerCharacter::OnAbilityActivated(UGameplayAbility* Ability)
 
 void ACAPlayerCharacter::OnAbilityEnded(UGameplayAbility* Ability)
 {
-	// Stop forwarding combo inputs once the melee ability has ended.
+	UE_LOG(LogTemp, Warning, TEXT("AbilityEnded: %s isMelee=%d"),
+		*GetNameSafe(Ability), Cast<UCAMeleeAbility>(Ability) != nullptr);
+	
 	if (Cast<UCAMeleeAbility>(Ability))
 	{
 		ActiveMeleeAbility = nullptr;
@@ -537,6 +542,8 @@ void ACAPlayerCharacter::EnterStagger()
 		AbilitySystemComponent->CancelAllAbilities();
 		AbilitySystemComponent->AddLooseGameplayTag(CATags::State_Staggered);
 	}
+	
+	ActiveMeleeAbility = nullptr;
 
 	if (APlayerController* PC = Cast<APlayerController>(GetController()))
 	{

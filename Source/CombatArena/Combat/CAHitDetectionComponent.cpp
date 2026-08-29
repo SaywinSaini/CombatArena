@@ -165,17 +165,6 @@ void UCAHitDetectionComponent::PerformTrace()
 							Stun->AddStun(PendingBlockedStunAmount);
 						}
 					}
-					
-					if (PC)
-					{
-						const TSubclassOf<UCameraShakeBase> ShakeToPlay = BlockCameraShake ? BlockCameraShake : HitCameraShake;
-						if (ShakeToPlay)
-						{
-							PC->ClientStartCameraShake(ShakeToPlay);
-						}
-					}
-					
-					continue;
 				}
 			}
 			
@@ -202,21 +191,6 @@ void UCAHitDetectionComponent::PerformTrace()
 				if (UCAStunComponent* Stun = HitActor->FindComponentByClass<UCAStunComponent>())
 				{
 					Stun->AddStun(PendingStunAmount);
-				}
-			}
-			
-			if (ACAEnemyBase* HitEnemy = Cast<ACAEnemyBase>(HitActor))
-			{
-				// A fatal or staggering hit plays its own montage instead of a reaction.
-				if (!HitEnemy->IsDead() && !HitEnemy->IsStaggered())
-				{
-					if (UCAEnemyData* Data = HitEnemy->GetEnemyData())
-					{
-						if (Data->HitReactMontage)
-						{
-							HitEnemy->PlayHitReact(Data->HitReactMontage, Data->HitReactPlayRate, PendingHitReactSection);
-						}
-					}
 				}
 			}
 			
@@ -267,10 +241,6 @@ void UCAHitDetectionComponent::PerformTrace()
 			if (PC && HitCameraShake)
 			{
 				PC->ClientStartCameraShake(HitCameraShake);
-			}
-			else
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Camera shake failed — PC: %d | Shake: %d"), PC != nullptr, HitCameraShake != nullptr);
 			}
 		}
 		

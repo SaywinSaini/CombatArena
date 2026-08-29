@@ -117,13 +117,6 @@ void UCATargetingComponent::TickComponent(float DeltaTime, enum ELevelTick TickT
 		return;
 	}
 	
-	if (!IsValid(LockedTarget))
-	{
-		LockedTarget = nullptr;
-		bIsTargetLocked = false;
-		return;
-	}
-
 	// Neither death nor stagger should let the component keep rotating the pawn.
 	if (const ACAPlayerCharacter* Player = Cast<ACAPlayerCharacter>(GetOwner()))
 	{
