@@ -91,4 +91,7 @@ class COMBATARENA_API UCACharacterData : public UDataAsset
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float DodgeInvulnFraction = 0.6f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<USoundBase> TakedownSound;
 };

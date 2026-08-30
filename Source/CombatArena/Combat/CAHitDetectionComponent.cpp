@@ -8,6 +8,7 @@
 #include "CombatArena.h"
 #include "AI/CAEnemyBase.h"
 #include "Abilities/CAAttributeSet.h"
+#include "Kismet/GameplayStatics.h"
 #include "Characters/CAEnemyData.h"
 #include "GameFramework/PlayerController.h"
 #include "GenericTeamAgentInterface.h"
@@ -50,10 +51,19 @@ void UCAHitDetectionComponent::StartTrace()
 {
 	bIsTracing = true;
 	HitActors.Empty();
+	bPlayedHitSoundThisSwing = false;
 }
 
 void UCAHitDetectionComponent::StopTrace()
 {
+	if (SwooshSounds.Num() > 0 && !bPlayedHitSoundThisSwing)
+	{
+		USoundBase* Sound = SwooshSounds[FMath::RandRange(0, SwooshSounds.Num() - 1)];
+		if (Sound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, Sound, GetOwner()->GetActorLocation());
+		}
+	}
 	bIsTracing = false;
 	bIsPlayerFrozen = false;
 }
@@ -165,6 +175,13 @@ void UCAHitDetectionComponent::PerformTrace()
 							Stun->AddStun(PendingBlockedStunAmount);
 						}
 					}
+					
+					if (BlockSound && !bPlayedHitSoundThisSwing)
+					{
+						UGameplayStatics::PlaySoundAtLocation(this, BlockSound, Hit.ImpactPoint);
+					}
+
+					continue;
 				}
 			}
 			
@@ -185,6 +202,16 @@ void UCAHitDetectionComponent::PerformTrace()
 			}
 			
 			SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(),TargetASC);
+			
+			if (HitSounds.Num() > 0 && !bPlayedHitSoundThisSwing)
+			{
+				USoundBase* Sound = HitSounds[FMath::RandRange(0, HitSounds.Num() - 1)];
+				if (Sound)
+				{
+					UGameplayStatics::PlaySoundAtLocation(this, Sound, Hit.ImpactPoint);
+					bPlayedHitSoundThisSwing = true;
+				}
+			}
 			
 			if (PendingStunAmount > 0.f)
 			{

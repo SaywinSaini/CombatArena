@@ -80,4 +80,15 @@ public:
 	
 	bool bPendingReactWhileStaggered = false;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TArray<TObjectPtr<USoundBase>> HitSounds;
+	
+	bool bPlayedHitSoundThisSwing = false;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<USoundBase> BlockSound;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TArray<TObjectPtr<USoundBase>> SwooshSounds;
+	
 };

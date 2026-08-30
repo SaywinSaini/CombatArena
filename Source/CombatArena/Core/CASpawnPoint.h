@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/BillboardComponent.h"
 #include "CASpawnPoint.generated.h"
 
 /**

@@ -237,6 +237,11 @@ void ACAPlayerCharacter::SetPendingDeath(AActor* Killer, FName SectionOverride)
 
 void ACAPlayerCharacter::OnTakedownImpact()
 {
+	if (CharacterData && CharacterData->TakedownSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, CharacterData->TakedownSound, GetActorLocation());
+	}
+	
 	if (TakedownTarget.IsValid())
 	{
 		TakedownTarget->Die();
@@ -389,16 +394,14 @@ void ACAPlayerCharacter::StopCrouch()
 // otherwise activate the granted melee ability.
 void ACAPlayerCharacter::ActivateMeleeAbility()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Melee input: dead=%d staggered=%d reacting=%d activeMelee=%d"),
-bIsDead, bIsStaggered, bIsReacting, ActiveMeleeAbility != nullptr);
-	
 	if (ActiveMeleeAbility)
 	{
 		ActiveMeleeAbility->SetComboInputReceived();
 	}
 	else
 	{
-		AbilitySystemComponent->TryActivateAbility(MeleeAbilityHandle);
+		const bool bActivated = AbilitySystemComponent->TryActivateAbility(MeleeAbilityHandle);
+		UE_LOG(LogTemp, Warning, TEXT("Melee TryActivateAbility returned %s"), bActivated ? TEXT("true") : TEXT("false"));
 	}
 }
 
