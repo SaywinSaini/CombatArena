@@ -18,6 +18,7 @@
 #include "Core/CAGameMode.h"
 #include "AI/CAEnemyBase.h"
 #include "AIController.h"
+#include "Blueprint/UserWidget.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Combat/CAStunComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -130,6 +131,18 @@ void ACAPlayerCharacter::BeginPlay()
 		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetHealthAttribute(), CharacterData->MaxHealth);
 		AbilitySystemComponent->SetNumericAttributeBase(UCAAttributeSet::GetMaxStunAttribute(), 100.f);
 	});
+	
+	if (HUDWidgetClass)
+	{
+		if (APlayerController* PC = Cast<APlayerController>(GetController()))
+		{
+			HUDWidget = CreateWidget<UUserWidget>(PC, HUDWidgetClass);
+			if (HUDWidget)
+			{
+				HUDWidget->AddToViewport();
+			}
+		}
+	}
 	
 }
 
@@ -326,6 +339,27 @@ void ACAPlayerCharacter::ApplyDodgeInvulnerability(float Duration)
 			AbilitySystemComponent->RemoveLooseGameplayTag(CATags::State_Invulnerable, 100);
 		}
 	}, Duration, false);
+}
+
+float ACAPlayerCharacter::GetHealthPercent() const
+{
+	if (!AbilitySystemComponent) return 0.f;
+
+	const float Max = AbilitySystemComponent->GetNumericAttribute(UCAAttributeSet::GetMaxHealthAttribute());
+	if (Max <= 0.f) return 0.f;
+
+	return AbilitySystemComponent->GetNumericAttribute(UCAAttributeSet::GetHealthAttribute()) / Max;
+	
+}
+
+float ACAPlayerCharacter::GetStunPercent() const
+{
+	if (!AbilitySystemComponent) return 0.f;
+
+	const float Max = AbilitySystemComponent->GetNumericAttribute(UCAAttributeSet::GetMaxStunAttribute());
+	if (Max <= 0.f) return 0.f;
+
+	return AbilitySystemComponent->GetNumericAttribute(UCAAttributeSet::GetStunAttribute()) / Max;
 }
 
 void ACAPlayerCharacter::Move(const FInputActionValue& Value)

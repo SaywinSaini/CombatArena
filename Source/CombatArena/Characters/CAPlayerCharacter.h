@@ -8,6 +8,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "CAPlayerCharacter.generated.h"
 
+class UUserWidget;
 class ACAEnemyBase;
 class UCAStunComponent;
 class UCAHitstopComponent;
@@ -135,6 +136,12 @@ public:
 	
 	void ApplyDodgeInvulnerability(float Duration);
 	
+	UFUNCTION(BlueprintPure, Category = "Combat")
+	float GetHealthPercent() const;
+	
+	UFUNCTION(BlueprintPure, Category = "Combat")
+	float GetStunPercent() const;
+	
 private: 
 	
 	UPROPERTY(VisibleAnywhere,Category = "Combat")
@@ -232,4 +239,12 @@ private:
 	FTimerHandle ReactTimerHandle;
 	
 	FTimerHandle DodgeInvulnTimerHandle;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> HUDWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UUserWidget> HUDWidget;
+	
+	
 };
