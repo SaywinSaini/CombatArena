@@ -3,9 +3,11 @@
 #include "AI/CAEnemyMovementState.h"
 #include "Characters/CAEnemyData.h"
 #include "AI/CAEnemyBase.h"
+#include "Blueprint/UserWidget.h"
 #include "Core/CASpawnPoint.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Actor.h"
+#include "UI/CABossHealthBarWidget.h"
 #include "UObject/ConstructorHelpers.h"
 
 ACAGameMode::ACAGameMode()
@@ -34,6 +36,28 @@ void ACAGameMode::BeginPlay()
 	}
 
 	SpawnWave(0);
+}
+
+void ACAGameMode::ShowBossBar(ACAEnemyBase* Boss)
+{
+	if (!Boss || !BossBarClass || BossBarInstance) return;
+
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (!PC) return;
+
+	BossBarInstance = CreateWidget<UCABossHealthBarWidget>(PC, BossBarClass);
+	if (!BossBarInstance) return;
+
+	BossBarInstance->AddToViewport();
+	BossBarInstance->InitializeForBoss(Boss);
+}
+
+void ACAGameMode::HideBossBar()
+{
+	if (!BossBarInstance) return;
+
+	BossBarInstance->RemoveFromParent();
+	BossBarInstance = nullptr;
 }
 
 bool ACAGameMode::TryClaimAttackToken(AActor* Claimant)
@@ -68,12 +92,31 @@ void ACAGameMode::RegisterEnemy(ACAEnemyBase* Enemy)
 {
 	if (!Enemy) return;
 	ActiveEnemies.AddUnique(Enemy);
+
+	const UCAEnemyData* Data = Enemy->GetEnemyData();
+	if (Data && Data->bIsBoss)
+	{
+		TWeakObjectPtr<ACAEnemyBase> WeakBoss = Enemy;
+		GetWorldTimerManager().SetTimerForNextTick([this, WeakBoss]()
+		{
+			if (WeakBoss.IsValid())
+			{
+				ShowBossBar(WeakBoss.Get());
+			}
+		});
+	}
 }
 
 void ACAGameMode::UnregisterEnemy(ACAEnemyBase* Enemy)
 {
 	if (!Enemy) return;
 	ActiveEnemies.Remove(Enemy);
+
+	const UCAEnemyData* Data = Enemy->GetEnemyData();
+	if (Data && Data->bIsBoss)
+	{
+		HideBossBar();
+	}
 }
 
 const TArray<TWeakObjectPtr<ACAEnemyBase>>& ACAGameMode::GetActiveEnemies()

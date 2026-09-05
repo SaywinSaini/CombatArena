@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "CAGameMode.generated.h"
 
+class UCABossHealthBarWidget;
 class ACAEnemyBase;
 enum class EEnemyType : uint8;
 
@@ -36,7 +37,7 @@ class COMBATARENA_API ACAGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
-	public:
+public:
 	ACAGameMode();
 	
 	bool TryClaimAttackToken(AActor* Claimant);
@@ -52,6 +53,11 @@ class COMBATARENA_API ACAGameMode : public AGameModeBase
 	void GetFormationSlot(const ACAEnemyBase* Enemy, int32& OutIndex, int32& OutCount);
 	
 	void OnWaveCleared();
+	
+protected:
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UCABossHealthBarWidget> BossBarClass;
 	
 private:
 	
@@ -83,5 +89,11 @@ private:
 	FTimerHandle NextWaveHandle;
 
 	virtual void BeginPlay() override;
+	
+	UPROPERTY()
+	TObjectPtr<UCABossHealthBarWidget> BossBarInstance;
+
+	void ShowBossBar(ACAEnemyBase* Boss);
+	void HideBossBar();
 	
 };

@@ -139,4 +139,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Phases")
 	float PhaseTwoSlipChance = 1.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Boss")
+	bool bIsBoss = false;
 };
