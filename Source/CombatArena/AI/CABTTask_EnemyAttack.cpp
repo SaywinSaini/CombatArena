@@ -2,7 +2,7 @@
 
 
 #include "CABTTask_EnemyAttack.h"
-
+#include "BehaviorTree/BehaviorTreeComponent.h"
 #include "AIController.h"
 #include "CAEnemyBase.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -21,6 +21,11 @@ EBTNodeResult::Type UCABTTask_EnemyAttack::ExecuteTask(UBehaviorTreeComponent& O
 	if (!Enemy)
 	{
 		UE_LOG(LogTemp, Error, TEXT("CABTTask_EnemyAttack: Enemy cast failed"));
+		return EBTNodeResult::Failed;
+	}
+	
+	if (Enemy->IsReacting() || Enemy->IsStaggered())
+	{
 		return EBTNodeResult::Failed;
 	}
 	
@@ -64,15 +69,25 @@ EBTNodeResult::Type UCABTTask_EnemyAttack::ExecuteTask(UBehaviorTreeComponent& O
 	OwnerComp.PauseLogic("Attacking");
 	AnimInstance->Montage_Play(Montage);
 	
+	TWeakObjectPtr<UBehaviorTreeComponent> WeakComp = &OwnerComp;
+	TWeakObjectPtr<ACAEnemyBase> WeakEnemy = Enemy;
+	TWeakObjectPtr<ACAGameMode> WeakGameMode = GameMode;
+
 	FOnMontageEnded MontageEndedDelegate;
-	MontageEndedDelegate.BindLambda([this, &OwnerComp, Enemy, GameMode](UAnimMontage* Montage, bool bInterrupted)
+	MontageEndedDelegate.BindLambda(
+		[this, WeakComp, WeakEnemy, WeakGameMode](UAnimMontage*, bool bInterrupted)
 	{
-		if (GameMode) GameMode->ReleaseAttackToken(Enemy);
-		OwnerComp.ResumeLogic("Attacking");
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		if (!WeakComp.IsValid()) return;
+
+		if (WeakGameMode.IsValid() && WeakEnemy.IsValid())
+		{
+			WeakGameMode->ReleaseAttackToken(WeakEnemy.Get());
+		}
+
+		WeakComp->ResumeLogic("Attacking");
+		FinishLatentTask(*WeakComp, bInterrupted ? EBTNodeResult::Aborted : EBTNodeResult::Succeeded);
 	});
 	AnimInstance->Montage_SetEndDelegate(MontageEndedDelegate, Montage);
-
 	
 	return EBTNodeResult::InProgress;
 }

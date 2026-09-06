@@ -96,7 +96,6 @@ void UCACharacterMovementComponent::Dodge()
 	
 }
 
-
 void UCACharacterMovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
